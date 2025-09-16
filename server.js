@@ -32,7 +32,7 @@ app.get('/test-db', async (req, res) => {
 });
 
 // Utilisation des routes pour les diamants
-app.use('/api/diamants', diamantsRoutes); // Toutes les routes définies dans diamantsRoutes seront préfixées par /api/diamants
+app.use('/api/diamants', diamantsRoutes);
 
 // Gestion des routes non trouvées (404)
 app.use((req, res, next) => {

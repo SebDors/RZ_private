@@ -62,6 +62,7 @@ const buildWhereClause = (queryParams) => {
 
     paramIndex = addInFilter('color', queryParams, filters, values, paramIndex);
     paramIndex = addInFilter('clarity', queryParams, filters, values, paramIndex);
+    // Finishing
     paramIndex = addInFilter('cut', queryParams, filters, values, paramIndex);
     paramIndex = addInFilter('polish', queryParams, filters, values, paramIndex);
     paramIndex = addInFilter('symmetry', queryParams, filters, values, paramIndex);
@@ -71,6 +72,40 @@ const buildWhereClause = (queryParams) => {
 
     paramIndex = addInRangeMinFilter('minPriceCarat', 'price_carat', queryParams, filters, values, paramIndex);
     paramIndex = addInRangeMaxFilter('maxPriceCarat', 'price_carat', queryParams, filters, values, paramIndex);
+
+    //Parameters
+    paramIndex = addInRangeMinFilter('minTable', 'table_pct', queryParams, filters, values, paramIndex);
+    paramIndex = addInRangeMaxFilter('maxTable', 'table_pct', queryParams, filters, values, paramIndex);
+
+    paramIndex = addInRangeMinFilter('minDepth', 'depth_pct', queryParams, filters, values, paramIndex);
+    paramIndex = addInRangeMaxFilter('maxDepth', 'depth_pct', queryParams, filters, values, paramIndex);
+
+    paramIndex = addInRangeMinFilter('minRatio', '', queryParams, filters, values, paramIndex);
+    paramIndex = addInRangeMaxFilter('maxRatio', '', queryParams, filters, values, paramIndex);
+
+    paramIndex = addInRangeMinFilter('minLength', '', queryParams, filters, values, paramIndex);
+    paramIndex = addInRangeMaxFilter('maxLength', '', queryParams, filters, values, paramIndex);
+
+    paramIndex = addInRangeMinFilter('minWidth', '', queryParams, filters, values, paramIndex);
+    paramIndex = addInRangeMaxFilter('maxWidth', '', queryParams, filters, values, paramIndex);
+
+    paramIndex = addInRangeMinFilter('minHeight', '', queryParams, filters, values, paramIndex);
+    paramIndex = addInRangeMaxFilter('maxHeight', '', queryParams, filters, values, paramIndex);
+
+    paramIndex = addInRangeMinFilter('minCrownAngle', 'crown_angle', queryParams, filters, values, paramIndex);
+    paramIndex = addInRangeMaxFilter('maxCrownAngle', 'crown_angle', queryParams, filters, values, paramIndex);
+
+    paramIndex = addInRangeMinFilter('minCrownHeight', 'crown_height', queryParams, filters, values, paramIndex);
+    paramIndex = addInRangeMaxFilter('maxCrownHeight', 'crown_height', queryParams, filters, values, paramIndex);
+
+    paramIndex = addInRangeMinFilter('minGirdle', 'girdle_pct', queryParams, filters, values, paramIndex);
+    paramIndex = addInRangeMaxFilter('maxGirdle', 'girdle_pct', queryParams, filters, values, paramIndex);
+
+    paramIndex = addInRangeMinFilter('minPavillonAngle', 'pavillon_angle', queryParams, filters, values, paramIndex);
+    paramIndex = addInRangeMaxFilter('maxPavillonAngle', 'pavillon_angle', queryParams, filters, values, paramIndex);
+
+    paramIndex = addInRangeMinFilter('minPavillonHeight', 'pavilion_depth', queryParams, filters, values, paramIndex);
+    paramIndex = addInRangeMaxFilter('maxPavillonHeight', 'pavilion_depth', queryParams, filters, values, paramIndex);
     return { filters, values };
 };
 

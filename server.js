@@ -1,7 +1,8 @@
 require('dotenv').config(); // Charge les variables d'environnement dès le début
 const express = require('express');
 const db = require('./config/db'); // Importe le module de connexion à la base de données
-const diamantsRoutes = require('./routes/diamantsRoutes'); // Importe le routeur des diamants
+const diamantsRoutes = require('./routes/diamantsRoutes');
+const usersRoutes = require('./routes/usersRoutes')
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -33,6 +34,7 @@ app.get('/test-db', async (req, res) => {
 
 // Utilisation des routes pour les diamants
 app.use('/api/diamants', diamantsRoutes);
+app.use('/api/users', usersRoutes)
 
 // Gestion des routes non trouvées (404)
 app.use((req, res, next) => {

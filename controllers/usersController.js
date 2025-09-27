@@ -174,3 +174,89 @@ exports.deleteUser = async (req, res) => {
         res.status(500).json({ message: 'Erreur serveur lors de la suppression de l\'utilisateur.' });
     }
 };
+
+// Logique pour récupérer le profil de l'utilisateur connecté
+exports.getConnectedUserProfile = async (req, res) => {
+    const userId = req.user.id; // L'ID de l'utilisateur est attaché par le middleware d'authentification
+    try {
+        const client = await db.connect();
+        const result = await client.query('SELECT id, email, prefix, first_name, last_name, phone_number, designation, seller, company_name, company_owner, company_type, company_email, company_address, company_city, company_country, company_zip_code, id_document_url, business_registration_url, how_found_us, role, is_active, created_at, updated_at FROM users WHERE id = $1', [userId]);
+        client.release();
+
+        if (result.rows.length === 0) {
+            // Ceci ne devrait pas arriver si le token est valide et l'utilisateur existe
+            return res.status(404).json({ message: 'Profil utilisateur non trouvé.' });
+        }
+
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        console.error(`Erreur lors de la récupération du profil utilisateur ${userId} :`, error);
+        res.status(500).json({ message: 'Erreur serveur lors de la récupération du profil.' });
+    }
+};
+
+// Logique pour mettre à jour le profil de l'utilisateur connecté
+exports.updateConnectedUserProfile = async (req, res) => {
+    const userId = req.user.id; // L'ID de l'utilisateur est attaché par le middleware
+    const updates = req.body;
+
+    const setClauses = [];
+    const values = [];
+    let paramIndex = 1;
+
+    // Colonnes que l'utilisateur PEUT mettre à jour lui-même
+    const allowedSelfUpdateColumns = [
+        'prefix', 'first_name', 'last_name', 'phone_number',
+        'designation', 'seller', 'company_name', 'company_owner', 'company_type', 'company_email',
+        'company_address', 'company_city', 'company_country', 'company_zip_code', 'id_document_url',
+        'business_registration_url', 'how_found_us', 'password' // Permettre le changement de mot de passe
+    ];
+
+    for (const key of allowedSelfUpdateColumns) {
+        if (updates[key] !== undefined) {
+            if (key === 'password' && updates[key]) {
+                const salt = await bcrypt.genSalt(10);
+                const hashedPassword = await bcrypt.hash(updates[key], salt);
+                setClauses.push(`${key} = $${paramIndex++}`);
+                values.push(hashedPassword);
+            } else {
+                setClauses.push(`${key} = $${paramIndex++}`);
+                values.push(updates[key]);
+            }
+        }
+    }
+
+    if (setClauses.length === 0) {
+        return res.status(400).json({ message: 'Aucun champ valide fourni pour la mise à jour du profil.' });
+    }
+
+    values.push(userId); // Le dernier paramètre est l'ID de l'utilisateur pour la clause WHERE
+
+    const queryText = `
+        UPDATE users
+        SET ${setClauses.join(', ')}, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $${paramIndex}
+        RETURNING id, email, role, is_active, updated_at;
+    `;
+
+    try {
+        const client = await db.connect();
+        const result = await client.query(queryText, values);
+        client.release();
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Profil utilisateur non trouvé pour la mise à jour.' });
+        }
+
+        res.status(200).json({
+            message: 'Profil mis à jour avec succès.',
+            user: result.rows[0]
+        });
+    } catch (error) {
+        console.error(`Erreur lors de la mise à jour du profil utilisateur ${userId} :`, error);
+        if (error.code === '23505') { // Conflit d'email si l'email mis à jour existe déjà
+            return res.status(409).json({ message: 'L\'email fourni est déjà utilisé.' });
+        }
+        res.status(500).json({ message: 'Erreur serveur lors de la mise à jour du profil.' });
+    }
+};

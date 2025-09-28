@@ -4,6 +4,7 @@ const db = require('./config/db'); // Importe le module de connexion à la base 
 const diamantsRoutes = require('./routes/diamantsRoutes');
 const usersRoutes = require('./routes/usersRoutes')
 const authRoutes = require('./routes/authRoutes');
+const cartRoutes = require('./routes/cartRoutes'); 
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -33,10 +34,11 @@ app.get('/test-db', async (req, res) => {
     }
 });
 
-// Utilisation des routes pour les diamants
+// Utilisation des routes
 app.use('/api/diamants', diamantsRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/cart', cartRoutes);
 
 // Gestion des routes non trouvées (404)
 app.use((req, res, next) => {

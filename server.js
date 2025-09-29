@@ -8,6 +8,7 @@ const cartRoutes = require('./routes/cartRoutes');
 const watchlistRoutes = require('./routes/watchlistRoutes');
 const quoteRoutes = require('./routes/quoteRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const logRoutes = require('./routes/logRoutes');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -45,6 +46,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/watchlist', watchlistRoutes);
 app.use('/api/quotes', quoteRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/logs', logRoutes);
 
 // Gestion des routes non trouvées (404)
 app.use((req, res, next) => {

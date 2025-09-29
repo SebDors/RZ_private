@@ -52,6 +52,12 @@ exports.addItemToCart = async (req, res) => {
         const result = await client.query(queryText, [userId, diamond_stock_id, quantity]);
         client.release();
 
+        logActivity({
+            userId: userId,
+            actionType: 'ADD_TO_CART',
+            details: { diamond_stock_id, quantity: newItem.quantity },
+        });
+
         res.status(201).json(result.rows[0]);
     } catch (error) {
         console.error('Erreur lors de l\'ajout de l\'article au panier :', error);

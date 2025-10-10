@@ -1,4 +1,4 @@
-import ClientCard from "../components/Users/UserCard"
+import ClientCard from "../../components/Users/UserCard"
 import { useState } from "react";
 
 function Clients() {

@@ -9,6 +9,9 @@ const watchlistRoutes = require('./routes/watchlistRoutes');
 const quoteRoutes = require('./routes/quoteRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const logRoutes = require('./routes/logRoutes');
+// Documentation API avec Swagger
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -37,6 +40,46 @@ app.get('/test-db', async (req, res) => {
         });
     }
 });
+
+const swaggerOptions = {
+    swaggerDefinition: {
+        openapi: '3.0.0', // Spécification OpenAPI
+        info: {
+            title: 'API Rubin & Zonen',
+            version: '1.0.0',
+            description: 'Documentation de l\'API REST pour le projet Rubin & Zonen, développée avec Node.js, Express et PostgreSQL.',
+            contact: {
+                name: 'EPF Projets',
+                url: 'https://www.epfprojets.com/',
+                email: 'info@epfprojets.com'
+            },
+        },
+        servers: [
+            {
+                url: 'http://localhost:3000',
+                description: 'Serveur de développement local'
+            },
+            // Ajoutez d'autres serveurs ici (staging, production) si nécessaire
+        ],
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                }
+            }
+        },
+        security: [{
+            bearerAuth: []
+        }]
+    },
+    // Chemin vers les fichiers contenant les annotations JSDoc pour l'API
+    apis: ['./routes/*.js'],
+};
+
+const swaggerDocs = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Utilisation des routes
 app.use('/api/diamants', diamantsRoutes);

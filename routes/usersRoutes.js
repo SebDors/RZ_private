@@ -1,32 +1,178 @@
-// routes/userRoutes.js
 const express = require('express');
 const router = express.Router();
-const usersController = require('../controllers/usersController'); // Vérifiez le nom du fichier : userController.js ou usersController.js
+const usersController = require('../controllers/usersController');
 const { authenticate, authorizeAdmin } = require('../middleware/authMiddleware');
 
-// Routes pour l'utilisateur AUTHENTIFIÉ (gestion de son propre profil)
-// GET le profil de l'utilisateur connecté
+/**
+ * @swagger
+ * tags:
+ *   name: Utilisateurs
+ *   description: Gestion des profils utilisateurs et administration des utilisateurs
+ */
+
+/**
+ * @swagger
+ * /api/users/profile:
+ *   get:
+ *     summary: Récupérer le profil de l'utilisateur connecté
+ *     tags: [Utilisateurs]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Profil de l'utilisateur récupéré avec succès
+ *       401:
+ *         description: Non autorisé
+ */
 router.get('/profile', authenticate, usersController.getConnectedUserProfile);
-// PUT mettre à jour le profil de l'utilisateur connecté
+
+/**
+ * @swagger
+ * /api/users/profile:
+ *   put:
+ *     summary: Mettre à jour le profil de l'utilisateur connecté
+ *     tags: [Utilisateurs]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Profil mis à jour avec succès
+ *       400:
+ *         description: Données invalides
+ */
 router.put('/profile', authenticate, usersController.updateConnectedUserProfile);
-// DELETE supprimer son propre compte (optionnel et à manier avec précaution)
-// router.delete('/profile', authenticate, usersController.deleteConnectedUser);
 
-
-// Routes pour l'ADMINISTRATION des utilisateurs (requiert AUTHENTIFICATION et rôle ADMIN)
-// GET tous les utilisateurs (pour les admins)
+/**
+ * @swagger
+ * /api/users:
+ *   get:
+ *     summary: Récupérer la liste de tous les utilisateurs (Admin seulement)
+ *     tags: [Utilisateurs]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Liste des utilisateurs récupérée
+ *       403:
+ *         description: Accès refusé
+ */
 router.get('/', authenticate, authorizeAdmin, usersController.getAllUsers);
 
-// GET un utilisateur par son ID (pour les admins)
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   get:
+ *     summary: Récupérer un utilisateur par son ID (Admin seulement)
+ *     tags: [Utilisateurs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Utilisateur trouvé
+ *       404:
+ *         description: Utilisateur non trouvé
+ */
 router.get('/:id', authenticate, authorizeAdmin, usersController.getUserById);
 
-// POST (Créer) un nouvel utilisateur (pour les admins, l'inscription "register" est publique)
+/**
+ * @swagger
+ * /api/users:
+ *   post:
+ *     summary: Créer un nouvel utilisateur (Admin seulement)
+ *     tags: [Utilisateurs]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Utilisateur créé
+ *       400:
+ *         description: Données invalides
+ */
 router.post('/', authenticate, authorizeAdmin, usersController.createUser);
 
-// PUT (Mettre à jour) un utilisateur existant par son ID (pour les admins)
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   put:
+ *     summary: Mettre à jour un utilisateur par son ID (Admin seulement)
+ *     tags: [Utilisateurs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Utilisateur mis à jour
+ *       404:
+ *         description: Utilisateur non trouvé
+ */
 router.put('/:id', authenticate, authorizeAdmin, usersController.updateUser);
 
-// DELETE (Supprimer) un utilisateur par son ID (pour les admins)
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   delete:
+ *     summary: Supprimer un utilisateur par son ID (Admin seulement)
+ *     tags: [Utilisateurs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Utilisateur supprimé
+ *       404:
+ *         description: Utilisateur non trouvé
+ */
 router.delete('/:id', authenticate, authorizeAdmin, usersController.deleteUser);
 
 module.exports = router;

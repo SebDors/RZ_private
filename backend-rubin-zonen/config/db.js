@@ -4,12 +4,12 @@ const { Pool } = require('pg');
 
 // Récupération des variables d'environnement pour la connexion à la base de données
 const pool = new Pool({
-    user: process.env.user,
-    host: process.env.host,
-    database: process.env.database,
-    password: process.env.password,
-    port: process.env.port_serv,
-    // ssl: process.env.ssl === 'true' // Décommentez si vous utilisez SSL, assurez-vous que la variable est un string 'true'
+    user: process.env.DATABASE_USER,
+    host: process.env.HOST,
+    database: process.env.DATABASE_NAME,
+    password: process.env.DATABASE_PASSWORD,
+    port: process.env.PORT_SERV,
+    // ssl: process.env.SSL === 'true' // Décommentez si vous utilisez SSL, assurez-vous que la variable est un string 'true'
 });
 
 

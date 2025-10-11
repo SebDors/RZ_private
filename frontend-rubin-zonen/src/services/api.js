@@ -1,0 +1,1 @@
+const BASE_URL = 'htt://localhost:3000/'; //TODO: change to real url

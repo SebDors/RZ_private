@@ -1,9 +1,9 @@
 // TODO implementer Register page
 
-function LogIn() {
+function Register() {
     return (
-        <div>LogIn page</div>
+        <div>Register page</div>
     )
 }
 
-export default LogIn
+export default Register

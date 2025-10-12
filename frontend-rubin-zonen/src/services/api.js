@@ -1,1 +1,35 @@
-const BASE_URL = 'htt://localhost:3000/'; //TODO: change to real url
+export const getAllDiamonds = async () => {
+    //TODO const token = localStorage.getItem("JWT");
+    const token = import.meta.env.VITE_TEMPORARY_JWT; // Temporary JWT for testing purpose
+
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/diamants`,
+        {
+            method: 'GET',
+            headers: {
+                Accept: "application/json",
+                Autorisation: "Bearer " + token,
+
+            }
+        }
+    );
+    const data = await response.json();
+    return data;
+};
+
+export const getAllUsers = async () => {
+    // const token = localStorage.getItem("JWT");
+    const token = import.meta.env.VITE_TEMPORARY_JWT; // Temporary JWT for testing purpose
+
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/users`,
+        {
+            method: 'GET',
+            headers: {
+                Accept: "application/json",
+                Autorisation: "Bearer " + token,
+
+            }
+        }
+    );
+    const data = await response.json();
+    return data;
+};

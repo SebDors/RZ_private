@@ -1,14 +1,28 @@
 import ClientCard from "../../components/Users/UserCard"
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getAllUsers } from "../../services/api";
 
 function Clients() {
-    const [searchQuery, setSearchQuery] = useState("");
+    const [searchQuery, setSearchQuery] = useState(""); // State for the search input
+    const [users, setUsers] = useState([]); // State to hold fetched users
+    const [loading, setLoading] = useState(true); // State to manage loading status
+    const [error, setError] = useState(null); // State to manage error
 
-    const clients = [ //Mock data
-        { id: 0, companyName: "Example Corp 1", active: true, contactName: "John Doe", phoneNumber: "1234567890" },
-        { id: 1, companyName: "Example Corp 2", active: false, contactName: "John Doe", phoneNumber: "1234567890" },
-        { id: 2, companyName: "Example Corp 3", active: true, contactName: "John Doe" }
-    ];
+    useEffect(() => {
+        const fetchAllUsers = async () => {
+            try {
+                const users = await getAllUsers()
+                setUsers(users)
+            } catch (err) {
+                setError("Failed to fetch users")
+                console.log("Error fetching users : ", err)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchAllUsers()
+    }, []); // Empty useEffect to fetch user only one time (useEffect runs when the array changes)
 
     const handleSearch = () => {
         console.log("Search for:" + searchQuery)
@@ -27,7 +41,7 @@ function Clients() {
             </form>
 
             <div className="clients-list">
-                {clients.map(client => (// .map iterates over the clients array and creates a ClientCard for each client
+                {users.map(client => (// .map iterates over the clients array and creates a ClientCard for each client
                     client.companyName.toLowerCase().includes(searchQuery.toLowerCase()) && <ClientCard client={client} key={client.id} />
                 ))}
             </div>

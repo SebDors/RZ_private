@@ -3,12 +3,18 @@ const bcrypt = require('bcryptjs'); // Importe bcryptjs pour le hachage des mots
 
 // Logique pour récupérer tous les utilisateurs
 exports.getAllUsers = async (req, res) => {
+        console.log('Retrieving users');
     try {
         const client = await db.connect();
         // Ne pas sélectionner le mot de passe dans les résultats (sécurité)
         const result = await client.query('SELECT * FROM users');
         client.release();
 
+        if (req.header.origin){
+            const origin = req.header.origin;
+            res.setHeader('Access-Control-Allow-Origin', origin);
+            console.log("CORS for origin: " + origin);
+        }
         res.status(200).json(result.rows);
     } catch (error) {
         console.error('Erreur lors de la récupération des users. Error: ', error);

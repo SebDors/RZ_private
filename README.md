@@ -9,7 +9,7 @@ In the terminal paste this :
 ```bash
 cd backend-rubin-zonen
 npm i
-node server.js
+npm run start
 
 cd ../frontend-rubin-zonen
 npm i

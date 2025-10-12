@@ -1,5 +1,6 @@
 require('dotenv').config(); // Charge les variables d'environnement dès le début
 const express = require('express');
+const cors = require('cors');
 const db = require('./config/db'); // Importe le module de connexion à la base de données
 const diamantsRoutes = require('./routes/diamantsRoutes');
 const usersRoutes = require('./routes/usersRoutes')
@@ -15,6 +16,12 @@ const swaggerUi = require('swagger-ui-express');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Enable CORS for all routes
+app.use(cors({
+    origin: 'http://localhost:5173', // Your frontend URL
+    credentials: true
+}));
 
 app.use(express.json()); // Middleware pour parser le JSON
 

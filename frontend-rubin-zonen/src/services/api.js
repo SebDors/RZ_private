@@ -24,6 +24,7 @@ export const getAllUsers = async () => {
         {
             method: 'GET',
             headers: {
+                origin: 'http://localhost:5173',
                 Accept: "application/json",
                 Autorisation: "Bearer " + token,
 

@@ -1,7 +1,6 @@
 const db = require('../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { logActivity } = require('../services/logService');
 
 // Fonction d'inscription d'un nouvel utilisateur
 exports.register = async (req, res) => {
@@ -49,12 +48,6 @@ exports.register = async (req, res) => {
 
         const user = result.rows[0];
 
-        logActivity({
-            userId: user.id,
-            actionType: 'REGISTER_SUCCESS',
-            details: { email: user.email },
-        });
-
         // Générer un token JWT pour l'utilisateur nouvellement enregistré
         const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, {
             expiresIn: '1h'
@@ -97,11 +90,6 @@ exports.login = async (req, res) => {
         // Vérifier le mot de passe haché
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            logActivity({
-                userId: user.id,
-                actionType: 'LOGIN_FAILURE',
-                details: { reason: 'Invalid password' },
-            });
             return res.status(401).json({ message: 'Email ou mot de passe incorrect.' });
         }
 
@@ -109,11 +97,6 @@ exports.login = async (req, res) => {
         if (!user.is_active) {
             return res.status(403).json({ message: 'Votre compte est inactif. Veuillez contacter l\'administrateur.' });
         }
-
-        logActivity({
-            userId: user.id,
-            actionType: 'LOGIN_SUCCESS',
-        });
 
         // Générer un token JWT
         const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, {

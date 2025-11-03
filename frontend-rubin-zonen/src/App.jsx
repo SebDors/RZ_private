@@ -24,7 +24,7 @@ import StoneDetail from './pages/Home/StoneDetail'
 // Auth pages
 import Auth from './pages/Auth/Auth'
 import ForgottenPassword from './pages/Auth/ForgottenPassword'
-import Login from './pages/Auth/Login'
+import Login from './pages/Auth/LogIn'
 import Register from './pages/Auth/Register'
 
 function App() {

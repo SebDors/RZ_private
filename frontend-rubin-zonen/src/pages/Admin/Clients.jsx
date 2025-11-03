@@ -5,8 +5,8 @@ import { getAllUsers } from "../../services/api";
 function Clients() {
     const [searchQuery, setSearchQuery] = useState(""); // State for the search input
     const [users, setUsers] = useState([]); // State to hold fetched users
-    const [loading, setLoading] = useState(true); // State to manage loading status
-    const [error, setError] = useState(null); // State to manage error
+    // const [loading, setLoading] = useState(true); // State to manage loading status
+    // const [error, setError] = useState(null); // State to manage error
 
     useEffect(() => {
         const fetchAllUsers = async () => {
@@ -24,10 +24,10 @@ function Clients() {
         fetchAllUsers()
     }, []); // Empty useEffect to fetch user only one time (useEffect runs when the array changes)
 
-    const handleSearch = () => {
-        console.log("Search for:" + searchQuery)
-        //TODO implement function for filters
-    }
+    // const handleSearch = () => {
+    //     console.log("Search for:" + searchQuery)
+    //     //TODO implement function for filters
+    // }
 
     return (
         <div className="clients-page">

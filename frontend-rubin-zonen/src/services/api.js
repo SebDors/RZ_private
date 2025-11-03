@@ -34,3 +34,17 @@ export const getAllUsers = async () => {
     const data = await response.json();
     return data;
 };
+
+export const loginUser = async (email, password) => {
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/login`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password })
+        }
+    );
+    const data = await response.json();
+    return data;
+};

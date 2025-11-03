@@ -4,6 +4,12 @@
     color: #333;
 }
 
+.error-message {
+    color: red;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
 .input-group {
     margin-bottom: 1rem;
 }
@@ -19,6 +25,21 @@
     padding: 0.75rem;
     border: 1px solid #ccc;
     border-radius: 4px;
+}
+
+.input-group input.error {
+    border-color: red;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.remember-me input[type="checkbox"] {
+    width: auto;
+    margin-right: 0.5rem;
 }
 
 .login-button {

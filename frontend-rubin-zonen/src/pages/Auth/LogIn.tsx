@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../../css/Auth/LogIn.css';
 import { loginUser } from '../../services/api';
+import EyeIcon from '../../assets/icons/Eye.jsx';
+import EyeOffIcon from '../../assets/icons/EyeOff.jsx';
 
 function LogIn() {
     const [email, setEmail] = useState('');
@@ -9,6 +11,7 @@ function LogIn() {
     const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState(null);
     const [errorFields, setErrorFields] = useState([]);
+    const [passwordShown, setPasswordShown] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -21,9 +24,9 @@ function LogIn() {
 
             if (data.token) {
                 if (rememberMe) {
-                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('token', data.token); // Store token in localStorage for persistent login
                 } else {
-                    sessionStorage.setItem('token', data.token);
+                    sessionStorage.setItem('token', data.token);// Store token in sessionStorage for session-only login
                 }
                 navigate('/dashboard');
             } else {
@@ -35,6 +38,10 @@ function LogIn() {
         } catch (err) {
             setError('An error occurred during login.');
         }
+    };
+
+    const togglePasswordVisibility = () => {
+        setPasswordShown(!passwordShown);
     };
 
     return (
@@ -54,14 +61,17 @@ function LogIn() {
             </div>
             <div className="input-group">
                 <label htmlFor="password">Password</label>
-                <input
-                    type="password"
-                    id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className={errorFields.includes('password') ? 'error' : ''}
-                />
+                <div className="password-wrapper">
+                    <input
+                        type={passwordShown ? "text" : "password"}
+                        id="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        className={errorFields.includes('password') ? 'error' : ''}
+                    />
+                    <i onClick={togglePasswordVisibility}>{passwordShown ? <EyeOffIcon /> : <EyeIcon />}</i>
+                </div>
             </div>
             <div className="remember-me">
                 <input

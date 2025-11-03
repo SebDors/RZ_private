@@ -31,6 +31,22 @@
     border-color: red;
 }
 
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    padding-right: 4rem;
+}
+
+.password-wrapper i {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
 .remember-me {
     display: flex;
     align-items: center;

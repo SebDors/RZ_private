@@ -10,6 +10,7 @@ const watchlistRoutes = require('./routes/watchlistRoutes');
 const quoteRoutes = require('./routes/quoteRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const filtersRoutes = require('./routes/filtersRoutes');
+const emailRoutes = require('./routes/emailRoutes');
 // Documentation API avec Swagger
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -104,6 +105,7 @@ app.use('/api/watchlist', watchlistRoutes);
 app.use('/api/quotes', quoteRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/filters', filtersRoutes);
+app.use('/api/email', emailRoutes);
 
 // Gestion des routes non trouvées (404)
 app.use((req, res, next) => {

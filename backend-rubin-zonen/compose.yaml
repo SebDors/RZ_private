@@ -2,7 +2,6 @@ services:
   database:
     container_name: rubin-zonen-database
     image: postgres
-    restart: always
     env_file:
       - .env
     environment:

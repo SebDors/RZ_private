@@ -109,6 +109,5 @@ app.use((err, req, res, next) => {
 
 
 app.listen(port, () => {
-    console.log(`Serveur API démarré sur le port ${port}`);
-    console.log('Tentative de connexion à la base de données...');
+    console.log(`Serveur API démarré sur le port localhost:${port}`);
 });

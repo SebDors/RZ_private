@@ -21,6 +21,6 @@ npm i
 npm run dev
 ```
 
-And go to the URL given by Vite (in the terminal)
+And go to the URL given by Vite (in the terminal ctrl + click)
 
-The documentation for backend routes is on http://localhost:3000/api-docs/
+The documentation for backend routes is on [http://localhost:3000/api-docs/](http://localhost:3000/api-docs/)

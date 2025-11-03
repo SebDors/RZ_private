@@ -1,6 +1,13 @@
-import ClientCard from "../../components/Users/UserCard"
 import { useState, useEffect } from "react";
-import { getAllUsers } from "../../services/api";
+import { getAllUsers } from "../../services/api.ts";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 function Clients() {
     const [searchQuery, setSearchQuery] = useState(""); // State for the search input
@@ -14,36 +21,42 @@ function Clients() {
                 const users = await getAllUsers()
                 setUsers(users)
             } catch (err) {
-                setError("Failed to fetch users")
+                // setError("Failed to fetch users")
                 console.log("Error fetching users : ", err)
             } finally {
-                setLoading(false)
+                // setLoading(false)
             }
         }
 
         fetchAllUsers()
     }, []); // Empty useEffect to fetch user only one time (useEffect runs when the array changes)
 
-    // const handleSearch = () => {
-    //     console.log("Search for:" + searchQuery)
-    //     //TODO implement function for filters
-    // }
-
     return (
-        <div className="clients-page">
-            <form className="search-form" >
-                {/* TODO make the text (Search ...) a variable */}
-                <input type="text"
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+            <div className="w-full max-w-4xl p-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+                <Input 
+                    type="text"
                     placeholder="Search ..."
-                    className="search-input"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)} />
-            </form>
+                    onChange={(e) => setSearchQuery(e.target.value)} 
+                />
 
-            <div className="clients-list">
-                {users.map(client => (// .map iterates over the clients array and creates a ClientCard for each client
-                    client.companyName.toLowerCase().includes(searchQuery.toLowerCase()) && <ClientCard client={client} key={client.id} />
-                ))}
+                <div className="clients-list mt-4 grid gap-4">
+                    {users.map(client => (
+                        client.companyName.toLowerCase().includes(searchQuery.toLowerCase()) && 
+                        <Card key={client.id}>
+                            <CardHeader>
+                                <CardTitle>{client.companyName}</CardTitle>
+                                <CardDescription>{client.email}</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <p>{client.firstName} {client.lastName}</p>
+                                <p>{client.address}, {client.city}, {client.zipCode}, {client.country}</p>
+                                <p>{client.phoneNumber}</p>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
             </div>
         </div>
     );

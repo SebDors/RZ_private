@@ -1,4 +1,6 @@
-export const getAllDiamonds = async () => {
+import { Diamant, User } from "../models/models";
+
+export const getAllDiamonds = async (): Promise<Diamant[]> => {
     //TODO const token = localStorage.getItem("JWT");
     const token = import.meta.env.VITE_TEMPORARY_JWT; // Temporary JWT for testing purpose
 
@@ -16,7 +18,7 @@ export const getAllDiamonds = async () => {
     return data;
 };
 
-export const getAllUsers = async () => {
+export const getAllUsers = async (): Promise<User[]> => {
     // const token = localStorage.getItem("JWT");
     const token = import.meta.env.VITE_TEMPORARY_JWT; // Temporary JWT for testing purpose
 
@@ -35,7 +37,7 @@ export const getAllUsers = async () => {
     return data;
 };
 
-export const loginUser = async (email, password) => {
+export const loginUser = async (email: string, password: string):Promise<any> => {
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/login`,
         {
             method: 'POST',

@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button"
+
 //page temporaire pour lister toutes les pages accessibles
 
 import { useEffect } from 'react';
@@ -23,7 +25,7 @@ function Home() {
         <div>
             <h1>Welcome to the Home Page</h1>
             <p>This is the main landing page of the application.</p>
-            <button onClick={handleLogout}>Logout</button>
+            <Button onClick={handleLogout}>Logout</Button>
             <Outlet/>
         </div>
     );

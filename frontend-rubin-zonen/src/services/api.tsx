@@ -1,4 +1,4 @@
-import type { Diamant, User } from "@/models/models";
+import type { Diamant, User } from "../models/models";
 
 export const getAllDiamonds = async (): Promise<Diamant[]> => {
     //TODO const token = localStorage.getItem("JWT");

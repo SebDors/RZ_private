@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getAllUsers } from "../../services/api.ts";
+import { getAllUsers } from "../../services/api.tsx";
 import { Input } from "@/components/ui/input";
 import {
   Card,
@@ -7,11 +7,12 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/card"
+import type { User } from "../../models/models"
 
 function Clients() {
     const [searchQuery, setSearchQuery] = useState(""); // State for the search input
-    const [users, setUsers] = useState([]); // State to hold fetched users
+    const [users, setUsers] = useState<User[]>([]); // State to hold fetched users
     // const [loading, setLoading] = useState(true); // State to manage loading status
     // const [error, setError] = useState(null); // State to manage error
 
@@ -42,7 +43,8 @@ function Clients() {
                 />
 
                 <div className="clients-list mt-4 grid gap-4">
-                    {users.map(client => (
+                    List clients here 
+                    {/* {users.map(client => (
                         client.companyName.toLowerCase().includes(searchQuery.toLowerCase()) && 
                         <Card key={client.id}>
                             <CardHeader>
@@ -55,7 +57,7 @@ function Clients() {
                                 <p>{client.phoneNumber}</p>
                             </CardContent>
                         </Card>
-                    ))}
+                    ))} */}
                 </div>
             </div>
         </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -13,6 +13,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 function Register() {
+    const token = localStorage.getItem('token');
+  if (token) {return <Navigate to="/dashboard" />;}
+
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

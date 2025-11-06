@@ -1,3 +1,4 @@
+import Header from "@/components/Header"
 import {
   Card,
   CardContent,
@@ -7,16 +8,19 @@ import {
 
 function Dashboard() {
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-            <Card className="w-full max-w-4xl p-8">
-                <CardHeader>
-                    <CardTitle>Dashboard</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p>Your dashboard content will be displayed here.</p>
-                </CardContent>
-            </Card>
-        </div>
+        <>
+            <Header />
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+                <Card className="w-full max-w-4xl p-8">
+                    <CardHeader>
+                        <CardTitle>Dashboard</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p>Your dashboard content will be displayed here.</p>
+                    </CardContent>
+                </Card>
+            </div>
+        </>
     )
 }
 

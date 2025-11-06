@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -17,6 +17,9 @@ import EyeOffIcon from "@/assets/icons/EyeOff";
 import { loginUser } from "@/services/api";
 
 export function LogIn() {
+  const token = localStorage.getItem('token');
+  if (token) {return <Navigate to="/dashboard" />;}
+
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [rememberMe, setRememberMe] = useState<boolean>(false);

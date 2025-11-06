@@ -1,4 +1,3 @@
-
 import { Routes, Route } from 'react-router-dom'
 
 // Account pages
@@ -59,6 +58,5 @@ function App() {
     </main>
   )
 }
-
 
 export default App

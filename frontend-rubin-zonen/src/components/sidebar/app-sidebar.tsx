@@ -60,7 +60,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: "Search",
         url: "/search",
         icon: Search,
-        isActive: true,
+        isActive: false,
         items: [
           {
             title: "History",

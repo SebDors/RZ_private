@@ -58,25 +58,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     navMain: [
       {
         title: "Search",
-        url: "/Search",
+        url: "/search",
         icon: Search,
         isActive: true,
         items: [
           {
             title: "History",
-            url: "#",
+            url: "/Search",
           },
           {
             title: "Starred",
-            url: "#",
+            url: "/Search",
           },
           {
             title: "Quick Search",
-            url: "#",
+            url: "/Search",
           },
           {
             title: "Side Stone Search",
-            url: "#",
+            url: "/Search",
           },
         ],
       },
@@ -87,11 +87,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [
           {
             title: "List",
-            url: "#",
+            url: "/diamond-list",
           },
           {
             title: "Compare",
-            url: "#",
+            url: "/diamond-list",
           },
         ],
       },
@@ -102,11 +102,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [
           {
             title: "List",
-            url: "#",
+            url: "/stone-detail",
           },
           {
             title: "Compare",
-            url: "#",
+            url: "/stone-detail",
           },
         ],
       },
@@ -117,15 +117,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [
           {
             title: "General",
-            url: "#",
+            url: "/settings",
           },
           {
             title: "Truc1",
-            url: "#",
+            url: "/settings",
           },
           {
             title: "Truc2",
-            url: "#",
+            url: "/settings",
           },
           {
             title: "Truc3",

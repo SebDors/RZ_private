@@ -1,16 +1,73 @@
+import { getToken } from "@/components/utils";
 import type { Diamant } from "@/models/models";
 
-export const getAllDiamonds = async (): Promise<Diamant[]> => {
-    const token = localStorage.getItem("JWT");
-    // const token = import.meta.env.VITE_TEMPORARY_JWT; // Temporary JWT for testing purpose
-
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/diamants`,
+export const getAllDiamonds = async (filters?: any): Promise<Diamant[]> => {
+    const query = new URLSearchParams(filters).toString();
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/diamants?${query}`,
         {
             method: 'GET',
             headers: {
-                Accept: "application/json",
-                Autorisation: "Bearer " + token,
+                'Content-Type': 'application/json',
+            }
+        }
+    );
+    const data = await response.json();
+    return data;
+};
 
+export const getDiamondById = async (stock_id: string): Promise<Diamant> => {
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/diamants/${stock_id}`,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }
+    );
+    const data = await response.json();
+    return data;
+};
+
+export const createDiamond = async (diamond: Diamant): Promise<Diamant> => {
+    const token = getToken();
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/diamants`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(diamond)
+        }
+    );
+    const data = await response.json();
+    return data;
+};
+
+export const updateDiamond = async (stock_id: string, diamond: Partial<Diamant>): Promise<Diamant> => {
+    const token = getToken();
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/diamants/${stock_id}`,
+        {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(diamond)
+        }
+    );
+    const data = await response.json();
+    return data;
+};
+
+export const deleteDiamond = async (stock_id: string): Promise<any> => {
+    const token = getToken();
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/diamants/${stock_id}`,
+        {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             }
         }
     );

@@ -5,6 +5,15 @@ import {
   SidebarProvider,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { useEffect, useState } from "react"
+import { getDashboardStats } from "@/services/dashboard"
+import { Skeleton } from "@/components/ui/skeleton"
+
+interface DashboardStats {
+  specialStonesCount: number;
+  upcomingStonesCount: number;
+  totalAvailableStones: number;
+}
 
 function DashboardContent() {
   const { setOpen, open } = useSidebar()
@@ -13,21 +22,44 @@ function DashboardContent() {
       setOpen(true)
     }
   }
+
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setError(null);
+        const data = await getDashboardStats();
+        setStats(data);
+      } catch (err) {
+        setError("Failed to fetch dashboard statistics.");
+        console.error(err);
+      }
+    };
+    fetchStats();
+  }, []);
+
   return (
     <>
-      <div onClick={handleOpen} className="cursor-pointer">
-        <AppSidebar />
-      </div>
+      <AppSidebar onClick={handleOpen} className="cursor-pointer" />
       <SidebarInset>
-        <Header/>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="bg-muted/50 aspect-video rounded-xl" />
-            <div className="bg-muted/50 aspect-video rounded-xl" />
-            <div className="bg-muted/50 aspect-video rounded-xl" />
+        <Header />
+        {error && <p className="text-red-500">{error}</p>}
+        {stats ? (
+          <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+            <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">Dashboard Statistics</h2>
+            <p>Special Stones: {stats.specialStonesCount}</p>
+            <p>Upcoming Stones: {stats.upcomingStonesCount}</p>
+            <p>Total Available Stones: {stats.totalAvailableStones}</p>
           </div>
-          <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
-        </div>
+        ) : !error && (
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[250px]" />
+            <Skeleton className="h-4 w-[250px]" />
+            <Skeleton className="h-4 w-[250px]" />
+          </div>
+        )}
       </SidebarInset>
     </>
   )

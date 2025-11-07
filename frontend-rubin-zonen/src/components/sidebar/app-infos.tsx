@@ -2,6 +2,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
 } from "@/components/ui/sidebar"
 
 export function AppInfos({
@@ -24,7 +25,9 @@ export function AppInfos({
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{app.name}</span>
                 <span className="truncate text-xs">{app.plan}</span>
+                
               </div>
+              <SidebarTrigger />
             </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>

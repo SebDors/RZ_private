@@ -9,17 +9,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import logo from '@/assets/logos/logo blanc front BLEU_page-0001.jpg';
-import { SidebarTrigger } from './ui/sidebar';
+
 
 export function Header() {
   return (
     <header className="flex items-center justify-between p-4 bg-white dark:bg-gray-950">
       <div className="flex items-center">
-        <SidebarTrigger />
-        <Link to="/">
-          <img src={logo} alt="logo" className="w-9 h-16 rounded-md" />
-        </Link>
       </div>
       <div className="flex items-center">
         <Link to="/my-account">

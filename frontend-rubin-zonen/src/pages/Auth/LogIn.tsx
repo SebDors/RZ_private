@@ -17,8 +17,8 @@ import EyeOffIcon from "@/assets/icons/EyeOff";
 import { loginUser } from "@/services/api";
 
 export function LogIn() {
-  const token = localStorage.getItem('token');
-  if (token) {return <Navigate to="/dashboard" />;}
+  const token = localStorage.getItem('token'); // If token is valid can't access page
+  if (token) {return <Navigate to="/dashboard" />;} //TODO check validity not just existence
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');

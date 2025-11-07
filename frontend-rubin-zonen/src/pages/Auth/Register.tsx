@@ -13,8 +13,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 function Register() {
-    const token = localStorage.getItem('token');
-  if (token) {return <Navigate to="/dashboard" />;}
+  const token = localStorage.getItem('token'); // If token is valid can't access page
+  if (token) {return <Navigate to="/dashboard" />;} //TODO check validity not just existence
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');

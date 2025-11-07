@@ -18,7 +18,7 @@ In an other terminal this to launch the front :
 ```bash
 cd frontend-rubin-zonen
 npm i
-npm run dev
+npm run start
 ```
 
 And go to the URL given by Vite (in the terminal ctrl + click)

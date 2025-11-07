@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Link, Navigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -14,11 +14,11 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import EyeIcon from "@/assets/icons/Eye";
 import EyeOffIcon from "@/assets/icons/EyeOff";
-import { loginUser } from "@/services/Auth";
+import { loginUser } from "@/services/auth";
+import { redirectIfAuth } from "@/components/utils";
 
 export function LogIn() {
-  const token = localStorage.getItem('token'); // If token is valid can't access page
-  if (token) {return <Navigate to="/dashboard" />;} //TODO check validity not just existence
+  redirectIfAuth();
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -27,6 +27,7 @@ export function LogIn() {
   const [errorFields, setErrorFields] = useState<string[]>([]);
   const [passwordShown, setPasswordShown] = useState<boolean>(false);
   const navigate = useNavigate();
+
 
   const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();

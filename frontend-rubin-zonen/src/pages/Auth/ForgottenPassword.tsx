@@ -9,11 +9,11 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { redirectIfAuth } from "@/components/utils"
 import { Link, Navigate } from "react-router-dom"
 
 function ForgottenPassword() {
-  const token = localStorage.getItem('token'); // If token is valid can't access page
-  if (token) {return <Navigate to="/dashboard" />;} //TODO check validity not just existence
+    redirectIfAuth();
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">

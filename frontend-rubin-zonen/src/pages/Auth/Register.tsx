@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { redirectIfAuth } from '@/components/utils';
 
 function Register() {
-  const token = localStorage.getItem('token'); // If token is valid can't access page
-  if (token) {return <Navigate to="/dashboard" />;} //TODO check validity not just existence
+    redirectIfAuth();
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');

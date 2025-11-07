@@ -1,5 +1,8 @@
+import { getToken } from "@/components/utils";
+
 export const getDashboardStats = async ():Promise<any> => {
-    const token = localStorage.getItem('token');
+    const token = getToken();
+    
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/dashboard/stats`,
         {
             method: 'GET',

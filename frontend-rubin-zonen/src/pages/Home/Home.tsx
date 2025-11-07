@@ -1,19 +1,12 @@
+import { redirectIfNotAuth } from "@/components/utils";
 import { Button } from "../../components/ui/button"
-
-//page temporaire pour lister toutes les pages accessibles
-
-import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 
+//page temporaire pour lister toutes les pages accessibles
 function Home() {
-    const navigate = useNavigate();
+    redirectIfNotAuth();
 
-    useEffect(() => {
-        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-        if (!token) {
-            navigate('/login');
-        }
-    }, [navigate]);
+    const navigate = useNavigate();
 
     const handleLogout = () => {
         localStorage.removeItem('token');

@@ -4,11 +4,11 @@ import * as React from "react"
 import {
   BookOpen,
   Bot,
-  Frame,
-  Map,
-  PieChart,
+  Search,
   Settings2,
-  SquareTerminal,
+  ScanSearch,
+  Gem,
+  Hammer,
 } from "lucide-react"
 
 import { NavMain } from "@/components/sidebar/nav-main"
@@ -44,7 +44,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, []);
 
 
-  // This is sample data.
   const data = {
     user: {
       name: user?.first_name,
@@ -58,9 +57,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     navMain: [
       {
-        title: "Playground",
-        url: "#",
-        icon: SquareTerminal,
+        title: "Search",
+        url: "/Search",
+        icon: Search,
         isActive: true,
         items: [
           {
@@ -72,56 +71,48 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: "#",
           },
           {
-            title: "Settings",
+            title: "Quick Search",
+            url: "#",
+          },
+          {
+            title: "Side Stone Search",
             url: "#",
           },
         ],
       },
       {
-        title: "Models",
-        url: "#",
-        icon: Bot,
+        title: "Diamond List",
+        url: "/diamond-list",
+        icon: Gem,
         items: [
           {
-            title: "Genesis",
+            title: "List",
             url: "#",
           },
           {
-            title: "Explorer",
-            url: "#",
-          },
-          {
-            title: "Quantum",
+            title: "Compare",
             url: "#",
           },
         ],
       },
       {
-        title: "Documentation",
-        url: "#",
-        icon: BookOpen,
+        title: "Stone Detail",
+        url: "/stone-detail",
+        icon: Hammer,
         items: [
           {
-            title: "Introduction",
+            title: "List",
             url: "#",
           },
           {
-            title: "Get Started",
-            url: "#",
-          },
-          {
-            title: "Tutorials",
-            url: "#",
-          },
-          {
-            title: "Changelog",
+            title: "Compare",
             url: "#",
           },
         ],
       },
       {
         title: "Settings",
-        url: "#",
+        url: "/settings",
         icon: Settings2,
         items: [
           {
@@ -129,35 +120,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: "#",
           },
           {
-            title: "Team",
+            title: "Truc1",
             url: "#",
           },
           {
-            title: "Billing",
+            title: "Truc2",
             url: "#",
           },
           {
-            title: "Limits",
+            title: "Truc3",
             url: "#",
           },
         ],
-      },
-    ],
-    projects: [
-      {
-        name: "Design Engineering",
-        url: "#",
-        icon: Frame,
-      },
-      {
-        name: "Sales & Marketing",
-        url: "#",
-        icon: PieChart,
-      },
-      {
-        name: "Travel",
-        url: "#",
-        icon: Map,
       },
     ],
   }

@@ -12,8 +12,10 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
-import EyeIcon from "@/assets/icons/Eye";
-import EyeOffIcon from "@/assets/icons/EyeOff";
+import {
+  Eye,
+  EyeOffIcon
+} from "lucide-react"
 import { loginUser } from "@/services/auth";
 import { redirectIfAuth } from "@/components/utils";
 
@@ -105,7 +107,7 @@ export function LogIn() {
                   className={errorFields.includes('password') ? 'border-red-500' : ''}
                 />
                 <button type="button" onClick={togglePasswordVisibility} className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer">
-                    {passwordShown ? <EyeOffIcon /> : <EyeIcon />}
+                    {passwordShown ? <EyeOffIcon /> : <Eye />}
                 </button>
               </div>
             </div>

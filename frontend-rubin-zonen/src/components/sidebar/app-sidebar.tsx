@@ -17,7 +17,7 @@ import {
 import { NavMain } from "@/components/sidebar/nav-main"
 import { NavProjects } from "@/components/sidebar/nav-projects"
 import { NavUser } from "@/components/sidebar/nav-user"
-import { TeamSwitcher } from "@/components/sidebar/team-switcher"
+import { AppInfos } from "@/components/sidebar/app-infos"
 import {
   Sidebar,
   SidebarContent,
@@ -28,6 +28,9 @@ import {
 import { getConnectedUserProfile } from "@/services/users"
 import { useState } from "react"
 import type { User } from "@/models/models"
+
+import logo from '@/assets/logos/logo blanc front BLEU_page-0001.jpg';
+import App from "@/App"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [user, setUser] = useState<User | null>(null);
@@ -43,7 +46,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     };
 
     fetchUserData();
-  }, []); // The empty dependency array ensures this runs once when the component mounts
+  }, []);
 
 
   // This is sample data.
@@ -51,25 +54,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     user: {
       name: user?.first_name,
       email: user?.email,
-      avatar: "/avatars/"+user?.first_name+".jpg",
+      avatar: "",
     },
-    teams: [
-      {
-        name: "Acme Inc",
+    app: {
+        name: "Rubin & Zonen",
         logo: GalleryVerticalEnd,
         plan: "Enterprise",
-      },
-      {
-        name: "Acme Corp.",
-        logo: AudioWaveform,
-        plan: "Startup",
-      },
-      {
-        name: "Evil Corp.",
-        logo: Command,
-        plan: "Free",
-      },
-    ],
+    },
     navMain: [
       {
         title: "Playground",
@@ -179,14 +170,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <AppInfos app={data.app} />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {user && <NavUser user={data.user as { name: string; email: string; avatar: string }} />}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

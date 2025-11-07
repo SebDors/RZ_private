@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { getAllDiamonds } from "../../services/api.tsx";
-import type { Diamant } from "../../models/models";
+import { getAllDiamonds } from "@/services/diamonds";
+import type { Diamant } from "@/models/models";
 import {
   Card,
   CardContent,

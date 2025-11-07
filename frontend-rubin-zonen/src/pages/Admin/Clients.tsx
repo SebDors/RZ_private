@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getAllUsers } from "../../services/api.tsx";
+import { getAllUsers } from "@/services/users";
 import { Input } from "@/components/ui/input";
 import {
   Card,

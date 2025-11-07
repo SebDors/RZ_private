@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import EyeIcon from "@/assets/icons/Eye";
 import EyeOffIcon from "@/assets/icons/EyeOff";
-import { loginUser } from "@/services/api";
+import { loginUser } from "@/services/Auth";
 
 export function LogIn() {
   const token = localStorage.getItem('token'); // If token is valid can't access page

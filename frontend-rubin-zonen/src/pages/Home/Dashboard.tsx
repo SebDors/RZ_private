@@ -5,8 +5,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { getDashboardStats } from "@/services/dashboard";
+import { useEffect, useState } from "react";
 
 function Dashboard() {
+    const [stats, setStats] = useState<any>(null);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            const data = await getDashboardStats();
+            setStats(data);
+        };
+        fetchStats();
+    }, []);
+
     return (
         <>
             <Header />
@@ -16,7 +28,15 @@ function Dashboard() {
                         <CardTitle>Dashboard</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p>Your dashboard content will be displayed here.</p>
+                        {stats ? (
+                            <div>
+                                <p>Special Stones: {stats.specialStonesCount}</p>
+                                <p>Upcoming Stones: {stats.upcomingStonesCount}</p>
+                                <p>Total Available Stones: {stats.totalAvailableStones}</p>
+                            </div>
+                        ) : (
+                            <p>Loading stats...</p>
+                        )}
                     </CardContent>
                 </Card>
             </div>

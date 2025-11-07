@@ -1,48 +1,26 @@
-import { AppSidebar } from "@/components/AppSidebar";
+import { AppSidebar } from "@/components/sidebar/app-sidebar"
 import Header from "@/components/Header"
-import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
 
-import { getDashboardStats } from "@/services/dashboard";
-import { useEffect, useState } from "react";
+} from "@/components/ui/sidebar"
 
-function Dashboard() {
-    const [stats, setStats] = useState<any>(null);
-
-    useEffect(() => {
-        const fetchStats = async () => {
-            const data = await getDashboardStats();
-            setStats(data);
-        };
-        fetchStats();
-    }, []);
-
-    return (
-        <>
-        <SidebarProvider>
-            <AppSidebar />
-            
-            <SidebarInset>
-                <Header />
-
-
-                <div className="w-full max-w-4xl p-8">
-                    <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">Dashboard</h2>
-                    {stats ? (
-                        <div>
-                            <p>Special Stones: {stats.specialStonesCount}</p>
-                            <p>Upcoming Stones: {stats.upcomingStonesCount}</p>
-                            <p>Total Available Stones: {stats.totalAvailableStones}</p>
-                        </div>
-                    ) : (
-                        <p>Loading stats...</p>
-                    )}
-                </div>
-            </SidebarInset>
-        </SidebarProvider>
-            
-
-        </>
-    )
+export default function Page() {
+  return (
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <Header/>
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+            <div className="bg-muted/50 aspect-video rounded-xl" />
+            <div className="bg-muted/50 aspect-video rounded-xl" />
+            <div className="bg-muted/50 aspect-video rounded-xl" />
+          </div>
+          <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
+  )
 }
-
-export default Dashboard

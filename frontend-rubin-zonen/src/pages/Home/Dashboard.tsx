@@ -1,6 +1,6 @@
 import { AppSidebar } from "@/components/AppSidebar";
 import Header from "@/components/Header"
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
 
 import { getDashboardStats } from "@/services/dashboard";
 import { useEffect, useState } from "react";
@@ -21,11 +21,10 @@ function Dashboard() {
         <SidebarProvider>
             <AppSidebar />
             
-            <main>
+            <SidebarInset>
                 <Header />
-                
-                
-            
+
+
                 <div className="w-full max-w-4xl p-8">
                     <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">Dashboard</h2>
                     {stats ? (
@@ -38,7 +37,7 @@ function Dashboard() {
                         <p>Loading stats...</p>
                     )}
                 </div>
-            </main>
+            </SidebarInset>
         </SidebarProvider>
             
 

@@ -2,12 +2,9 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
   BookOpen,
   Bot,
-  Command,
   Frame,
-  GalleryVerticalEnd,
   Map,
   PieChart,
   Settings2,
@@ -30,7 +27,6 @@ import { useState } from "react"
 import type { User } from "@/models/models"
 
 import logo from '@/assets/logos/logo blanc front BLEU_page-0001.jpg';
-import App from "@/App"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [user, setUser] = useState<User | null>(null);
@@ -58,7 +54,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     app: {
         name: "Rubin & Zonen",
-        logo: GalleryVerticalEnd,
+        logo: logo,
         plan: "Enterprise",
     },
     navMain: [

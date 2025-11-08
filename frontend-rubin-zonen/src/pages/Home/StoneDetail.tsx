@@ -5,12 +5,6 @@ import {
   SidebarProvider,
   useSidebar,
 } from "@/components/ui/sidebar"
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
 import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 
 function StoneDetailContent() {
@@ -29,14 +23,8 @@ function StoneDetailContent() {
             <SidebarInset>
                 <Header />
                 <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-                    <Card className="w-full max-w-4xl p-8">
-                        <CardHeader>
-                            <CardTitle>Stone Detail</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p>Stone detail information will be displayed here.</p>
-                        </CardContent>
-                    </Card>
+                    <h2 className="text-2xl font-bold mb-4">Stone Detail</h2>
+                    <p>Stone Detail</p>
                 </div>
             </SidebarInset>
         </>

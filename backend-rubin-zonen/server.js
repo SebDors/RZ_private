@@ -16,10 +16,16 @@ const swaggerUi = require('swagger-ui-express');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Enable CORS for all routes
+// Enable CORS for the routes in the array
+const allowedOrigins = ['http://localhost:4173', 'http://localhost:5173'];
 app.use(cors({
-    origin: 'http://localhost:4173',    // build frontend URL //TODO change it for prod
-    // origin: 'http://localhost:5173', // dev frontend URL //TODO change it for prod
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
 }));
 

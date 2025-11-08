@@ -5,12 +5,6 @@ import {
     SidebarProvider,
     useSidebar,
 } from "@/components/ui/sidebar"
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
 
 function SettingsContent() {
     const { setOpen, open } = useSidebar()
@@ -26,14 +20,8 @@ function SettingsContent() {
             <SidebarInset>
                 <Header />
                 <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-                    <Card className="w-[350px]">
-                        <CardHeader>
-                            <CardTitle>Settings</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p>Manage your account settings.</p>
-                        </CardContent>
-                    </Card>
+                    <h2>Settings</h2>
+                    <p>The settings are here</p>
                 </div>
             </SidebarInset>
         </>

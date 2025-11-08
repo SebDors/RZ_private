@@ -9,6 +9,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
+      - ./backend-rubin-zonen/initdb:/docker-entrypoint-initdb.d
       - db-data:/var/lib/postgresql
 
   backend:
@@ -25,7 +26,8 @@ services:
       - db
 
   frontend:
-    build: ./frontend-rubin-zonen
+    build:
+      context: ./frontend-rubin-zonen
     container_name: rubin-zonen-frontend
     ports:
       - "4173:4173"

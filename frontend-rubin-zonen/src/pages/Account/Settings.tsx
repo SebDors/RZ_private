@@ -1,9 +1,9 @@
 import { AppSidebar } from "@/components/sidebar/app-sidebar"
 import Header from "@/components/Header"
 import {
-  SidebarInset,
-  SidebarProvider,
-  useSidebar,
+    SidebarInset,
+    SidebarProvider,
+    useSidebar,
 } from "@/components/ui/sidebar"
 import {
     Card,

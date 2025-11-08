@@ -24,15 +24,16 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useCookie } from "@/hooks/use-cookie"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
-const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
+const SUBMENU_COOKIE_NAME = "submenu_state"
 const SIDEBAR_WIDTH = "16rem"
 const SIDEBAR_WIDTH_MOBILE = "18rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
-type SidebarContextProps = {
+export type SidebarContextProps = {
   state: "expanded" | "collapsed"
   open: boolean
   setOpen: (open: boolean) => void
@@ -42,12 +43,28 @@ type SidebarContextProps = {
   toggleSidebar: () => void
 }
 
-const SidebarContext = React.createContext<SidebarContextProps | null>(null)
+export const SidebarContext = React.createContext<SidebarContextProps | null>(null)
 
-function useSidebar() {
+export function useSidebar() {
   const context = React.useContext(SidebarContext)
   if (!context) {
     throw new Error("useSidebar must be used within a SidebarProvider.")
+  }
+
+  return context
+}
+
+export type SubMenuContextProps = {
+  openSubMenu: string | null
+  setOpenSubMenu: (value: string | null) => void
+}
+
+export const SubMenuContext = React.createContext<SubMenuContextProps | null>(null)
+
+export function useSubMenu() {
+  const context = React.useContext(SubMenuContext)
+  if (!context) {
+    throw new Error("useSubMenu must be used within a SubMenuProvider.")
   }
 
   return context
@@ -68,10 +85,11 @@ function SidebarProvider({
 }) {
   const isMobile = useIsMobile()
   const [openMobile, setOpenMobile] = React.useState(false)
+  const [cookieOpen, setCookieOpen] = useCookie(SIDEBAR_COOKIE_NAME, defaultOpen.toString())
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
-  const [_open, _setOpen] = React.useState(defaultOpen)
+  const [_open, _setOpen] = React.useState(cookieOpen === 'true')
   const open = openProp ?? _open
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
@@ -83,9 +101,9 @@ function SidebarProvider({
       }
 
       // This sets the cookie to keep the sidebar state.
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+      setCookieOpen(openState.toString())
     },
-    [setOpenProp, open]
+    [setOpenProp, open, setCookieOpen]
   )
 
   // Helper to toggle the sidebar.
@@ -113,7 +131,7 @@ function SidebarProvider({
   // This makes it easier to style the sidebar with Tailwind classes.
   const state = open ? "expanded" : "collapsed"
 
-  const contextValue = React.useMemo<SidebarContextProps>(
+  const contextValue = React.useMemo(
     () => ({
       state,
       open,
@@ -148,6 +166,28 @@ function SidebarProvider({
         </div>
       </TooltipProvider>
     </SidebarContext.Provider>
+  )
+}
+
+function SubMenuProvider({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const [openSubMenu, setOpenSubMenu] = useCookie(SUBMENU_COOKIE_NAME, '')
+
+  const contextValue = React.useMemo(
+    () => ({
+      openSubMenu,
+      setOpenSubMenu,
+    }),
+    [openSubMenu, setOpenSubMenu]
+  )
+
+  return (
+    <SubMenuContext.Provider value={contextValue as { openSubMenu: string; setOpenSubMenu: (value: string) => void }}>
+      {children}
+    </SubMenuContext.Provider>
   )
 }
 
@@ -719,8 +759,8 @@ export {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarProvider,
+  SubMenuProvider,
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
-  useSidebar,
 }

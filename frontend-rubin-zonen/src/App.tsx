@@ -24,6 +24,7 @@ import StoneDetail from './pages/Home/StoneDetail'
 import ForgottenPassword from './pages/Auth/ForgottenPassword'
 import Login from './pages/Auth/LogIn'
 import Register from './pages/Auth/Register'
+import { SidebarProvider, SubMenuProvider } from './components/ui/sidebar'
 
 function App() {
 
@@ -34,23 +35,31 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgotten-password" element={<ForgottenPassword />} />
+      </Routes>
 
-        {/* Home Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/diamond-list" element={<DiamondList />} />
-        <Route path="/my-cart" element={<MyCart />} />
-        <Route path="/my-quote" element={<MyQuote />} />
-        <Route path="/my-watchlist" element={<MyWatchlist />} />
-        <Route path="/quick-search" element={<QuickSearch />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/side-stone-search" element={<SideStoneSearch />} />
-        <Route path="/stone-detail" element={<StoneDetail />} />
+      <SidebarProvider>
+        <SubMenuProvider>
+          <Routes >
+            {/* Home Routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/diamond-list" element={<DiamondList />} />
+            <Route path="/my-cart" element={<MyCart />} />
+            <Route path="/my-quote" element={<MyQuote />} />
+            <Route path="/my-watchlist" element={<MyWatchlist />} />
+            <Route path="/quick-search" element={<QuickSearch />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/side-stone-search" element={<SideStoneSearch />} />
+            <Route path="/stone-detail" element={<StoneDetail />} />
 
-        {/* Account Routes */}
-        <Route path="/my-account" element={<MyAccount />} />
-        <Route path="/settings" element={<Settings />} />
+            {/* Account Routes */}
+            <Route path="/my-account" element={<MyAccount />} />
+            <Route path="/settings" element={<Settings />} />
+          </Routes>
+        </SubMenuProvider>
+      </SidebarProvider>
 
+      <Routes >
         {/* Admin Routes */}
         <Route path="/admin" element={<Admin />} />
         <Route path="/clients" element={<Clients />} />

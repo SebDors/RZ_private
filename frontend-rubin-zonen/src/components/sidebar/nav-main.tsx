@@ -17,6 +17,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
+import { useSubMenu } from "@/components/ui/sidebar"
 
 export function NavMain({
   items,
@@ -32,6 +33,12 @@ export function NavMain({
     }[]
   }[]
 }) {
+  const { openSubMenu, setOpenSubMenu } = useSubMenu()
+
+  const handleSubMenuToggle = (title: string) => {
+    setOpenSubMenu(openSubMenu === title ? null : title)
+  }
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Pages</SidebarGroupLabel>
@@ -40,7 +47,8 @@ export function NavMain({
           <Collapsible
             key={item.title}
             asChild
-            defaultOpen={item.isActive}
+            open={openSubMenu === item.title}
+            onOpenChange={() => handleSubMenuToggle(item.title)}
             className="group/collapsible"
           >
             <SidebarMenuItem>

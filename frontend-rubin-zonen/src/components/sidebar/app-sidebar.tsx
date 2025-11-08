@@ -45,7 +45,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     user: {
       name: user?.first_name,
       email: user?.email,
-      avatar: "",
+      avatar: "",//TODO have images 
     },
     app: {
         name: "Rubin & Zonen",
@@ -60,20 +60,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         isActive: false,
         items: [
           {
-            title: "History",
-            url: "/Search",
+            title: "Search Diamond",
+            url: "/search",
           },
           {
-            title: "Starred",
-            url: "/Search",
+            title: "Favorite Stones",
+            url: "/search",
           },
           {
             title: "Quick Search",
-            url: "/Search",
+            url: "/quick-search",
           },
           {
             title: "Side Stone Search",
-            url: "/Search",
+            url: "/side-stone-search",
           },
         ],
       },

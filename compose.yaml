@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres
+    container_name: rubin-zonen-db
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql
+
+  backend:
+    build: ./backend-rubin-zonen
+    container_name: rubin-zonen-backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend-rubin-zonen/.env
+    environment:
+      - CORS_ORIGIN=http://localhost:4173
+      - HOST=db
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend-rubin-zonen
+    container_name: rubin-zonen-frontend
+    ports:
+      - "4173:4173"
+    depends_on:
+      - backend
+
+volumes:
+  db-data:

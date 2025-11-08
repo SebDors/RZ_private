@@ -9,9 +9,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useCookie } from '@/hooks/use-cookie';
 
 
 export function Header() {
+  const [language, setLanguage] = useCookie('language');
+
   return (
     <header className="flex items-center justify-between p-4 bg-white dark:bg-gray-950">
       <div className="flex items-center">
@@ -20,7 +23,7 @@ export function Header() {
         <Link to="/my-account">
           <Button variant="outline">My Account</Button>
         </Link>
-        <Select>
+        <Select value={language || ''} onValueChange={setLanguage}>
           <SelectTrigger className="w-[160px]">
             <SelectValue placeholder="Select a language" />
           </SelectTrigger>

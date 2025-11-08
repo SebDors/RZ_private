@@ -21,14 +21,16 @@ const setCookie = (name: string, value: string, days: number): void => {
   document.cookie = `${name}=${value}; expires=${date.toUTCString()}; path=/`;
 };
 
-export const useCookie = (key: string, defaultValue: string): [string, (value: string) => void] => {
-  const [value, setValue] = useState<string>(() => {
+export const useCookie = (key: string, defaultValue?: string): [string | undefined, (value: string) => void] => {
+  const [value, setValue] = useState<string | undefined>(() => {
     const cookie = getCookie(key);
     return cookie === undefined ? defaultValue : cookie;
   });
 
   useEffect(() => {
-    setCookie(key, value, 7);
+    if (value !== undefined) {
+      setCookie(key, value, 7);
+    }
   }, [key, value]);
 
   return [value, setValue];

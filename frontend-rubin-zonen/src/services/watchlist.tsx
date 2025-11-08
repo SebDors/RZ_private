@@ -1,7 +1,7 @@
 import { getToken } from "@/hooks/useRedirect";
-import type { Diamond } from "@/models/models";
+import type { Diamant } from "@/models/models";
 
-export const getWatchlist = async (): Promise<{ diamond: Diamond }[]> => {
+export const getWatchlist = async (): Promise<{ diamond: Diamant }[]> => {
     const token = getToken();
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/watchlist`,
         {

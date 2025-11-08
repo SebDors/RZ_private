@@ -129,7 +129,7 @@ function SidebarProvider({
 
   // We add a state so that we can do data-state="expanded" or "collapsed".
   // This makes it easier to style the sidebar with Tailwind classes.
-  const state = open ? "expanded" : "collapsed"
+  const state: "expanded" | "collapsed" = open ? "expanded" : "collapsed"
 
   const contextValue = React.useMemo(
     () => ({
@@ -174,18 +174,22 @@ function SubMenuProvider({
 }: {
   children: React.ReactNode
 }) {
-  const [openSubMenu, setOpenSubMenu] = useCookie(SUBMENU_COOKIE_NAME, '')
+  const [openSubMenu, setOpenSubMenuCookie] = useCookie(SUBMENU_COOKIE_NAME)
+
+  const setOpenSubMenu = (value: string | null) => {
+    setOpenSubMenuCookie(value || '')
+  }
 
   const contextValue = React.useMemo(
     () => ({
-      openSubMenu,
+      openSubMenu: openSubMenu || null,
       setOpenSubMenu,
     }),
-    [openSubMenu, setOpenSubMenu]
+    [openSubMenu]
   )
 
   return (
-    <SubMenuContext.Provider value={contextValue as { openSubMenu: string; setOpenSubMenu: (value: string) => void }}>
+    <SubMenuContext.Provider value={contextValue}>
       {children}
     </SubMenuContext.Provider>
   )

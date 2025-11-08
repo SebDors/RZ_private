@@ -1,7 +1,7 @@
 import { getToken } from "@/hooks/useRedirect";
-import type { Diamond } from "@/models/models";
+import type { Diamant } from "@/models/models";
 
-export const getCart = async (): Promise<{ diamond: Diamond, quantity: number }[]> => {
+export const getCart = async (): Promise<{ diamond: Diamant, quantity: number }[]> => {
     const token = getToken();
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/cart`,
         {

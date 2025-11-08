@@ -1,7 +1,7 @@
-import { getToken } from "@/components/utils";
+import { getToken } from "@/hooks/useRedirect";
 import type { Diamant } from "@/models/models";
 
-export const getAllDiamonds = async (filters?: any): Promise<Diamant[]> => {
+export const getAllDiamonds = async (filters?: Record<string, string>): Promise<Diamant[]> => {
     const query = new URLSearchParams(filters).toString();
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/diamants?${query}`,
         {
@@ -60,7 +60,7 @@ export const updateDiamond = async (stock_id: string, diamond: Partial<Diamant>)
     return data;
 };
 
-export const deleteDiamond = async (stock_id: string): Promise<any> => {
+export const deleteDiamond = async (stock_id: string): Promise<{ message: string }> => {
     const token = getToken();
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/diamants/${stock_id}`,
         {

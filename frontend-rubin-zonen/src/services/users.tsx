@@ -1,4 +1,4 @@
-import { getToken } from "@/components/utils";
+import { getToken } from "@/hooks/useRedirect";
 import type { User } from "@/models/models";
 
 export const getAllUsers = async (): Promise<User[]> => {
@@ -63,7 +63,7 @@ export const updateUser = async (id: number, user: Partial<User>): Promise<User>
 	return data;
 };
 
-export const deleteUser = async (id: number): Promise<any> => {
+export const deleteUser = async (id: number): Promise<{ message: string }> => {
 	const token = getToken();
 	const response = await fetch(`${import.meta.env.VITE_BASE_URL}/users/${id}`,
 		{

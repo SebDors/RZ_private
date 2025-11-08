@@ -1,6 +1,7 @@
-import { getToken } from "@/components/utils";
+import { getToken } from "@/hooks/useRedirect";
+import type { Diamond } from "@/models/models";
 
-export const getCart = async ():Promise<any> => {
+export const getCart = async (): Promise<{ diamond: Diamond, quantity: number }[]> => {
     const token = getToken();
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/cart`,
         {
@@ -15,7 +16,7 @@ export const getCart = async ():Promise<any> => {
     return data;
 };
 
-export const addItemToCart = async (diamond_stock_id: string, quantity: number):Promise<any> => {
+export const addItemToCart = async (diamond_stock_id: string, quantity: number): Promise<{ message: string }> => {
     const token = getToken();
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/cart`,
         {
@@ -31,7 +32,7 @@ export const addItemToCart = async (diamond_stock_id: string, quantity: number):
     return data;
 };
 
-export const updateCartItemQuantity = async (diamond_stock_id: string, quantity: number):Promise<any> => {
+export const updateCartItemQuantity = async (diamond_stock_id: string, quantity: number): Promise<{ message: string }> => {
     const token = getToken();
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/cart/${diamond_stock_id}`,
         {
@@ -47,7 +48,7 @@ export const updateCartItemQuantity = async (diamond_stock_id: string, quantity:
     return data;
 };
 
-export const deleteCartItem = async (diamond_stock_id: string):Promise<any> => {
+export const deleteCartItem = async (diamond_stock_id: string): Promise<{ message: string }> => {
     const token = getToken();
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/cart/${diamond_stock_id}`,
         {

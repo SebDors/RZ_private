@@ -2,11 +2,8 @@
 
 import * as React from "react"
 import {
-  BookOpen,
-  Bot,
   Search,
   Settings2,
-  ScanSearch,
   Gem,
   Hammer,
 } from "lucide-react"

@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { redirectIfAuth } from '@/components/utils';
+import { useRedirectIfAuth } from '@/hooks/useRedirect';
 
 function Register() {
-    redirectIfAuth();
+    useRedirectIfAuth();
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');

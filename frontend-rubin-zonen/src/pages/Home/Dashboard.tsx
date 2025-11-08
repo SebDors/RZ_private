@@ -8,6 +8,7 @@ import {
 import { useEffect, useState } from "react"
 import { getDashboardStats } from "@/services/dashboard"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useRedirectIfNotAuth } from "@/hooks/useRedirect"
 
 interface DashboardStats {
   specialStonesCount: number;
@@ -16,6 +17,8 @@ interface DashboardStats {
 }
 
 function DashboardContent() {
+  useRedirectIfNotAuth();
+
   const { setOpen, open } = useSidebar()
   const handleOpen = () => {
     if (!open) {

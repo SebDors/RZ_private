@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
 import { getAllUsers } from "@/services/users";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import type { User } from "../../models/models"
+// import {
+//   Card,
+//   CardContent,
+//   CardDescription,
+//   CardHeader,
+//   CardTitle,
+// } from "@/components/ui/card"
+// import type { User } from "../../models/models"
 
 function Clients() {
     const [searchQuery, setSearchQuery] = useState(""); // State for the search input
-    const [users, setUsers] = useState<User[]>([]); // State to hold fetched users
+    // const [users, setUsers] = useState<User[]>([]); // State to hold fetched users
     // const [loading, setLoading] = useState(true); // State to manage loading status
     // const [error, setError] = useState(null); // State to manage error
 
@@ -20,7 +20,8 @@ function Clients() {
         const fetchAllUsers = async () => {
             try {
                 const users = await getAllUsers()
-                setUsers(users)
+                // setUsers(users)
+                console.log(users)
             } catch (err) {
                 // setError("Failed to fetch users")
                 console.log("Error fetching users : ", err)

@@ -14,7 +14,7 @@ export const getToken = (): string | null => {
  * and redirects to the dashboard if there is a token 
  * or to the login page if no token is found.
  */
-export const redirectAuth = () => {
+export const useRedirectAuth = () => {
   const navigate = useNavigate();
   useEffect(() => {
     if (getToken()) {
@@ -31,7 +31,7 @@ export const redirectAuth = () => {
  * It checks for an authentication token 
  * and redirects to the dashboard if there is a token
  */
-export const redirectIfAuth = () => {
+export const useRedirectIfAuth = () => {
   const navigate = useNavigate();
   useEffect(() => {
     if (getToken()) {
@@ -46,7 +46,7 @@ export const redirectIfAuth = () => {
  * It checks for an authentication token
  * and redirects to the login page if no token is found.
  */
-export const redirectIfNotAuth = () => {
+export const useRedirectIfNotAuth = () => {
   const navigate = useNavigate();
   useEffect(() => {
     if (!getToken()) {

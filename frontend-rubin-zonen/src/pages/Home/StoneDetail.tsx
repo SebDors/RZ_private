@@ -11,8 +11,11 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 
 function StoneDetailContent() {
+    useRedirectIfNotAuth();
+    
     const { setOpen, open } = useSidebar()
     const handleOpen = () => {
         if (!open) {

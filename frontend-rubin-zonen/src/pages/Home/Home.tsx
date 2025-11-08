@@ -1,10 +1,10 @@
-import { redirectIfNotAuth } from "@/components/utils";
+import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 import { Button } from "../../components/ui/button"
 import { Outlet, useNavigate } from 'react-router-dom';
 
 //page temporaire pour lister toutes les pages accessibles
 function Home() {
-    redirectIfNotAuth();
+    useRedirectIfNotAuth();
 
     const navigate = useNavigate();
 

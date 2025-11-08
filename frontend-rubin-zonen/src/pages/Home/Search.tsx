@@ -11,8 +11,11 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 
 function SearchContent() {
+    useRedirectIfNotAuth();
+    
     const { setOpen, open } = useSidebar()
     const handleOpen = () => {
         if (!open) {

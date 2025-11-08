@@ -17,10 +17,10 @@ import {
   EyeOffIcon
 } from "lucide-react"
 import { loginUser } from "@/services/auth";
-import { redirectIfAuth } from "@/components/utils";
+import { useRedirectIfAuth } from "@/hooks/useRedirect";
 
 export function LogIn() {
-  redirectIfAuth();
+  useRedirectIfAuth();
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -37,7 +37,7 @@ export function LogIn() {
       setErrorFields([]);
 
       try {
-          const data: any = await loginUser(email, password);
+          const data: { token?: string; message?: string } = await loginUser(email, password);
 
           if (data.token) {
               if (rememberMe) {
@@ -52,7 +52,7 @@ export function LogIn() {
                   setErrorFields(['email', 'password']);
               }
           }
-      } catch (err) {
+      } catch {
           setError('An error occurred during login.');
       }
   };

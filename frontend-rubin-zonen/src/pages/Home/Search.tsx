@@ -17,7 +17,7 @@ import { toast } from "sonner";
 
 
 function SearchContent() {
-    const { user, loading: userLoading } = useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
     const { setOpen, open } = useSidebar();
     const handleOpen = () => {
@@ -99,10 +99,6 @@ function SearchContent() {
             </div>
         );
     };
-
-    if (userLoading) {
-        return <div>Loading...</div>;
-    }
 
     return (
         <>

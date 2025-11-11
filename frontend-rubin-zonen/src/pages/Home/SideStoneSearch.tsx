@@ -16,7 +16,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 
 function SideStoneSearchContent() {
-    const { user, loading: userLoading } = useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const { setOpen, open } = useSidebar();
@@ -105,10 +105,6 @@ function SideStoneSearchContent() {
             </div>
         );
     };
-
-    if (userLoading) {
-        return <div>Loading...</div>;
-    }
 
     return (
         <>

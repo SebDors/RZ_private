@@ -52,7 +52,7 @@ function App() {
             <Route path="/quick-search" element={<QuickSearch />} />
             <Route path="/search" element={<Search />} />
             <Route path="/side-stone-search" element={<SideStoneSearch />} />
-            <Route path="/stone-detail" element={<StoneDetail />} />
+            <Route path="/stone-detail/:stock_id" element={<StoneDetail />} />
 
             {/* Account Routes */}
             <Route path="/my-account" element={<MyAccount />}>

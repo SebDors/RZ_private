@@ -125,17 +125,19 @@ function SearchContent() {
                         <ScrollArea className="h-[80vh]">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {diamonds.map((diamond) => (
-                                    <Card key={diamond.stock_id}>
-                                        <CardHeader>
-                                            <CardTitle>{diamond.shape} {diamond.weight}ct</CardTitle>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <p>Color: {diamond.color}</p>
-                                            <p>Clarity: {diamond.clarity}</p>
-                                            <p>Price/Carat: ${diamond.price_carat}</p>
-                                        </CardContent>
-                                    </Card>
-                                ))}
+                                                                            <Card key={diamond.stock_id}>
+                                                                                <CardHeader>
+                                                                                    <CardTitle>{diamond.shape} {diamond.weight}ct</CardTitle>
+                                                                                </CardHeader>
+                                                                                <CardContent>
+                                                                                    <p>Color: {diamond.color}</p>
+                                                                                    <p>Clarity: {diamond.clarity}</p>
+                                                                                    <p>Price/Carat: ${diamond.price_carat}</p>
+                                                                                    <Button onClick={() => navigate(`/stone-detail/${diamond.stock_id}`)} className="mt-4">
+                                                                                        Show Details
+                                                                                    </Button>
+                                                                                </CardContent>
+                                                                            </Card>                                ))}
                             </div>
                         </ScrollArea>
                     </div>

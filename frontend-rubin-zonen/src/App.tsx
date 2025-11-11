@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 
 // Account pages
 import MyAccount from './pages/Account/MyAccount'
+import Profile from './pages/Account/Profile'
 import Settings from './pages/Account/Settings'
 
 // Admin pages
@@ -54,8 +55,13 @@ function App() {
             <Route path="/stone-detail" element={<StoneDetail />} />
 
             {/* Account Routes */}
-            <Route path="/my-account" element={<MyAccount />} />
-            <Route path="/settings" element={<Settings />} />
+            <Route path="/my-account" element={<MyAccount />}>
+              <Route path="profile" element={<Profile />} />
+              <Route path="orders" element={<div>Order History Page</div>} /> {/* Placeholder */}
+              <Route path="settings" element={<Settings />} />
+              <Route path="login-history" element={<div>Login History Page</div>} /> {/* Placeholder */}
+              <Route path="delete" element={<div>Delete Account Page</div>} /> {/* Placeholder */}
+            </Route>
 
             {/* Admin Routes */}
             <Route path="/admin" element={<Admin />}>

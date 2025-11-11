@@ -1,68 +1,97 @@
 import { useState, useEffect } from "react";
-import { getAllUsers } from "@/services/users";
+import { getAllUsers, updateUser } from "@/services/users";
 import { Input } from "@/components/ui/input";
-// import {
-//   Card,
-//   CardContent,
-//   CardDescription,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card"
-// import type { User } from "../../models/models"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import type { User } from "../../models/models"
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 function Clients() {
-    const [searchQuery, setSearchQuery] = useState(""); // State for the search input
-    // const [users, setUsers] = useState<User[]>([]); // State to hold fetched users
-    // const [loading, setLoading] = useState(true); // State to manage loading status
-    // const [error, setError] = useState(null); // State to manage error
+    const [searchQuery, setSearchQuery] = useState("");
+    const [users, setUsers] = useState<User[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const fetchAllUsers = async () => {
+        try {
+            const usersData = await getAllUsers();
+            setUsers(usersData);
+        } catch {
+            setError("Failed to fetch users");
+            toast.error("Failed to fetch users.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchAllUsers = async () => {
-            try {
-                const users = await getAllUsers()
-                // setUsers(users)
-                console.log(users)
-            } catch (err) {
-                // setError("Failed to fetch users")
-                console.log("Error fetching users : ", err)
-            } finally {
-                // setLoading(false)
-            }
-        }
+        fetchAllUsers();
+    }, []);
 
-        fetchAllUsers()
-    }, []); // Empty useEffect to fetch user only one time (useEffect runs when the array changes)
+    const handleToggleActive = async (user: User) => {
+        try {
+            await updateUser(user.id, { is_active: !user.is_active });
+            toast.success(`User ${user.is_active ? 'deactivated' : 'activated'} successfully.`);
+            fetchAllUsers(); // Refresh the list
+        } catch {
+            toast.error(`Failed to ${user.is_active ? 'deactivate' : 'activate'} user.`);
+        }
+    };
+
+    const filteredUsers = users.filter(user =>
+        user.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.last_name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>{error}</div>;
+    }
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-            <div className="w-full max-w-4xl p-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
-                <Input 
-                    type="text"
-                    placeholder="Search ..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)} 
-                />
+        <div className="p-8">
+            <Input
+                type="text"
+                placeholder="Search by name, email, or company..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="mb-4"
+            />
 
-                <div className="clients-list mt-4 grid gap-4">
-                    List clients here 
-                    {/* {users.map(client => (
-                        client.companyName.toLowerCase().includes(searchQuery.toLowerCase()) && 
-                        <Card key={client.id}>
-                            <CardHeader>
-                                <CardTitle>{client.companyName}</CardTitle>
-                                <CardDescription>{client.email}</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <p>{client.firstName} {client.lastName}</p>
-                                <p>{client.address}, {client.city}, {client.zipCode}, {client.country}</p>
-                                <p>{client.phoneNumber}</p>
-                            </CardContent>
-                        </Card>
-                    ))} */}
-                </div>
+            <div className="clients-list grid gap-4">
+                {filteredUsers.map(client => (
+                    <Card key={client.id}>
+                        <CardHeader>
+                            <CardTitle>{client.company_name}</CardTitle>
+                            <CardDescription>{client.email}</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <p>{client.first_name} {client.last_name}</p>
+                            <p>{client.company_address}, {client.company_city}, {client.company_zip_code}, {client.company_country}</p>
+                            <p>{client.phone_number}</p>
+                            <div className="flex justify-end space-x-2 mt-4">
+                                <Button onClick={() => handleToggleActive(client)}>
+                                    {client.is_active ? 'Deactivate' : 'Activate'}
+                                </Button>
+                                <Button variant="outline">View Details</Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
             </div>
         </div>
     );
 }
 
-export default Clients
+export default Clients;

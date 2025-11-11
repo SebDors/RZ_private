@@ -7,6 +7,7 @@ import Settings from './pages/Account/Settings'
 // Admin pages
 import Admin from './pages/Admin/Admin'
 import Clients from './pages/Admin/Clients'
+import FilterSettings from './pages/Admin/FilterSettings'
 
 // Home pages
 import Home from './pages/Home/Home'
@@ -55,15 +56,15 @@ function App() {
             {/* Account Routes */}
             <Route path="/my-account" element={<MyAccount />} />
             <Route path="/settings" element={<Settings />} />
+
+            {/* Admin Routes */}
+            <Route path="/admin" element={<Admin />}>
+              <Route path="filter-settings" element={<FilterSettings />} />
+              <Route path="clients" element={<Clients />} />
+            </Route>
           </Routes>
         </SubMenuProvider>
       </SidebarProvider>
-
-      <Routes >
-        {/* Admin Routes */}
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/clients" element={<Clients />} />
-      </Routes>
     </main>
   )
 }

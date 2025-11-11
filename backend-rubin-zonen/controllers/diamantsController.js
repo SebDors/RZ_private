@@ -63,12 +63,17 @@ const buildWhereClause = (queryParams) => {
     paramIndex = addInFilter('color', queryParams, filters, values, paramIndex);
     paramIndex = addInFilter('clarity', queryParams, filters, values, paramIndex);
     // Finishing
-    paramIndex = addInFilter('cut', queryParams, filters, values, paramIndex);
+    paramIndex = addInFilter('cut_grade', queryParams, filters, values, paramIndex);
     paramIndex = addInFilter('polish', queryParams, filters, values, paramIndex);
     paramIndex = addInFilter('symmetry', queryParams, filters, values, paramIndex);
 
     paramIndex = addInFilter('fluorescence_intensity', queryParams, filters, values, paramIndex);
+    paramIndex = addInFilter('fluorescence_color', queryParams, filters, values, paramIndex);
     paramIndex = addInFilter('lab', queryParams, filters, values, paramIndex);
+
+    paramIndex = addInFilter('fancy_color', queryParams, filters, values, paramIndex);
+    paramIndex = addInFilter('fancy_color_intensity', queryParams, filters, values, paramIndex);
+    paramIndex = addInFilter('fancy_color_overtone', queryParams, filters, values, paramIndex);
 
     paramIndex = addInRangeMinFilter('minPriceCarat', 'price_carat', queryParams, filters, values, paramIndex);
     paramIndex = addInRangeMaxFilter('maxPriceCarat', 'price_carat', queryParams, filters, values, paramIndex);

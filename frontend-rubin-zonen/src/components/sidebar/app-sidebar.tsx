@@ -6,6 +6,8 @@ import {
   Settings2,
   Gem,
   Hammer,
+  LayoutDashboard,
+  ShieldUser,
 } from "lucide-react"
 
 import { NavMain } from "@/components/sidebar/nav-main"
@@ -53,6 +55,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         plan: "Enterprise",
     },
     navMain: [
+      {
+        title: "Dashboard",
+        url: "/dashboard",
+        icon: LayoutDashboard,
+        isActive: true,
+        items: [
+          {
+            title: "Dashboard",
+            url: "/dashboard",
+          },
+          {
+            title: "Truc1",
+            url: "/dashboard",
+          },
+        ]
+      },
       {
         title: "Search",
         url: "/search",
@@ -106,6 +124,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: "/stone-detail",
           },
         ],
+      },
+      {//TODO hide this part if not admin
+        title: "Admin",
+        url: "/admin",
+        icon: ShieldUser,
+        items: [
+          {
+            title: "Clients",
+            url: "/admin/clients",
+          },
+          {
+            title: "Filter Settings",
+            url: "/admin/filter-settings",
+          },
+        ]
       },
       {
         title: "Settings",

@@ -1,23 +1,34 @@
-import { Outlet } from "react-router-dom"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Link, Outlet } from "react-router-dom"
+import { AppSidebar } from "@/components/sidebar/app-sidebar"
+import Header from "@/components/Header"
+import { SidebarInset, useSidebar } from "@/components/ui/sidebar"
 
 function Admin() {
+    const { setOpen, open } = useSidebar()
+    const handleOpen = () => {
+        if (!open) {
+            setOpen(true)
+        }
+    }
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-            <Card className="w-[350px]">
-                <CardHeader>
-                    <CardTitle>Admin</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Outlet/>
-                </CardContent>
-            </Card>
-        </div>
+        <>
+            <AppSidebar onClick={handleOpen} className="cursor-pointer" />
+            <SidebarInset>
+                <Header />
+                <div className="flex">
+                    <div className="w-1/4 p-4 border-r">
+                        <h2 className="text-xl font-bold mb-4">Admin Menu</h2>
+                        <nav className="flex flex-col space-y-2">
+                            <Link to="clients">Clients</Link>
+                            <Link to="filter-settings">Filter Settings</Link>
+                        </nav>
+                    </div>
+                    <div className="w-3/4 p-4">
+                        <Outlet />
+                    </div>
+                </div>
+            </SidebarInset>
+        </>
     )
 }
 

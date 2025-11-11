@@ -110,4 +110,7 @@ export interface WatchlistItem {
     added_at: string;
 };
 
-
+export interface Filter {
+    filter_name: string;
+    is_enabled: boolean;
+};

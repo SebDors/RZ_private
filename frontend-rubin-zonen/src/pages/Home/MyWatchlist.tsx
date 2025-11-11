@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getWatchlist, deleteWatchlistItem } from "@/services/watchlist";
-import { addItemToCart } from "@/services/cart"; // Assuming this function exists
-import type { Diamant } from "@/models/models";
+import { addItemToCart } from "@/services/cart";
+import type { WatchlistItem } from "@/services/watchlist";
 import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,7 +14,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 function MyWatchlistContent() {
     useRedirectIfNotAuth();
     const { setOpen, open } = useSidebar();
-    const [watchlistItems, setWatchlistItems] = useState<{ diamond: Diamant }[]>([]);
+    const [watchlistItems, setWatchlistItems] = useState<WatchlistItem[]>([]);
     const [loading, setLoading] = useState(true);
 
     const handleOpen = () => {
@@ -52,7 +52,7 @@ function MyWatchlistContent() {
 
     const handleAddToCart = async (stock_id: string) => {
         try {
-            await addItemToCart(stock_id, 1); // Assuming addItemToCart takes stock_id and quantity
+            await addItemToCart(stock_id, 1);
             toast.success("Item added to cart.");
         } catch (error) {
             console.error("Error adding item to cart:", error);
@@ -72,18 +72,18 @@ function MyWatchlistContent() {
                     ) : (
                         <ScrollArea className="h-[80vh]">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {watchlistItems.map(({ diamond }) => (
-                                    <Card key={diamond.stock_id}>
+                                {watchlistItems.map((item) => (
+                                    <Card key={item.diamond_stock_id}>
                                         <CardHeader>
-                                            <CardTitle>{diamond.shape} {diamond.weight}ct</CardTitle>
+                                            <CardTitle>{item.shape} {item.weight}ct</CardTitle>
                                         </CardHeader>
                                         <CardContent>
-                                            <p>Color: {diamond.color}</p>
-                                            <p>Clarity: {diamond.clarity}</p>
-                                            <p>Price/Carat: ${diamond.price_carat}</p>
+                                            <p>Color: {item.color}</p>
+                                            <p>Clarity: {item.clarity}</p>
+                                            <p>Price/Carat: ${item.price_carat}</p>
                                             <div className="flex justify-between mt-4">
-                                                <Button variant="outline" onClick={() => handleRemoveItem(diamond.stock_id)}>Remove</Button>
-                                                <Button onClick={() => handleAddToCart(diamond.stock_id)}>Add to Cart</Button>
+                                                <Button variant="outline" onClick={() => handleRemoveItem(item.diamond_stock_id)}>Remove</Button>
+                                                <Button onClick={() => handleAddToCart(item.diamond_stock_id)}>Add to Cart</Button>
                                             </div>
                                         </CardContent>
                                     </Card>

@@ -1,7 +1,18 @@
 import { getToken } from "@/hooks/useRedirect";
-import type { Diamant } from "@/models/models";
 
-export const getCart = async (): Promise<{ diamond: Diamant, quantity: number }[]> => {
+export interface CartItem {
+    diamond_stock_id: string;
+    quantity: number;
+    shape: string;
+    weight: number;
+    color: string;
+    clarity: string;
+    price_carat: number;
+    image_file: string;
+    total_price: number;
+}
+
+export const getCart = async (): Promise<CartItem[]> => {
     const token = getToken();
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/cart`,
         {
@@ -16,7 +27,7 @@ export const getCart = async (): Promise<{ diamond: Diamant, quantity: number }[
     return data;
 };
 
-export const addItemToCart = async (diamond_stock_id: string, quantity: number): Promise<{ message: string }> => {
+export const addItemToCart = async (diamond_stock_id: string, quantity: number): Promise<CartItem> => {
     const token = getToken();
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/cart`,
         {
@@ -32,7 +43,7 @@ export const addItemToCart = async (diamond_stock_id: string, quantity: number):
     return data;
 };
 
-export const updateCartItemQuantity = async (diamond_stock_id: string, quantity: number): Promise<{ message: string }> => {
+export const updateCartItemQuantity = async (diamond_stock_id: string, quantity: number): Promise<CartItem> => {
     const token = getToken();
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/cart/${diamond_stock_id}`,
         {
@@ -48,7 +59,7 @@ export const updateCartItemQuantity = async (diamond_stock_id: string, quantity:
     return data;
 };
 
-export const deleteCartItem = async (diamond_stock_id: string): Promise<{ message: string }> => {
+export const deleteCartItem = async (diamond_stock_id: string): Promise<{ message: string, deletedItem: CartItem }> => {
     const token = getToken();
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/cart/${diamond_stock_id}`,
         {

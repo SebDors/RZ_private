@@ -1,12 +1,12 @@
 "use client"
 
 import {
-  BadgeCheck,
-  Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
-  User
+  User,
+  Heart, // For Watchlist
+  ShoppingCart, // For Cart
+  FileText, // For Quote
 } from "lucide-react"
 
 import {
@@ -93,22 +93,22 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Truc1
+              <DropdownMenuItem onClick={() => navigate('/my-watchlist')}>
+                <Heart className="mr-2 h-4 w-4" />
+                My Watchlist
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Truc2
+              <DropdownMenuItem onClick={() => navigate('/my-cart')}>
+                <ShoppingCart className="mr-2 h-4 w-4" />
+                My Cart
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Truc3
+              <DropdownMenuItem onClick={() => navigate('/my-quote')}>
+                <FileText className="mr-2 h-4 w-4" />
+                My Quote
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
-              <LogOut />
+              <LogOut className="mr-2 h-4 w-4" />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

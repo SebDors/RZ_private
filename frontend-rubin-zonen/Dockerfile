@@ -2,8 +2,8 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Set build arguments as environment variables for Vite
-ENV VITE_BASE_URL=http://localhost:3000/api
+# Set build arguments as environment variables for Vite #TODO change for prod
+ENV VITE_BASE_URL=http://localhost:3000/api 
 
 # Copy package files and install dependencies
 COPY package.json package-lock.json ./

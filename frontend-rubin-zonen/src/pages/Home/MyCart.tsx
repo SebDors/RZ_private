@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getCart, updateCartItemQuantity, deleteCartItem } from "@/services/cart";
-import type { Diamant } from "@/models/models";
+import type { CartItem } from "@/services/cart";
 import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,11 +11,6 @@ import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import Header from "@/components/Header";
 import { SidebarInset, SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-interface CartItem {
-    diamond: Diamant;
-    quantity: number;
-}
 
 function MyCartContent() {
     useRedirectIfNotAuth();
@@ -72,7 +67,7 @@ function MyCartContent() {
     };
 
     const calculateTotal = () => {
-        return cartItems.reduce((total, item) => total + item.diamond.price_carat * item.diamond.weight * item.quantity, 0);
+        return cartItems.reduce((total, item) => total + item.price_carat * item.weight * item.quantity, 0);
     };
 
     return (
@@ -89,27 +84,27 @@ function MyCartContent() {
                             <div className="w-3/4 pr-4">
                                 <ScrollArea className="h-[80vh]">
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {cartItems.map(({ diamond, quantity }) => (
-                                            <Card key={diamond.stock_id}>
+                                        {cartItems.map((item) => (
+                                            <Card key={item.diamond_stock_id}>
                                                 <CardHeader>
-                                                    <CardTitle>{diamond.shape} {diamond.weight}ct</CardTitle>
+                                                    <CardTitle>{item.shape} {item.weight}ct</CardTitle>
                                                 </CardHeader>
                                                 <CardContent>
-                                                    <p>Color: {diamond.color}</p>
-                                                    <p>Clarity: {diamond.clarity}</p>
-                                                    <p>Price/Carat: ${diamond.price_carat}</p>
+                                                    <p>Color: {item.color}</p>
+                                                    <p>Clarity: {item.clarity}</p>
+                                                    <p>Price/Carat: ${item.price_carat}</p>
                                                     <div className="flex items-center mt-4">
-                                                        <Label htmlFor={`quantity-${diamond.stock_id}`} className="mr-2">Qty:</Label>
+                                                        <Label htmlFor={`quantity-${item.diamond_stock_id}`} className="mr-2">Qty:</Label>
                                                         <Input
-                                                            id={`quantity-${diamond.stock_id}`}
+                                                            id={`quantity-${item.diamond_stock_id}`}
                                                             type="number"
                                                             min="1"
-                                                            value={quantity}
-                                                            onChange={(e) => handleUpdateQuantity(diamond.stock_id, parseInt(e.target.value))}
+                                                            value={item.quantity}
+                                                            onChange={(e) => handleUpdateQuantity(item.diamond_stock_id, parseInt(e.target.value))}
                                                             className="w-20"
                                                         />
                                                     </div>
-                                                    <Button variant="destructive" onClick={() => handleRemoveItem(diamond.stock_id)} className="mt-4">
+                                                    <Button variant="destructive" onClick={() => handleRemoveItem(item.diamond_stock_id)} className="mt-4">
                                                         Remove
                                                     </Button>
                                                 </CardContent>

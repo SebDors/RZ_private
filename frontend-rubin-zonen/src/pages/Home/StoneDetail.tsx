@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getDiamondById } from "@/services/diamonds";
+import { addItemToCart } from "@/services/cart";
+import { addItemToWatchlist } from "@/services/watchlist";
 import type { Diamant } from "@/models/models";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import Header from "@/components/Header";
@@ -13,10 +15,12 @@ import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 
 function StoneDetailContent() {
     useRedirectIfNotAuth();
     const { stock_id } = useParams<{ stock_id: string }>();
+    const navigate = useNavigate();
     const { setOpen, open } = useSidebar();
     const [diamond, setDiamond] = useState<Diamant | null>(null);
     const [loading, setLoading] = useState(true);
@@ -43,6 +47,40 @@ function StoneDetailContent() {
 
         fetchDiamond();
     }, [stock_id]);
+
+    const handleAddToCart = async () => {
+        if (stock_id) {
+            try {
+                await addItemToCart(stock_id, 1);
+                toast.success("Item added to cart", {
+                    action: {
+                        label: "View Cart",
+                        onClick: () => navigate("/my-cart"),
+                    },
+                });
+            } catch (error) {
+                console.error("Error adding item to cart:", error);
+                toast.error("Failed to add item to cart.");
+            }
+        }
+    };
+
+    const handleAddToWatchlist = async () => {
+        if (stock_id) {
+            try {
+                await addItemToWatchlist(stock_id);
+                toast.success("Item added to watchlist", {
+                    action: {
+                        label: "View Watchlist",
+                        onClick: () => navigate("/my-watchlist"),
+                    },
+                });
+            } catch (error) {
+                console.error("Error adding item to watchlist:", error);
+                toast.error("Failed to add item to watchlist.");
+            }
+        }
+    };
 
     if (loading) {
         return (
@@ -98,8 +136,8 @@ function StoneDetailContent() {
                                 </div>
                             </div>
                             <div className="mt-6 flex space-x-2">
-                                <Button>Add to Cart</Button>
-                                <Button variant="outline">Add to Watchlist</Button>
+                                <Button onClick={handleAddToCart}>Add to Cart</Button>
+                                <Button variant="outline" onClick={handleAddToWatchlist}>Add to Watchlist</Button>
                                 <Button variant="outline">Make a Custom Offer</Button>
                             </div>
                         </CardContent>

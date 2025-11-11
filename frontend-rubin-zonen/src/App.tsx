@@ -28,6 +28,8 @@ import Login from './pages/Auth/LogIn'
 import Register from './pages/Auth/Register'
 import { SidebarProvider, SubMenuProvider } from './components/ui/sidebar'
 
+import { Toaster } from "@/components/ui/sonner"
+
 function App() {
 
   return (
@@ -71,6 +73,7 @@ function App() {
           </Routes>
         </SubMenuProvider>
       </SidebarProvider>
+      <Toaster />
     </main>
   )
 }

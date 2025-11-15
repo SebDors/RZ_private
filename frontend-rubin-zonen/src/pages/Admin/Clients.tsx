@@ -71,7 +71,7 @@ function Clients() {
 
             <div className="clients-list grid gap-4">
                 {filteredUsers.map(client => (
-                    <Card key={client.id}>
+                    <Card key={client.id} className={!client.is_active ? 'bg-gray-100 dark:bg-gray-700 opacity-70' : ''}>
                         <CardHeader>
                             <CardTitle>{client.company_name}</CardTitle>
                             <CardDescription>{client.email}</CardDescription>

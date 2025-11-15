@@ -1,33 +1,25 @@
-# Stage 1: Build the application
 FROM node:20-alpine AS builder
 WORKDIR /app
-
-# Set build arguments as environment variables for Vite #TODO change for prod
+#TODO change for prod
 ENV VITE_BASE_URL=http://localhost:3000/api 
 
-# Copy package files and install dependencies
 COPY package.json package-lock.json ./
 RUN npm install
 
-# Copy the rest of the application source code
 COPY . .
 
-# Build the application
 RUN npm run build
 
-# Stage 2: Serve the application
-FROM node:20-alpine
-WORKDIR /app
 
-# Copy package files and install only production dependencies
-COPY package.json package-lock.json ./
-RUN npm install --omit=dev
+FROM nginx:alpine
+WORKDIR /usr/share/nginx/html
 
-# Copy the built application from the builder stage
-COPY --from=builder /app/dist ./dist
+RUN rm -rf ./*
 
-# Expose the port the preview server will run on
-EXPOSE 4173
+COPY --from=builder /app/dist .
 
-# Command to run the preview server
-CMD ["npm", "run", "preview", "--", "--host"]
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

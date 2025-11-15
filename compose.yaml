@@ -30,7 +30,7 @@ services:
       context: ./frontend-rubin-zonen
     container_name: rubin-zonen-frontend
     ports:
-      - "4173:4173"
+      - "4173:80"
     depends_on:
       - backend
 

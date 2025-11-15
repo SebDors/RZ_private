@@ -19,7 +19,8 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Enable CORS for the routes in the array
-const allowedOrigins = ['http://localhost:4173', 'http://localhost:5173'];
+// TODO : ajuster les origines autorisées en production
+const allowedOrigins = ['http://localhost:4173', 'http://localhost:5173','http://localhost:3000'];
 app.use(cors({
     origin: function (origin, callback) {
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {

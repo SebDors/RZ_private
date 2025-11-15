@@ -132,6 +132,38 @@ router.post('/forgot-password', authController.forgotPassword);
  *       400:
  *         description: Jeton invalide ou expiré
  */
+
 router.post('/reset-password/:token', authController.resetPassword);
+
+/**
+ * @swagger
+ * /api/auth/check-token:
+ *   get:
+ *     summary: Vérifie la validité d'un token JWT et retourne le rôle de l'utilisateur.
+ *     tags: [Authentification]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Token valide, retourne le rôle de l'utilisateur.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 isValid:
+ *                   type: boolean
+ *                   example: true
+ *                 role:
+ *                   type: string
+ *                   example: "user"
+ *       401:
+ *         description: Aucun token fourni ou format de token invalide.
+ *       403:
+ *         description: Token invalide, expiré ou compte inactif.
+ *       404:
+ *         description: Utilisateur non trouvé.
+ */
+router.get('/check-token', authController.checkToken);
 
 module.exports = router;

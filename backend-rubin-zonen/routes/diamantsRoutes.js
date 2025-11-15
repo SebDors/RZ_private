@@ -20,7 +20,7 @@ const { authenticate, authorizeAdmin } = require('../middleware/authMiddleware')
  *       200:
  *         description: Liste des diamants récupérée avec succès
  */
-router.get('/', diamantsController.getAllDiamants);
+router.get('/',authenticate, diamantsController.getAllDiamants);
 
 /**
  * @swagger

@@ -62,6 +62,8 @@ const buildWhereClause = (queryParams) => {
 
     paramIndex = addInFilter('color', queryParams, filters, values, paramIndex);
     paramIndex = addInFilter('clarity', queryParams, filters, values, paramIndex);
+    paramIndex = addInFilter('is_special', queryParams, filters, values, paramIndex);
+    paramIndex = addInFilter('is_upcoming', queryParams, filters, values, paramIndex);
     // Finishing
     paramIndex = addInFilter('cut_grade', queryParams, filters, values, paramIndex);
     paramIndex = addInFilter('polish', queryParams, filters, values, paramIndex);

@@ -5,7 +5,6 @@ import {
   Search,
   Settings2,
   Gem,
-  Hammer,
   LayoutDashboard,
   ShieldUser,
 } from "lucide-react"

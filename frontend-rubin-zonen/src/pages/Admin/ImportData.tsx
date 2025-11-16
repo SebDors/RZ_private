@@ -4,10 +4,10 @@ import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileSpreadsheet, X } from 'lucide-react';
+import { getToken } from '@/hooks/useRedirect';
 
-const excelMimeTypes = [
-  'application/vnd.ms-excel',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+const csvMimeTypes = [
+  'text/csv',
 ];
 
 export default function ImportData() {
@@ -33,15 +33,15 @@ export default function ImportData() {
   };
 
   const processFile = (file: File) => {
-    if (isExcelFile(file)) {
+    if (isCsvFile(file)) {
       // Prevent adding duplicate files
       if (!selectedFiles.some((f) => f.name === file.name && f.lastModified === file.lastModified)) {
-        setSelectedFiles((prevFiles) => [...prevFiles, file]);
+        setSelectedFiles([file]); // Replace previous file with the new one
       } else {
         toast.warning(`File "${file.name}" is already added.`);
       }
     } else {
-      toast.error(`File "${file.name}" is not a valid Excel file.`);
+      toast.error(`File "${file.name}" is not a valid CSV file.`);
     }
   };
 
@@ -75,8 +75,42 @@ export default function ImportData() {
     setSelectedFiles(selectedFiles.filter((file) => file.name !== fileName));
   };
 
-  const isExcelFile = (file: File) => {
-    return excelMimeTypes.includes(file.type) || file.name.endsWith('.xls') || file.name.endsWith('.xlsx');
+  const isCsvFile = (file: File) => {
+    return csvMimeTypes.includes(file.type) || file.name.endsWith('.csv');
+  };
+
+  const handleUpload = async () => {
+    if (selectedFiles.length === 0) {
+        toast.error('No file selected for upload.');
+        return;
+    }
+
+    const file = selectedFiles[0];
+    const formData = new FormData();
+    formData.append('diamonds_csv', file);
+    const token = getToken();
+
+    try {
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}/diamants/upload_data`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+            body: formData,
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            toast.success(data.message || 'File uploaded successfully!');
+            setSelectedFiles([]);
+        } else {
+            toast.error(data.message || 'File upload failed.');
+        }
+    } catch (error) {
+        console.error('Upload error:', error);
+        toast.error('An error occurred during file upload.');
+    }
   };
 
   return (
@@ -97,7 +131,7 @@ export default function ImportData() {
             onClick={handleDivClick}
           >
             <div className="text-center">
-              <p className="text-lg text-gray-500">Drag & drop your Excel file here</p>
+              <p className="text-lg text-gray-500">Drag & drop your CSV file here</p>
               <p className="text-sm text-gray-400">or click to select a file</p>
             </div>
           </div>
@@ -105,7 +139,7 @@ export default function ImportData() {
             type="file"
             ref={fileInputRef}
             onChange={handleFileChange}
-            accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            accept=".csv,text/csv"
             className="hidden"
           />
           <div className="mt-4 space-y-2">
@@ -120,6 +154,11 @@ export default function ImportData() {
                 </Button>
               </div>
             ))}
+          </div>
+          <div className="mt-4">
+            <Button onClick={handleUpload} disabled={selectedFiles.length === 0}>
+              Upload
+            </Button>
           </div>
         </CardContent>
       </Card>

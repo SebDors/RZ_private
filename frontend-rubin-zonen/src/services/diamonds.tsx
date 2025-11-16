@@ -3,11 +3,13 @@ import type { Diamant } from "@/models/models";
 
 export const getAllDiamonds = async (filters?: Record<string, string>): Promise<Diamant[]> => {
     const query = new URLSearchParams(filters).toString();
+    const token = getToken();
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/diamants?${query}`,
         {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             }
         }
     );
@@ -16,11 +18,13 @@ export const getAllDiamonds = async (filters?: Record<string, string>): Promise<
 };
 
 export const getDiamondById = async (stock_id: string): Promise<Diamant> => {
+    const token = getToken();
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/diamants/${stock_id}`,
         {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             }
         }
     );

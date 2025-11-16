@@ -45,10 +45,10 @@ function Clients() {
     };
 
     const filteredUsers = users.filter(user =>
-        user.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.last_name.toLowerCase().includes(searchQuery.toLowerCase())
+        (user.company_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (user.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (user.first_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (user.last_name || '').toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     if (loading) {

@@ -117,22 +117,40 @@ function StoneDetailContent() {
                                     <p><strong>Symmetry:</strong> {diamond.symmetry}</p>
                                     <p><strong>Fluorescence:</strong> {diamond.fluorescence_intensity}</p>
                                     <p><strong>Lab:</strong> {diamond.lab}</p>
-                                    <p><strong>Certificate:</strong> {diamond.certificate_number}</p>
+                                    <p>
+                                        <strong>Certificate:</strong>{' '}
+                                        {diamond.certificate_file ? (
+                                            <a href={diamond.certificate_file} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                {diamond.certificate_number}
+                                            </a>
+                                        ) : (
+                                            diamond.certificate_number
+                                        )}
+                                    </p>
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-semibold mb-2">Measurements</h3>
                                     <p>{diamond.measurements}</p>
-                                    <h3 className="text-lg font-semibold mb-2 mt-4">Price</h3>
-                                    <p><strong>Price/Carat:</strong> ${diamond.price_carat}</p>
+                                    <h3 className="text-lg font-semibold mb-2 mt-4">Price : ???</h3>
+                                    {/* TODO show the price */}
+                                    <p><strong>Price/Carat :</strong> ${diamond.price_carat}</p>
                                 </div>
                             </div>
                             <div className="mt-4">
                                 <h3 className="text-lg font-semibold mb-2">Media</h3>
                                 <div className="flex space-x-4">
-                                    {/* Placeholders for image, video, certificate */}
-                                    <div className="w-32 h-32 bg-gray-200 flex items-center justify-center">Image</div>
-                                    <div className="w-32 h-32 bg-gray-200 flex items-center justify-center">Video</div>
-                                    <div className="w-32 h-32 bg-gray-200 flex items-center justify-center">Certificate</div>
+                                    {(diamond.diamond_image || diamond.image_file) && (
+                                        <div className="w-32 h-32 flex items-center justify-center border rounded-md overflow-hidden">
+                                            <img src={diamond.diamond_image || diamond.image_file} alt="Diamond" className="object-cover h-full w-full" />
+                                        </div>
+                                    )}
+                                    {diamond.video_file && (
+                                        <div className="w-32 h-32 flex items-center justify-center border rounded-md overflow-hidden">
+                                            <video controls src={diamond.video_file} className="object-cover h-full w-full">
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div className="mt-6 flex space-x-2">

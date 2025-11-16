@@ -21,6 +21,7 @@ function Admin() {
                         <nav className="flex flex-col space-y-2">
                             <Link to="clients">Clients</Link>
                             <Link to="filter-settings">Filter Settings</Link>
+                            <Link to="import-data">Import Data</Link>
                         </nav>
                     </div>
                     <div className="w-3/4 p-4">

@@ -9,6 +9,7 @@ import Settings from './pages/Account/Settings'
 import Admin from './pages/Admin/Admin'
 import Clients from './pages/Admin/Clients'
 import FilterSettings from './pages/Admin/FilterSettings'
+import ImportData from './pages/Admin/ImportData'
 
 // Home pages
 import Home from './pages/Home/Home'
@@ -26,6 +27,10 @@ import StoneDetail from './pages/Home/StoneDetail'
 import ForgottenPassword from './pages/Auth/ForgottenPassword'
 import Login from './pages/Auth/LogIn'
 import Register from './pages/Auth/Register'
+
+// Other pages
+import NotFound from './pages/NotFound'
+
 import { SidebarProvider, SubMenuProvider } from './components/ui/sidebar'
 
 import { Toaster } from "@/components/ui/sonner"
@@ -69,7 +74,11 @@ function App() {
             <Route path="/admin" element={<Admin />}>
               <Route path="filter-settings" element={<FilterSettings />} />
               <Route path="clients" element={<Clients />} />
+              <Route path="import-data" element={<ImportData />} />
             </Route>
+
+            {/* Not Found Route */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </SubMenuProvider>
       </SidebarProvider>

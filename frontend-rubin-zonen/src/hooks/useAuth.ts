@@ -12,43 +12,45 @@ interface DecodedToken {
 }
 
 export const useAuth = () => {
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    const fetchUser = useCallback(async (userId: number) => {
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/users/${userId}`, {
-                headers: {
-                    'Authorization': `Bearer ${getToken()}`,
-                },
-            });
-            if (!response.ok) {
-                throw new Error('Failed to fetch user data');
-            }
-            const userData: User = await response.json();
-            setUser(userData);
-        } catch (error) {
-            console.error("Error fetching user data:", error);
-            toast.error("Failed to load user data.");
-            setUser(null);
-        }
-    }, []);
-
-    useEffect(() => {
-        const token = getToken();
-        if (token) {
+        const [user, setUser] = useState<User | null>(null);
+        const [loading, setLoading] = useState(true);
+    
+        const fetchUser = useCallback(async (userId: number) => {
             try {
-                const decodedToken = jwtDecode<DecodedToken>(token);
-                fetchUser(decodedToken.id);
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}/users/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`,
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+                const userData: User = await response.json();
+                setUser(userData);
             } catch (error) {
-                console.error("Failed to decode token:", error);
+                console.error("Error fetching user data:", error);
+                toast.error("Failed to load user data.");
                 setUser(null);
+            } finally {
                 setLoading(false);
             }
-        } else {
-            setLoading(false);
-        }
-    }, [fetchUser]);
+        }, []);
+    
+        useEffect(() => {
+            const token = getToken();
+            if (token) {
+                try {
+                    const decodedToken = jwtDecode<DecodedToken>(token);
+                    fetchUser(decodedToken.id);
+                } catch (error) {
+                    console.error("Failed to decode token:", error);
+                    setUser(null);
+                    setLoading(false);
+                }
+            } else {
+                setLoading(false);
+            }
+        }, [fetchUser]);
 
     const updateUser = useCallback(async (userId: number, updatedUserData: Partial<User>) => {
         try {

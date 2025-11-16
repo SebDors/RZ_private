@@ -10,14 +10,22 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useCookie } from '@/hooks/use-cookie';
+import { PanelLeftClose } from "lucide-react"
+import { useSidebar } from '@/components/ui/sidebar';
 
 
 export function Header() {
   const [language, setLanguage] = useCookie('language');
+  const { isMobile, toggleSidebar } = useSidebar();
 
   return (
     <header className="flex items-center justify-between p-4 bg-white dark:bg-gray-950">
       <div className="flex items-center">
+        {isMobile && (
+          <Button variant="ghost" size="icon" onClick={toggleSidebar}>
+            <PanelLeftClose className="size-5 rotate-180" />
+          </Button>
+        )}
       </div>
       <div className="flex items-center">
         <Link to="/my-account">

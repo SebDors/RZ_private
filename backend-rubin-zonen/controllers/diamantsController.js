@@ -1,5 +1,7 @@
 // controllers/diamantsController.js
 const db = require('../config/db');
+const fs = require('fs');
+const csv = require('csv-parser');
 
 /**
  * Fonction d'aide pour ajouter un filtre de type 'IN' à la clause WHERE.
@@ -300,5 +302,133 @@ exports.deleteDiamant = async (req, res) => {
     } catch (error) {
         console.error(`Erreur lors de la suppression du diamant ${stock_id} :`, error);
         res.status(500).json({ message: 'Erreur serveur lors de la suppression du diamant.', error: error.message });
+    }
+};
+
+exports.uploadDiamonds = async (req, res) => {
+    if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+    }
+
+    const filePath = req.file.path;
+    const diamonds = [];
+
+    const client = await db.connect();
+
+    try {
+        const headerMapping = {
+            'Stock #': 'stock_id',
+            'Availability': 'availability',
+            'Shape': 'shape',
+            'Weight': 'weight',
+            'Color': 'color',
+            'Clarity': 'clarity',
+            'Cut Grade': 'cut_grade',
+            'Polish': 'polish',
+            'Symmetry': 'symmetry',
+            'Fluorescence Intensity': 'fluorescence_intensity',
+            'Fluorescence Color': 'fluorescence_color',
+            'Measurements': 'measurements',
+            'Lab': 'lab',
+            'Certificate #': 'certificate_number',
+            'Treatment': 'treatment',
+            'PriceCarat': 'price_carat',
+            'Fancy Color': 'fancy_color',
+            'Fancy Color Intensity': 'fancy_color_intensity',
+            'Fancy Color Overtone': 'fancy_color_overtone',
+            'Depth %': 'depth_pct',
+            'Table %': 'table_pct',
+            'Girdle Thin': 'girdle_thin',
+            'Girdle Thick': 'girdle_thick',
+            'Girdle %': 'girdle_pct',
+            'Girdle Condition': 'girdle_condition',
+            'Culet Size': 'culet_size',
+            'Culet Condition': 'culet_condition',
+            'Crown Height': 'crown_height',
+            'Crown Angle': 'crown_angle',
+            'Pavilion Depth': 'pavilion_depth',
+            'Pavilion Angle': 'pavilion_angle',
+            'Laser Inscription': 'laser_inscription',
+            'Comment': 'comment',
+            'Country': 'country',
+            'State': 'state',
+            'City': 'city',
+            'Is Matched Pair Separable': 'is_matched_pair_separable',
+            'Pair Stock #': 'pair_stock_id',
+            'Allow RapLink Feed': 'allow_raplink_feed',
+            'Parcel Stones': 'parcel_stones',
+            'Certificate Filename': 'certificate_filename',
+            'Diamond Image': 'diamond_image',
+            '3D File': '"3d_file"',
+            'Trade Show': 'trade_show',
+            'Member comments': 'member_comments',
+            'rap': 'rap',
+            'Disc': 'disc',
+            'VideoFile': 'video_file',
+            'ImageFile': 'image_file',
+            'CertificateFile': 'certificate_file'
+        };
+
+        const stream = fs.createReadStream(filePath)
+            .pipe(csv({
+                mapHeaders: ({ header }) => headerMapping[header.trim()] || header.trim(),
+            }));
+
+        for await (const row of stream) {
+            // Sanitize row data
+            const sanitizedRow = {};
+            for (const key in row) {
+                const dbColumn = key; // Already mapped
+                if (dbColumn && headerMapping[Object.keys(headerMapping).find(h => headerMapping[h] === dbColumn)]) { // only process mapped columns
+                    let value = row[key];
+                    if (value === '' || value === 'NULL' || value === undefined) {
+                        sanitizedRow[dbColumn] = null;
+                    } else if (typeof value === 'string') {
+                        const lowerValue = value.toLowerCase();
+                        if (lowerValue === 'true') {
+                            sanitizedRow[dbColumn] = true;
+                        } else if (lowerValue === 'false') {
+                            sanitizedRow[dbColumn] = false;
+                        } else {
+                            sanitizedRow[dbColumn] = value;
+                        }
+                    } else {
+                        sanitizedRow[dbColumn] = value;
+                    }
+                }
+            }
+            diamonds.push(sanitizedRow);
+        }
+
+        await client.query('BEGIN');
+        await client.query('DELETE FROM diamants');
+
+        for (const diamond of diamonds) {
+            const columns = Object.keys(diamond).filter(k => diamond[k] !== null && diamond[k] !== undefined);
+            const values = columns.map(k => diamond[k]);
+            const placeholders = columns.map((_, i) => `$${i + 1}`).join(', ');
+            
+            const columnNames = columns.join(', ');
+
+            if(columns.length > 0) {
+                const queryText = `INSERT INTO diamants (${columnNames}) VALUES (${placeholders})`;
+                await client.query(queryText, values);
+            }
+        }
+
+        await client.query('COMMIT');
+        res.status(200).json({ message: `Successfully imported ${diamonds.length} diamonds.` });
+
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Error during CSV processing:', error);
+        res.status(500).json({ message: 'Error processing file.', error: error.message });
+    } finally {
+        client.release();
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                console.error('Error deleting uploaded file:', err);
+            }
+        });
     }
 };

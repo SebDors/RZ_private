@@ -2,6 +2,15 @@ const express = require('express');
 const router = express.Router();
 const diamantsController = require('../controllers/diamantsController');
 const { authenticate, authorizeAdmin } = require('../middleware/authMiddleware');
+const multer = require('multer');
+const fs = require('fs');
+
+// Configure multer for file uploads
+const uploadDir = 'uploads/';
+if (!fs.existsSync(uploadDir)){
+    fs.mkdirSync(uploadDir);
+}
+const upload = multer({ dest: uploadDir });
 
 /**
  * @swagger
@@ -9,6 +18,37 @@ const { authenticate, authorizeAdmin } = require('../middleware/authMiddleware')
  *   name: Diamants
  *   description: Gestion des diamants de la base de données
  */
+
+/**
+ * @swagger
+ * /api/diamants/upload_data:
+ *   post:
+ *     summary: Uploader un fichier CSV pour importer les diamants (Admin seulement)
+ *     tags: [Diamants]
+ *     security:
+ *       - bearerAuth: []
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - in: formData
+ *         name: diamonds_csv
+ *         type: file
+ *         required: true
+ *         description: Le fichier CSV des diamants à importer.
+ *     responses:
+ *       200:
+ *         description: Données des diamants importées avec succès
+ *       400:
+ *         description: Fichier manquant ou invalide
+ *       401:
+ *         description: Non autorisé
+ *       403:
+ *         description: Accès refusé
+ *       500:
+ *         description: Erreur serveur
+ */
+router.post('/upload_data', authenticate, authorizeAdmin, upload.single('diamonds_csv'), diamantsController.uploadDiamonds);
+
 
 /**
  * @swagger

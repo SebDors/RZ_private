@@ -635,9 +635,9 @@ X311097	On Memo	EM	2.29000	FDBshGshY	VS2	\N	EX	VG	NON	\N	8.42-6.46*4.21	GIA	2205
 --
 
 
-COPY public.users (id, email, password, prefix, first_name, last_name, phone_number, designation, seller, company_name, company_owner, company_type, company_email, company_address, company_city, company_country, company_zip_code, id_document_url, business_registration_url, how_found_us, accept_terms, role, is_active, created_at, updated_at) FROM stdin;
-1	dorssebastien@gmail.com	$2b$10$ecIUcqmRt0S5gUTK658ya.PVbPpecK362/7WkUIc/hG.FnuI/Hux2	\N	Sébastien	Dors	0987654321	partenaire	\N	Nouvelle Entreprise	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	admin	t	2025-09-27 18:29:46.923365+00	2025-09-27 18:35:50.075778+00
-2	test.user@example.com	$2b$10$ecIUcqmRt0S5gUTK658ya.PVbPpecK362/7WkUIc/hG.FnuI/Hux2	Mr.	Test	User	555-0101	Software Tester	No	Test Company	Test User	Technology	contact@testcompany.com	123 Test Ave	Test City	Testland	12345	https://example.com/documents/id.pdf	https://example.com/documents/business_reg.pdf	Google search	t	user	t	2025-11-15 22:32:29.205716+00	2025-11-15 22:32:29.205716+00
+COPY public.users (id, email, password, prefix, first_name, last_name, phone_number, designation, seller, company_name, company_owner, company_type, company_email, company_address, company_city, company_country, company_zip_code, id_document_url, business_registration_url, how_found_us, accept_terms, is_admin, is_active, created_at, updated_at) FROM stdin;
+1	dorssebastien@gmail.com	$2b$10$ecIUcqmRt0S5gUTK658ya.PVbPpecK362/7WkUIc/hG.FnuI/Hux2	\N	Sébastien	Dors	0987654321	partenaire	\N	Nouvelle Entreprise	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	t	t	2025-09-27 18:29:46.923365+00	2025-09-27 18:35:50.075778+00
+2	test.user@example.com	$2b$10$ecIUcqmRt0S5gUTK658ya.PVbPpecK362/7WkUIc/hG.FnuI/Hux2	Mr.	Test	User	555-0101	Software Tester	No	Test Company	Test User	Technology	contact@testcompany.com	123 Test Ave	Test City	Testland	12345	https://example.com/documents/id.pdf	https://example.com/documents/business_reg.pdf	Google search	t	f	t	2025-11-15 22:32:29.205716+00	2025-11-15 22:32:29.205716+00
 \.
 
 --

@@ -110,21 +110,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
         ],
       },
-      {
-        title: "Stone Detail",
-        url: "/stone-detail",
-        icon: Hammer,
-        items: [
-          {
-            title: "List",
-            url: "/stone-detail",
-          },
-          {
-            title: "Compare",
-            url: "/stone-detail",
-          },
-        ],
-      },
       {//TODO hide this part if not admin
         title: "Admin",
         url: "/admin",

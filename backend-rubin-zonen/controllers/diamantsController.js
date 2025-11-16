@@ -126,11 +126,10 @@ exports.getAllDiamants = async (req, res) => {
             queryText += ` WHERE ${filters.join(' AND ')}`;
         }
 
-        queryText += ' ORDER BY stock_id ASC LIMIT 100'; // Toujours limiter le nombre de résultats pour éviter de surcharger
+        queryText += ' ORDER BY stock_id ASC';
 
         const client = await db.connect();
         const result = await client.query(queryText, values);
-        console.log(queryText, "===AVEC===>", values);
         client.release();
 
         const filteredRows = result.rows.map(row => ({

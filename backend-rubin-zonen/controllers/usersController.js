@@ -69,7 +69,7 @@ exports.createUser = async (req, res) => {
 
             ) VALUES (
                 $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20
-            ) RETURNING id, email, role, is_active, created_at;
+            ) RETURNING id, email, is_admin, is_active, created_at;
         `;
         const values = [
             email, hashedPassword, prefix, first_name, last_name, phone_number,
@@ -107,7 +107,7 @@ exports.updateUser = async (req, res) => {
         'email', 'password', 'prefix', 'first_name', 'last_name', 'phone_number',
         'designation', 'seller', 'company_name', 'company_owner', 'company_type', 'company_email',
         'company_address', 'company_city', 'company_country', 'company_zip_code', 'id_document_url',
-        'business_registration_url', 'how_found_us', 'role', 'is_active'
+        'business_registration_url', 'how_found_us', 'is_admin', 'is_active'
     ];
 
     for (const key of allowedColumns) {
@@ -135,7 +135,7 @@ exports.updateUser = async (req, res) => {
         UPDATE users
         SET ${setClauses.join(', ')}, updated_at = CURRENT_TIMESTAMP
         WHERE id = $${paramIndex}
-        RETURNING id, email, role, is_active, updated_at;
+        RETURNING id, email, is_admin, is_active, updated_at;
     `;
 
     try {
@@ -186,7 +186,7 @@ exports.getConnectedUserProfile = async (req, res) => {
     const userId = req.user.id; // L'ID de l'utilisateur est attaché par le middleware d'authentification
     try {
         const client = await db.connect();
-        const result = await client.query('SELECT id, email, prefix, first_name, last_name, phone_number, designation, seller, company_name, company_owner, company_type, company_email, company_address, company_city, company_country, company_zip_code, id_document_url, business_registration_url, how_found_us, role, is_active, created_at, updated_at FROM users WHERE id = $1', [userId]);
+        const result = await client.query('SELECT id, email, prefix, first_name, last_name, phone_number, designation, seller, company_name, company_owner, company_type, company_email, company_address, company_city, company_country, company_zip_code, id_document_url, business_registration_url, how_found_us, is_admin, is_active, created_at, updated_at FROM users WHERE id = $1', [userId]);
         client.release();
 
         if (result.rows.length === 0) {
@@ -242,7 +242,7 @@ exports.updateConnectedUserProfile = async (req, res) => {
         UPDATE users
         SET ${setClauses.join(', ')}, updated_at = CURRENT_TIMESTAMP
         WHERE id = $${paramIndex}
-        RETURNING id, email, role, is_active, updated_at;
+        RETURNING id, email, is_admin, is_active, updated_at;
     `;
 
     try {

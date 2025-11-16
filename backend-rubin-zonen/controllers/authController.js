@@ -36,7 +36,7 @@ exports.register = async (req, res) => {
                 business_registration_url, how_found_us
             ) VALUES (
                 $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19
-            ) RETURNING id, email, role, is_active;
+            ) RETURNING id, email, is_admin, is_active;
         `;
         const values = [
             email, hashedPassword, prefix, first_name, last_name, phone_number,
@@ -51,14 +51,14 @@ exports.register = async (req, res) => {
         const user = result.rows[0];
 
         // Générer un token JWT pour l'utilisateur nouvellement enregistré
-        const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ id: user.id, is_admin: user.is_admin }, process.env.JWT_SECRET, {
             expiresIn: '240h'
         });//TODO changer si besoin
 
         res.status(201).json({
             message: 'Inscription réussie.',
             token,
-            user: { id: user.id, email: user.email, role: user.role }
+            user: { id: user.id, email: user.email, is_admin: user.is_admin }
         });
 
     } catch (error) {
@@ -101,14 +101,14 @@ exports.login = async (req, res) => {
         }
 
         // Générer un token JWT
-        const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ id: user.id, is_admin: user.is_admin }, process.env.JWT_SECRET, {
             expiresIn: '240h'
         });
 
         res.status(200).json({
             message: 'Connexion réussie.',
             token,
-            user: { id: user.id, email: user.email, role: user.role, is_active: user.is_active}
+            user: { id: user.id, email: user.email, is_admin: user.is_admin, is_active: user.is_active}
         });
 
     } catch (error) {
@@ -196,7 +196,7 @@ exports.checkToken = async (req, res) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const client = await db.connect();
-        const result = await client.query('SELECT role, is_active FROM users WHERE id = $1', [decoded.id]);
+        const result = await client.query('SELECT is_admin, is_active FROM users WHERE id = $1', [decoded.id]);
         client.release();
 
         if (result.rows.length === 0) {
@@ -208,7 +208,7 @@ exports.checkToken = async (req, res) => {
             return res.status(403).json({ isValid: false, message: "Votre compte est inactif. Veuillez contacter l'administrateur." });
         }
 
-        res.status(200).json({ isValid: true, role: user.role });
+        res.status(200).json({ isValid: true, is_admin: user.is_admin });
     } catch (error) {
         console.error('Erreur de validation du token :', error);
         return res.status(403).json({ isValid: false, message: 'Token invalide ou expiré.' });

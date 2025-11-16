@@ -27,7 +27,8 @@ exports.authenticate = (req, res, next) => {
 // Middleware pour vérifier le rôle d'administrateur
 exports.authorizeAdmin = (req, res, next) => {
     // Supposons que authenticate a déjà attaché req.user
-    if (!req.user || req.user.role !== 'admin') {
+    if (!req.user || req.user.is_admin !== true) {
+        console.log('Accès refusé. Rôle administrateur requis. Utilisateur actuel :', req.user, "role:", req.user.is_admin);
         return res.status(403).json({ message: 'Accès refusé. Rôle administrateur requis.' });
     }
     next(); // L'utilisateur est un administrateur, passe au middleware/contrôleur suivant

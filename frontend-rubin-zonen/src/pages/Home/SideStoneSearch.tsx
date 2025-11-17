@@ -83,7 +83,7 @@ function SideStoneSearchContent() {
     };
 
     const renderFilter = (filter: Filter) => {
-        const isAdmin = user?.role === 'admin';
+        const isAdmin = user?.is_admin === true;
         if (!isAdmin && !filter.is_enabled) {
             return null;
         }

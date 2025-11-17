@@ -97,7 +97,7 @@ export interface User {
     business_registration_url: string;
     how_found_us: string;
     accept_terms: boolean;
-    role: string;
+    is_admin: boolean;
     is_active: boolean;
     created_at: string;
     updated_at: string;

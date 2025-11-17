@@ -65,7 +65,7 @@ function Register() {
             return;
         }
 
-        const userData: Omit<User, 'id' | 'role' | 'is_active' | 'created_at' | 'updated_at'> = {
+        const userData: Omit<User, 'id' | 'is_admin' | 'is_active' | 'created_at' | 'updated_at'> = {
             prefix,
             first_name: firstName,
             last_name: lastName,

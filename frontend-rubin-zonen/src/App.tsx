@@ -28,6 +28,8 @@ import ForgottenPassword from './pages/Auth/ForgottenPassword'
 import Login from './pages/Auth/LogIn'
 import Register from './pages/Auth/Register'
 
+import ResetPassword from './pages/Auth/ResetPassword'
+
 // Other pages
 import NotFound from './pages/NotFound'
 
@@ -44,6 +46,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgotten-password" element={<ForgottenPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
 
       <SidebarProvider>

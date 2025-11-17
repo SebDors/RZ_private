@@ -369,36 +369,64 @@ exports.uploadDiamonds = async (req, res) => {
             'CertificateFile': 'certificate_file'
         };
 
-        const stream = fs.createReadStream(filePath)
-            .pipe(csv({
+        const allDbColumns = Object.values(headerMapping);
+
+        await new Promise((resolve, reject) => {
+            const stream = fs.createReadStream(filePath);
+            const csvStream = stream.pipe(csv({
                 mapHeaders: ({ header }) => headerMapping[header.trim()] || header.trim(),
+                removeBOM: true,
+                separator: ',',
             }));
 
-        for await (const row of stream) {
-            // Sanitize row data
-            const sanitizedRow = {};
-            for (const key in row) {
-                const dbColumn = key; // Already mapped
-                if (dbColumn && headerMapping[Object.keys(headerMapping).find(h => headerMapping[h] === dbColumn)]) { // only process mapped columns
-                    let value = row[key];
-                    if (value === '' || value === 'NULL' || value === undefined) {
-                        sanitizedRow[dbColumn] = null;
-                    } else if (typeof value === 'string') {
-                        const lowerValue = value.toLowerCase();
-                        if (lowerValue === 'true') {
-                            sanitizedRow[dbColumn] = true;
-                        } else if (lowerValue === 'false') {
-                            sanitizedRow[dbColumn] = false;
+            csvStream.once('headers', (headers) => {
+                const fileHeaders = headers.map(h => h.trim());
+                const extraHeaders = fileHeaders.filter(header => !allDbColumns.includes(header));
+
+                if (extraHeaders.length > 0) {
+                    const error = new Error(`Invalid CSV format. Unknown columns found: ${extraHeaders.join(', ')}`);
+                    error.isValidationError = true;
+                    csvStream.emit('error', error);
+                }
+            });
+
+            csvStream.on('data', (row) => {
+                const sanitizedRow = {};
+                for (const key in row) {
+                    const dbColumn = key;
+                    if (dbColumn && allDbColumns.includes(dbColumn)) {
+                        let value = row[key];
+                        if (value === '' || value === 'NULL' || value === undefined) {
+                            sanitizedRow[dbColumn] = null;
+                        } else if (typeof value === 'string') {
+                            const lowerValue = value.toLowerCase();
+                            if (lowerValue === 'true') {
+                                sanitizedRow[dbColumn] = true;
+                            } else if (lowerValue === 'false') {
+                                sanitizedRow[dbColumn] = false;
+                            } else {
+                                sanitizedRow[dbColumn] = value;
+                            }
                         } else {
                             sanitizedRow[dbColumn] = value;
                         }
-                    } else {
-                        sanitizedRow[dbColumn] = value;
                     }
                 }
-            }
-            diamonds.push(sanitizedRow);
-        }
+                diamonds.push(sanitizedRow);
+            });
+
+            csvStream.on('end', () => {
+                if (diamonds.length === 0) {
+                    const error = new Error('The file does not contain any diamond data.');
+                    error.isValidationError = true;
+                    return reject(error);
+                }
+                resolve();
+            });
+
+            stream.on('error', reject);
+            csvStream.on('error', reject);
+        });
 
         await client.query('BEGIN');
         await client.query('DELETE FROM diamants');
@@ -422,6 +450,11 @@ exports.uploadDiamonds = async (req, res) => {
     } catch (error) {
         await client.query('ROLLBACK');
         console.error('Error during CSV processing:', error);
+
+        if (error.isValidationError) {
+            return res.status(400).json({ message: error.message });
+        }
+        
         res.status(500).json({ message: 'Error processing file.', error: error.message });
     } finally {
         client.release();

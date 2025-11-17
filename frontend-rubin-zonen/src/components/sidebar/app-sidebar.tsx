@@ -122,6 +122,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             title: "Filter Settings",
             url: "/admin/filter-settings",
           },
+          {
+            title: "Import Data",
+            url: "/admin/import-data",
+          }
         ]
       },
       {

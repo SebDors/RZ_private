@@ -242,7 +242,9 @@ CREATE TABLE public.users (
     is_admin boolean DEFAULT false NOT NULL,
     is_active boolean DEFAULT true NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    reset_password_token character varying(255),
+    reset_password_expires timestamp with time zone
 );
 
 ALTER TABLE public.users OWNER TO rubin_user;

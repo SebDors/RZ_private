@@ -142,7 +142,7 @@ exports.forgotPassword = async (req, res) => {
                 `Veuillez cliquer sur le lien suivant, ou le coller dans votre navigateur pour terminer le processus :\n\n` +
                 `${resetURL}\n\n` +
                 `Si vous n'avez pas demandé cela, veuillez ignorer cet e-mail et votre mot de passe restera inchangé.\n`,
-            sender: { name: 'Rubin & Zonen', email: 'noreply@rubinandzonen.com' },
+            sender: { name: 'Rubin & Zonen', email: process.env.BREVO_EMAIL_SENDER},
         };
 
         await apiInstance.sendTransacEmail(sendSmtpEmail);

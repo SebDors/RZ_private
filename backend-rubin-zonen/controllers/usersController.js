@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs'); // Importe bcryptjs pour le hachage des mots
 
 // Logique pour récupérer tous les utilisateurs
 exports.getAllUsers = async (req, res) => {
-        console.log('Retrieving users');
     try {
         const client = await db.connect();
         // Ne pas sélectionner le mot de passe dans les résultats (sécurité)

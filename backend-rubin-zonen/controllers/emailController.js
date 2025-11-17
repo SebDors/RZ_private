@@ -12,7 +12,8 @@ exports.sendTestEmail = async (req, res) => {
         to: [{ email: to }],
         subject: subject,
         textContent: textContent,
-        sender: { name: 'Rubin & Zonen', email: 'noreply@rubinandzonen.com' },
+        // TODO: Remplacer par l'adresse e-mail de Rubin Zonen qu'il a dans son compte dans le .env
+        sender: { name: 'Rubin & Zonen', email: process.env.BREVO_EMAIL_SENDER},
     };
 
     try {

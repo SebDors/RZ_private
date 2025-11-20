@@ -84,16 +84,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     {
       title: "Diamond List",
-      url: "/diamond-list",
+      url: "/new-diamond-list",
       icon: Gem,
       items: [
         {
           title: "List",
-          url: "/diamond-list",
+          url: "/new-diamond-list",
         },
         {
           title: "Compare",
-          url: "/diamond-list",
+          url: "/compare-diamonds",
         },
       ],
     },

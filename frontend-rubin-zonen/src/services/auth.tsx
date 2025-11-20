@@ -57,3 +57,18 @@ export const resetPassword = async (token: string, password: string): Promise<{ 
     }
     return data;
 };
+
+export const checkToken = async (token: string): Promise<{ isValid: boolean; role?: string; message?: string }> => {
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/check-token`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        return { isValid: false, message: data.message || 'Token validation failed.' };
+    }
+    return { isValid: true, role: data.role };
+};

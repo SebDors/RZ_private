@@ -15,11 +15,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { createQuote } from "@/services/quote";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 function MyCartContent() {
     useRedirectIfNotAuth();
+    const navigate = useNavigate();
     const { setOpen, open } = useSidebar();
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [loading, setLoading] = useState(true);
@@ -122,6 +125,34 @@ function MyCartContent() {
     };
 
 
+    const handleAskQuote = async () => {
+        if (cartItems.length === 0) {
+            toast.error("Your cart is empty.");
+            return;
+        }
+
+        const diamondStockIds = cartItems.map(item => item.diamond_stock_id);
+
+        try {
+            await createQuote(diamondStockIds);
+            toast.success("Quote request sent successfully.", {
+                action: {
+                    label: "View My Quotes",
+                    onClick: () => navigate("/my-quote"),
+                },
+            });
+            // Clear the cart after quote creation
+            for (const item of cartItems) {
+                await deleteCartItem(item.diamond_stock_id);
+            }
+            fetchCartItems();
+        } catch (error) {
+            console.error("Error creating quote:", error);
+            toast.error("Failed to create quote.");
+        }
+    };
+
+
     const calculateTotal = () => {
         return cartItems.reduce((total, item) => total + Number(item.price_carat) * item.weight * item.quantity, 0);
     };
@@ -193,7 +224,7 @@ function MyCartContent() {
                                             <span>Total</span>
                                             <span>${calculateTotal().toFixed(2)}</span>
                                         </div>
-                                        <Button className="w-full mt-4">Ask a Quote</Button>
+                                        <Button className="w-full mt-4" onClick={handleAskQuote}>Ask a Quote</Button>
                                         <Popover>
                                             <PopoverTrigger asChild>
                                                 <Button

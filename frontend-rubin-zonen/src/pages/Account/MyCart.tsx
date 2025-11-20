@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { getCart, updateCartItemQuantity, deleteCartItem } from "@/services/cart";
+import { getCart, updateCartItemQuantity, deleteCartItem, addItemToCart } from "@/services/cart";
+import { addItemToWatchlist, deleteWatchlistItem } from "@/services/watchlist";
 import type { CartItem } from "@/services/cart";
 import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 import { Button } from "@/components/ui/button";
@@ -11,12 +12,18 @@ import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import Header from "@/components/Header";
 import { SidebarInset, SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 function MyCartContent() {
     useRedirectIfNotAuth();
     const { setOpen, open } = useSidebar();
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [loading, setLoading] = useState(true);
+    const [date, setDate] = useState<Date | undefined>(undefined);
 
     const handleOpen = () => {
         if (!open) {
@@ -57,8 +64,13 @@ function MyCartContent() {
 
     const handleRemoveItem = async (stock_id: string) => {
         try {
-            await deleteCartItem(stock_id);
-            toast.success("Item removed from cart.");
+            const { deletedItem } = await deleteCartItem(stock_id);
+            toast.success("Item removed from cart.", {
+                action: {
+                    label: "Undo",
+                    onClick: () => handleUndoRemoveItem(deletedItem),
+                },
+            });
             fetchCartItems(); // Refresh the list
         } catch (error) {
             console.error("Error removing item from cart:", error);
@@ -66,8 +78,52 @@ function MyCartContent() {
         }
     };
 
+    const handleUndoRemoveItem = async (item: CartItem) => {
+        try {
+            await addItemToCart(item.diamond_stock_id, item.quantity);
+            fetchCartItems();
+        } catch (error) {
+            console.error("Error undoing remove from cart:", error);
+            toast.error("Failed to undo remove from cart.");
+        }
+    };
+
+    const handleMoveToWatchlist = async (stock_id: string) => {
+        try {
+            const cartItem = cartItems.find(item => item.diamond_stock_id === stock_id);
+            if (!cartItem) return;
+    
+            await addItemToWatchlist(stock_id);
+            const { deletedItem } = await deleteCartItem(stock_id);
+            
+            toast.success("Item moved to watchlist.", {
+                action: {
+                    label: "Undo",
+                    onClick: () => handleUndoMoveToWatchlist(deletedItem),
+                },
+            });
+    
+            fetchCartItems(); // Refresh cart
+        } catch (error) {
+            console.error("Error moving item to watchlist:", error);
+            toast.error("Failed to move item to watchlist.");
+        }
+    };
+
+    const handleUndoMoveToWatchlist = async (item: CartItem) => {
+        try {
+            await addItemToCart(item.diamond_stock_id, item.quantity);
+            await deleteWatchlistItem(item.diamond_stock_id);
+            fetchCartItems();
+        } catch (error) {
+            console.error("Error undoing move to watchlist:", error);
+            toast.error("Failed to undo move to watchlist.");
+        }
+    };
+
+
     const calculateTotal = () => {
-        return cartItems.reduce((total, item) => total + item.price_carat * item.weight * item.quantity, 0);
+        return cartItems.reduce((total, item) => total + Number(item.price_carat) * item.weight * item.quantity, 0);
     };
 
     return (
@@ -92,10 +148,9 @@ function MyCartContent() {
                                                 <CardContent>
                                                     <p>Color: {item.color}</p>
                                                     <p>Clarity: {item.clarity}</p>
-                                                    <p>Price/Carat: ${(item.price_carat).toFixed(2)}</p>
-                                                    <p>Weight: {item.weight}</p>                                                    
-                                                    <p>Total Price: ${(item.price_carat * item.weight * item.quantity).toFixed(2)}</p>
-                                                    <div className="flex items-center mt-4">
+                                                                                                        <p>Price/Carat: ${Number(item.price_carat).toFixed(2)}</p>
+                                                                                                        <p>Weight: {item.weight}</p>                                                    
+                                                                                                        <p>Total Price: ${(Number(item.price_carat) * item.weight * item.quantity).toFixed(2)}</p>                                                    <div className="flex items-center mt-4">
                                                         <Label htmlFor={`quantity-${item.diamond_stock_id}`} className="mr-2">Qty:</Label>
                                                         <Input
                                                             id={`quantity-${item.diamond_stock_id}`}
@@ -106,9 +161,14 @@ function MyCartContent() {
                                                             className="w-20"
                                                         />
                                                     </div>
-                                                    <Button variant="destructive" onClick={() => handleRemoveItem(item.diamond_stock_id)} className="mt-4">
-                                                        Remove
-                                                    </Button>
+                                                    <div className="flex flex-col space-y-2 mt-4">
+                                                        <Button variant="destructive" onClick={() => handleRemoveItem(item.diamond_stock_id)}>
+                                                            Remove
+                                                        </Button>
+                                                        <Button variant="outline" onClick={() => handleMoveToWatchlist(item.diamond_stock_id)}>
+                                                            Move to Watchlist
+                                                        </Button>
+                                                    </div>
                                                 </CardContent>
                                             </Card>
                                         ))}
@@ -133,7 +193,29 @@ function MyCartContent() {
                                             <span>Total</span>
                                             <span>${calculateTotal().toFixed(2)}</span>
                                         </div>
-                                        <Button className="w-full mt-4">Checkout</Button>
+                                        <Button className="w-full mt-4">Ask a Quote</Button>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant={"outline"}
+                                                    className={cn(
+                                                        "w-full justify-start text-left font-normal mt-4",
+                                                        !date && "text-muted-foreground"
+                                                    )}
+                                                >
+                                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={date}
+                                                    onSelect={setDate}
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
                                     </CardContent>
                                 </Card>
                             </div>

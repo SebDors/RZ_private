@@ -73,7 +73,7 @@ function SearchContent() {
     useEffect(() => {
         handleSearch();
     }, [handleSearch]);
-    
+
     const handleFilterChange = (filterName: string, value: string) => {
         setSearchParams(prev => ({ ...prev, [filterName]: value }));
     };
@@ -127,17 +127,19 @@ function SearchContent() {
             </div>
         );
     };
-
+    // TODO version mobile completement cassé
     return (
         <>
             <AppSidebar onClick={handleOpen} className="cursor-pointer" />
             <SidebarInset>
                 <Header />
                 <div className="flex">
-                    <div className="w-1/4 p-4 border-r">
+                    <div className="h-1/2 w-1/4 p-4">
                         <h2 className="text-xl font-bold mb-4">Filters</h2>
-                        <ScrollArea className="h-[calc(100vh - 200px)]">
-                            {filters.map(renderFilter)}
+                        <ScrollArea className="h-full w-full">
+                            <div className="p-4">
+                                {filters.map(renderFilter)}
+                            </div>
                         </ScrollArea>
                         <div className="grid grid-cols-2 gap-2 mt-4">
                             <Button onClick={handleSearch}>Search</Button>
@@ -147,10 +149,11 @@ function SearchContent() {
                             <Button onClick={handleSideStoneSearch} className="col-span-2">Side Stone Search</Button>
                         </div>
                     </div>
-                    <div className="w-3/4 p-4 flex flex-col gap-4">
-                        <div>
-                            <h2 className="text-2xl font-bold mb-4">Diamond List</h2>
-                            <ScrollArea className="h-[calc(100vh - 400px)]">
+                    <div className="h-1/2 w-3/4 p-4 flex flex-col gap-4">
+                        <h2 className="text-2xl font-bold mb-4">Diamond List</h2>
+                        {/*TODO Ne pas avoir la taille du scroll area en fix */}
+                        <ScrollArea className="h-200 w-full">
+                            <div className="p-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {diamonds.map((diamond) => (
                                         <Card key={diamond.stock_id}>
@@ -168,8 +171,9 @@ function SearchContent() {
                                         </Card>
                                     ))}
                                 </div>
-                            </ScrollArea>
-                        </div>
+                            </div>
+                        </ScrollArea>
+
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <SavedSearches
                                 title="Last Searches"

@@ -35,8 +35,12 @@ function ResetPassword() {
             const data = await resetPassword(token, password);
             toast.success(data.message);
             navigate("/login");
-        } catch (error: any) {
-            toast.error(error.message || "Failed to reset password.");
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error("An unexpected error occurred.");
+            }
         }
     };
 

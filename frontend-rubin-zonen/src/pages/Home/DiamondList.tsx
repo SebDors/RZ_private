@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getAllDiamonds } from "@/services/diamonds";
 import type { Diamant } from "@/models/models";
 import {
@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 function DiamondListContent() {
     useRedirectIfNotAuth();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const { setOpen, open } = useSidebar()
     const handleOpen = () => {
@@ -35,15 +36,36 @@ function DiamondListContent() {
     useEffect(() => {
         const fetchDiamonds = async () => {
             try {
-                const diamonds = await getAllDiamonds();
-                setDiamonds(diamonds);
+                let filters = {};
+                if (location.state && location.state.searchParams) {
+                    const { searchParams } = location.state;
+                    const processedFilters: Record<string, string> = {};
+
+                    if (searchParams.shape && searchParams.shape.length > 0) {
+                        processedFilters.shape = searchParams.shape.join(',');
+                    }
+                    if (searchParams.color && searchParams.color.length > 0) {
+                        processedFilters.color = searchParams.color.join(',');
+                    }
+                    if (searchParams.clarity && searchParams.clarity.length > 0) {
+                        processedFilters.clarity = searchParams.clarity.join(',');
+                    }
+                    if (searchParams.carat && searchParams.carat.length > 0) {
+                        const allValues = searchParams.carat.flatMap((range: string) => range.split('-').map(Number));
+                        processedFilters.minCarat = String(Math.min(...allValues));
+                        processedFilters.maxCarat = String(Math.max(...allValues));
+                    }
+                    filters = processedFilters;
+                }
+                const diamondsData = await getAllDiamonds(filters);
+                setDiamonds(diamondsData);
             } catch (error) {
                 console.error("Error fetching diamonds:", error);
             }
         };
 
         fetchDiamonds();
-    }, []);
+    }, [location.state]);
 
     return (
         <>
@@ -55,7 +77,7 @@ function DiamondListContent() {
                     <div className="w-full max-w-4xl">
                         <h2 className="text-2xl font-bold mb-4">Diamond List</h2>
                         <ScrollArea className="h-[80vh]">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
                                 {diamonds.map((diamond) => (
                                     <Card key={diamond.stock_id}>
                                         <CardHeader>

@@ -24,8 +24,12 @@ function ForgottenPassword() {
         try {
             const data = await forgotPassword(email);
             toast.success(data.message);
-        } catch (error: any) {
-            toast.error(error.message || "Failed to send password reset email.");
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error("An unexpected error occurred.");
+            }
         }
     };
 

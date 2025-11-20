@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { getAllDiamonds } from "@/services/diamonds";
 import { getAllFilters } from "@/services/filters";
 import type { Diamant, Filter } from "@/models/models";
@@ -13,11 +13,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-
+import { useSearchHistory } from "@/hooks/useSearchHistory";
+import { SavedSearches } from "@/components/SavedSearches";
 
 function SearchContent() {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const { setOpen, open } = useSidebar();
     const handleOpen = () => {
         if (!open) {
@@ -28,15 +30,32 @@ function SearchContent() {
     const [diamonds, setDiamonds] = useState<Diamant[]>([]);
     const [filters, setFilters] = useState<Filter[]>([]);
     const [searchParams, setSearchParams] = useState<Record<string, string>>({});
+    const {
+        lastSearches,
+        savedSearches,
+        addSearchToHistory,
+        saveSearch,
+        deleteSavedSearch,
+        deleteLastSearch
+    } = useSearchHistory();
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const paramsAsObject = Object.fromEntries(params.entries());
+        if (Object.keys(paramsAsObject).length > 0) {
+            setSearchParams(paramsAsObject);
+        }
+    }, [location.search]);
 
     const handleSearch = useCallback(async () => {
         try {
+            addSearchToHistory(searchParams);
             const diamondsData = await getAllDiamonds(searchParams);
             setDiamonds(diamondsData);
         } catch (error) {
             console.error("Error fetching diamonds:", error);
         }
-    }, [searchParams]);
+    }, [searchParams, addSearchToHistory]);
 
     useEffect(() => {
         const fetchFilters = async () => {
@@ -64,8 +83,11 @@ function SearchContent() {
     };
 
     const handleSave = () => {
-        console.log("Saving research:", searchParams);
-        // TODO For now, just log to console. Later, this could save to local storage or a backend endpoint.
+        const name = prompt("Enter a name for this search:");
+        if (name) {
+            saveSearch(name, searchParams);
+            toast(`Search "${name}" saved.`);
+        }
     };
 
     const handleSubmit = () => {
@@ -74,6 +96,10 @@ function SearchContent() {
 
     const handleSideStoneSearch = () => {
         navigate('/side-stone-search', { state: { searchParams } });
+    };
+
+    const loadSearch = (params: Record<string, string>) => {
+        setSearchParams(params);
     };
 
     const renderFilter = (filter: Filter) => {
@@ -107,38 +133,56 @@ function SearchContent() {
                 <div className="flex">
                     <div className="w-1/4 p-4 border-r">
                         <h2 className="text-xl font-bold mb-4">Filters</h2>
-                        <ScrollArea className="h-[80vh]">
+                        <ScrollArea className="h-[calc(100vh - 200px)]">
                             {filters.map(renderFilter)}
                         </ScrollArea>
                         <div className="grid grid-cols-2 gap-2 mt-4">
                             <Button onClick={handleSearch}>Search</Button>
                             <Button onClick={handleReset}>Reset</Button>
-                            <Button onClick={() => { }}>Add a research</Button>
                             <Button onClick={handleSave}>Save the research</Button>
                             <Button onClick={handleSubmit}>Submit a request</Button>
-                            <Button onClick={handleSideStoneSearch}>Side Stone Search</Button>
+                            <Button onClick={handleSideStoneSearch} className="col-span-2">Side Stone Search</Button>
                         </div>
                     </div>
-                    <div className="w-3/4 p-4">
-                        <h2 className="text-2xl font-bold mb-4">Diamond List</h2>
-                        <ScrollArea className="h-[80vh]">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {diamonds.map((diamond) => (
-                                                                            <Card key={diamond.stock_id}>
-                                                                                <CardHeader>
-                                                                                    <CardTitle>{diamond.shape} {diamond.weight}ct</CardTitle>
-                                                                                </CardHeader>
-                                                                                <CardContent>
-                                                                                    <p>Color: {diamond.color}</p>
-                                                                                    <p>Clarity: {diamond.clarity}</p>
-                                                                                    <p>Price/Carat: ${diamond.price_carat}</p>
-                                                                                    <Button onClick={() => navigate(`/stone-detail/${diamond.stock_id}`)} className="mt-4">
-                                                                                        Show Details
-                                                                                    </Button>
-                                                                                </CardContent>
-                                                                            </Card>                                ))}
-                            </div>
-                        </ScrollArea>
+                    <div className="w-3/4 p-4 flex flex-col gap-4">
+                        <div>
+                            <h2 className="text-2xl font-bold mb-4">Diamond List</h2>
+                            <ScrollArea className="h-[calc(100vh - 400px)]">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {diamonds.map((diamond) => (
+                                        <Card key={diamond.stock_id}>
+                                            <CardHeader>
+                                                <CardTitle>{diamond.shape} {diamond.weight}ct</CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <p>Color: {diamond.color}</p>
+                                                <p>Clarity: {diamond.clarity}</p>
+                                                <p>Price/Carat: ${diamond.price_carat}</p>
+                                                <Button onClick={() => navigate(`/stone-detail/${diamond.stock_id}`)} className="mt-4">
+                                                    Show Details
+                                                </Button>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                </div>
+                            </ScrollArea>
+                        </div>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            <SavedSearches
+                                title="Last Searches"
+                                searches={lastSearches}
+                                onLoad={loadSearch}
+                                onDelete={(timestamp) => deleteLastSearch(timestamp as number)}
+                                deleteIdentifier="timestamp"
+                            />
+                            <SavedSearches
+                                title="Saved Searches"
+                                searches={savedSearches}
+                                onLoad={loadSearch}
+                                onDelete={(name) => deleteSavedSearch(name as string)}
+                                deleteIdentifier="name"
+                            />
+                        </div>
                     </div>
                 </div>
             </SidebarInset>

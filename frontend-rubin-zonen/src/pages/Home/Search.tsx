@@ -83,7 +83,10 @@ function SearchContent() {
     };
 
     const handleSave = () => {
-        const name = prompt("Enter a name for this search:");
+        let name = prompt("Enter a name for this search:");
+        if (!name) {
+            name = new Date().toLocaleString();
+        }
         if (name) {
             saveSearch(name, searchParams);
             toast(`Search "${name}" saved.`);

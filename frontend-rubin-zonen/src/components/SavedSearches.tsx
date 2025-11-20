@@ -1,6 +1,8 @@
+import { useState } from "react";
 import type { SearchRecord } from "@/hooks/useSearchHistory";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Input } from "./ui/input";
 
 interface SavedSearchesProps {
     title: string;
@@ -11,17 +13,29 @@ interface SavedSearchesProps {
 }
 
 export function SavedSearches({ title, searches, onLoad, onDelete, deleteIdentifier }: SavedSearchesProps) {
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredSearches = searches.filter(search =>
+        (search.name || new Date(search.timestamp).toLocaleString()).toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <Card>
             <CardHeader>
                 <CardTitle>{title}</CardTitle>
+                <Input
+                    placeholder="Search..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="mt-2"
+                />
             </CardHeader>
             <CardContent>
-                {searches.length === 0 ? (
+                {filteredSearches.length === 0 ? (
                     <p>No searches found.</p>
                 ) : (
                     <ul className="space-y-2">
-                        {searches.map((search) => (
+                        {filteredSearches.map((search) => (
                             <li key={search.timestamp} className="flex items-center justify-between">
                                 <div>
                                     <p className="font-semibold">{search.name || new Date(search.timestamp).toLocaleString()}</p>

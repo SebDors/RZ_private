@@ -131,9 +131,11 @@ function StoneDetailContent() {
                                 <div>
                                     <h3 className="text-lg font-semibold mb-2">Measurements</h3>
                                     <p>{diamond.measurements}</p>
-                                    <h3 className="text-lg font-semibold mb-2 mt-4">Price : ???</h3>
-                                    {/* TODO show the price */}
                                     <p><strong>Price/Carat :</strong> ${diamond.price_carat}</p>
+                                    <p><strong>Weight :</strong> {diamond.weight}</p>
+                                    <h3 className="text-lg font-semibold mb-2 mt-4">
+                                        Price : <span className="text-base font-normal">{(diamond.price_carat * diamond.weight).toFixed(2)} €</span>
+                                    </h3>
                                 </div>
                             </div>
                             <div className="mt-4">

@@ -92,7 +92,9 @@ function MyCartContent() {
                                                 <CardContent>
                                                     <p>Color: {item.color}</p>
                                                     <p>Clarity: {item.clarity}</p>
-                                                    <p>Price/Carat: ${item.price_carat}</p>
+                                                    <p>Price/Carat: ${(item.price_carat).toFixed(2)}</p>
+                                                    <p>Weight: {item.weight}</p>                                                    
+                                                    <p>Total Price: ${(item.price_carat * item.weight * item.quantity).toFixed(2)}</p>
                                                     <div className="flex items-center mt-4">
                                                         <Label htmlFor={`quantity-${item.diamond_stock_id}`} className="mr-2">Qty:</Label>
                                                         <Input

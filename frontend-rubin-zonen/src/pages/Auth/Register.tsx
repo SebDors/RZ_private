@@ -115,7 +115,7 @@ function Register() {
                     <form onSubmit={handleSubmit}>
                         <div className="grid w-full items-center gap-4">
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="prefix">Prefix</Label>
+                                <Label htmlFor="prefix">Prefix <span className="text-red-500">*</span></Label>
                                 <Select onValueChange={setPrefix} value={prefix} required>
                                     <SelectTrigger id="prefix">
                                         <SelectValue placeholder="Select a prefix" />
@@ -128,7 +128,7 @@ function Register() {
                                 </Select>
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="firstName">First Name</Label>
+                                <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="firstName"
                                     type="text"
@@ -139,7 +139,7 @@ function Register() {
                                 />
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="lastName">Last Name</Label>
+                                <Label htmlFor="lastName">Last Name <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="lastName"
                                     type="text"
@@ -150,7 +150,7 @@ function Register() {
                                 />
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="phoneNumber">Phone Number</Label>
+                                <Label htmlFor="phoneNumber">Phone Number <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="phoneNumber"
                                     type="tel"
@@ -161,7 +161,7 @@ function Register() {
                                 />
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="email">Email <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -173,7 +173,7 @@ function Register() {
                             </div>
 
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="password">Password <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="password"
                                     type="password"
@@ -184,7 +184,7 @@ function Register() {
                                 />
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                                <Label htmlFor="confirmPassword">Confirm Password <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="confirmPassword"
                                     type="password"
@@ -195,7 +195,7 @@ function Register() {
                                 />
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="designation">Designation</Label>
+                                <Label htmlFor="designation">Designation <span className="text-red-500">*</span></Label>
                                 <Select onValueChange={setDesignation} value={designation} required>
                                     <SelectTrigger id="designation">
                                         <SelectValue placeholder="Select your designation" />
@@ -210,7 +210,7 @@ function Register() {
                                 </Select>
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="seller">Seller</Label>
+                                <Label htmlFor="seller">Seller <span className="text-red-500">*</span></Label>
                                 <Select onValueChange={setSeller} value={seller} required>
                                     <SelectTrigger id="seller">
                                         <SelectValue placeholder="Select a seller" />
@@ -222,7 +222,7 @@ function Register() {
                                 </Select>
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="companyName">Company Name</Label>
+                                <Label htmlFor="companyName">Company Name <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="companyName"
                                     type="text"
@@ -233,7 +233,7 @@ function Register() {
                                 />
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="ownerName">Owner Name</Label>
+                                <Label htmlFor="ownerName">Owner Name <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="ownerName"
                                     type="text"
@@ -244,7 +244,7 @@ function Register() {
                                 />
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="companyType">Company Type</Label>
+                                <Label htmlFor="companyType">Company Type <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="companyType"
                                     type="text"
@@ -255,7 +255,7 @@ function Register() {
                                 />
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="companyEmail">Company Email</Label>
+                                <Label htmlFor="companyEmail">Company Email <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="companyEmail"
                                     type="email"
@@ -266,7 +266,7 @@ function Register() {
                                 />
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="companyAddress">Company Address</Label>
+                                <Label htmlFor="companyAddress">Company Address <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="companyAddress"
                                     type="text"
@@ -277,7 +277,7 @@ function Register() {
                                 />
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="companyWebsite">Company Website</Label>
+                                <Label htmlFor="companyWebsite">Company Website <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="companyWebsite"
                                     type="url"
@@ -288,7 +288,7 @@ function Register() {
                                 />
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="city">City</Label>
+                                <Label htmlFor="city">City <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="city"
                                     type="text"
@@ -299,7 +299,7 @@ function Register() {
                                 />
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="country">Country</Label>
+                                <Label htmlFor="country">Country <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="country"
                                     type="text"
@@ -310,7 +310,7 @@ function Register() {
                                 />
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="postalCode">Postal Code</Label>
+                                <Label htmlFor="postalCode">Postal Code <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="postalCode"
                                     type="text"
@@ -337,7 +337,7 @@ function Register() {
                                 />
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="howDidYouHear">How did you hear about us?</Label>
+                                <Label htmlFor="howDidYouHear">How did you hear about us? <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="howDidYouHear"
                                     type="text"
@@ -355,7 +355,7 @@ function Register() {
                                     onChange={(e) => setAcceptTerms(e.target.checked)}
                                     required
                                 />
-                                <Label htmlFor="acceptTerms">I accept the terms and conditions</Label>
+                                <Label htmlFor="acceptTerms">I accept the terms and conditions <span className="text-red-500">*</span></Label>
                             </div>
                         </div>
                     </form>

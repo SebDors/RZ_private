@@ -113,7 +113,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {
           title: "Import Data",
           url: "/admin/import-data",
-        }
+        },
+        {
+          title: "All Quotes",
+          url: "/admin/all-quotes",
+        },
       ]
     },
     {

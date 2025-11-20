@@ -24,6 +24,7 @@ function Admin() {
                             <Link to="clients">Clients</Link>
                             <Link to="filter-settings">Filter Settings</Link>
                             <Link to="import-data">Import Data</Link>
+                            <Link to="all-quotes">All Quotes</Link>
                         </nav>
                     </div>
                     <div className="w-3/4 p-4">

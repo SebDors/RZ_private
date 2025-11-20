@@ -13,8 +13,10 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { useAuth } from "@/hooks/useAuth"
+import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 
 function MyAccountContent() {
+    useRedirectIfNotAuth();
     const { setOpen, open } = useSidebar()
     const { logout } = useAuth();
     const navigate = useNavigate();

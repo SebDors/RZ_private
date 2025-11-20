@@ -13,8 +13,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 
 function SideStoneSearchContent() {
+    useRedirectIfNotAuth();
     const { user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();

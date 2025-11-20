@@ -15,8 +15,10 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useSearchHistory } from "@/hooks/useSearchHistory";
 import { SavedSearches } from "@/components/SavedSearches";
+import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 
 function SearchContent() {
+    useRedirectIfNotAuth();
     const { user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();

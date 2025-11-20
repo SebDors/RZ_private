@@ -10,6 +10,7 @@ import Admin from './pages/Admin/Admin'
 import Clients from './pages/Admin/Clients'
 import FilterSettings from './pages/Admin/FilterSettings'
 import ImportData from './pages/Admin/ImportData'
+import AllQuotes from './pages/Admin/AllQuotes'
 
 // Home pages
 import Home from './pages/Home/Home'
@@ -85,6 +86,7 @@ function App() {
               <Route path="filter-settings" element={<FilterSettings />} />
               <Route path="clients" element={<Clients />} />
               <Route path="import-data" element={<ImportData />} />
+              <Route path="all-quotes" element={<AllQuotes />} />
             </Route>
 
             {/* Not Found Route */}

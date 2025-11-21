@@ -46,7 +46,7 @@ function ForgottenPassword() {
                 <form onSubmit={handleSubmit}>
                     <CardContent>
                         <div className="grid w-full items-center gap-4">
-                            <div className="flex flex-col space-y-1.5">
+                            <div className="flex flex-col space-y-1.5 mb-3">
                                 <Label htmlFor="email">Email</Label>
                                 <Input
                                     id="email"

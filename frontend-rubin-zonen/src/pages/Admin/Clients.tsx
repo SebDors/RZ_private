@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getAllUsers, updateUser } from "@/services/users";
 import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -17,6 +18,7 @@ function Clients() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     const fetchAllUsers = async () => {
         try {
@@ -84,7 +86,7 @@ function Clients() {
                                 <Button onClick={() => handleToggleActive(client)}>
                                     {client.is_active ? 'Deactivate' : 'Activate'}
                                 </Button>
-                                <Button variant="outline">View Details</Button>
+                                <Button variant="outline" onClick={() => navigate(`/admin/clients/${client.id}`)}>View Details</Button>
                             </div>
                         </CardContent>
                     </Card>

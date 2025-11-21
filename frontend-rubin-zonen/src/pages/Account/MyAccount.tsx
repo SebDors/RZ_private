@@ -46,12 +46,13 @@ function MyAccountContent() {
                             <div className="flex">
                                 <div className="w-1/4 border-r pr-4">
                                     <nav className="flex flex-col space-y-2">
-                                        <Link to="/my-account/profile" className="text-blue-600 hover:underline">Profile</Link>
-                                        <Link to="/my-account/orders" className="text-blue-600 hover:underline">Order History</Link>
-                                        <Link to="/my-account/settings" className="text-blue-600 hover:underline">Settings</Link>
-                                        <Link to="/my-account/login-history" className="text-blue-600 hover:underline">Login History</Link>
-                                        <Link to="/my-account/delete" className="text-red-600 hover:underline">Delete Account</Link>
-                                        <button onClick={handleLogout} className="text-blue-600 hover:underline text-left">Logout</button>
+                                        {/* fix color */}
+                                        <Link to="/my-account/profile" className="hover:grey">Profile</Link>
+                                        <Link to="/my-account/orders" className="hover:grey">Order History</Link>
+                                        <Link to="/my-account/settings" className="hover:grey">Settings</Link>
+                                        <Link to="/my-account/login-history" className="hover:grey">Login History</Link>
+                                        <Link to="/my-account/delete" className="hover:grey">Delete Account</Link>
+                                        <button onClick={handleLogout} className="hover:grey text-left">Logout</button>
                                     </nav>
                                 </div>
                                 <div className="w-3/4 pl-4">

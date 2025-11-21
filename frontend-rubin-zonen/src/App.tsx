@@ -4,6 +4,7 @@ import { Routes, Route } from 'react-router-dom'
 import MyAccount from './pages/Account/MyAccount'
 import Profile from './pages/Account/Profile'
 import Settings from './pages/Account/Settings'
+import DeleteAccount from './pages/Account/DeleteAccount'
 
 // Admin pages
 import Admin from './pages/Admin/Admin'
@@ -11,6 +12,7 @@ import Clients from './pages/Admin/Clients'
 import FilterSettings from './pages/Admin/FilterSettings'
 import ImportData from './pages/Admin/ImportData'
 import AllQuotes from './pages/Admin/AllQuotes'
+import ClientDetail from './pages/Admin/ClientDetail'
 
 // Home pages
 import Home from './pages/Home/Home'
@@ -75,13 +77,14 @@ function App() {
             <Route path="orders" element={<div>Order History Page</div>} /> {/* Placeholder */}
             <Route path="settings" element={<Settings />} />
             <Route path="login-history" element={<div>Login History Page</div>} /> {/* Placeholder */}
-            <Route path="delete" element={<div>Delete Account Page</div>} /> {/* Placeholder */}
+            <Route path="delete" element={<DeleteAccount />} />
           </Route>
 
           {/* Admin Routes */}
           <Route path="/admin" element={<Admin />}>
             <Route path="filter-settings" element={<FilterSettings />} />
             <Route path="clients" element={<Clients />} />
+            <Route path="clients/:id" element={<ClientDetail />} />
             <Route path="import-data" element={<ImportData />} />
             <Route path="all-quotes" element={<AllQuotes />} />
           </Route>

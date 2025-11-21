@@ -36,8 +36,7 @@ import ResetPassword from './pages/Auth/ResetPassword'
 // Other pages
 import NotFound from './pages/NotFound'
 
-import { SidebarProvider, SubMenuProvider } from './components/ui/sidebar'
-
+import MainLayout from './components/MainLayout'
 import { Toaster } from "@/components/ui/sonner"
 
 function App() {
@@ -50,50 +49,47 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/forgotten-password" element={<ForgottenPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+        {/* Routes with sidebar */}
+        <Route element={<MainLayout />}>
+          {/* Home Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          {/* The old diamond list page, QuickSearch uses it */}
+          <Route path="/diamond-list" element={<DiamondList />} />
+          {/* The new diamond list page with comparison features */}
+          <Route path="/new-diamond-list" element={<NewDiamondList />} />
+          {/* The compare diamonds page */}
+          <Route path="/compare-diamonds" element={<CompareDiamonds />} />
+          <Route path="/my-cart" element={<MyCart />} />
+          <Route path="/my-quote" element={<MyQuote />} />
+          <Route path="/my-watchlist" element={<MyWatchlist />} />
+          <Route path="/quick-search" element={<QuickSearch />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/side-stone-search" element={<SideStoneSearch />} />
+          <Route path="/stone-detail/:stock_id" element={<StoneDetail />} />
+
+          {/* Account Routes */}
+          <Route path="/my-account" element={<MyAccount />}>
+            <Route path="profile" element={<Profile />} />
+            <Route path="orders" element={<div>Order History Page</div>} /> {/* Placeholder */}
+            <Route path="settings" element={<Settings />} />
+            <Route path="login-history" element={<div>Login History Page</div>} /> {/* Placeholder */}
+            <Route path="delete" element={<div>Delete Account Page</div>} /> {/* Placeholder */}
+          </Route>
+
+          {/* Admin Routes */}
+          <Route path="/admin" element={<Admin />}>
+            <Route path="filter-settings" element={<FilterSettings />} />
+            <Route path="clients" element={<Clients />} />
+            <Route path="import-data" element={<ImportData />} />
+            <Route path="all-quotes" element={<AllQuotes />} />
+          </Route>
+        </Route>
+
+        {/* Not Found Route */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
-
-      <SidebarProvider>
-        <SubMenuProvider>
-          <Routes >
-            {/* Home Routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            {/* The old diamond list page, QuickSearch uses it */}
-            <Route path="/diamond-list" element={<DiamondList />} />
-            {/* The new diamond list page with comparison features */}
-            <Route path="/new-diamond-list" element={<NewDiamondList />} />
-            {/* The compare diamonds page */}
-            <Route path="/compare-diamonds" element={<CompareDiamonds />} />
-            <Route path="/my-cart" element={<MyCart />} />
-            <Route path="/my-quote" element={<MyQuote />} />
-            <Route path="/my-watchlist" element={<MyWatchlist />} />
-            <Route path="/quick-search" element={<QuickSearch />} />
-            <Route path="/search" element={<Search />} />
-            <Route path="/side-stone-search" element={<SideStoneSearch />} />
-            <Route path="/stone-detail/:stock_id" element={<StoneDetail />} />
-
-            {/* Account Routes */}
-            <Route path="/my-account" element={<MyAccount />}>
-              <Route path="profile" element={<Profile />} />
-              <Route path="orders" element={<div>Order History Page</div>} /> {/* Placeholder */}
-              <Route path="settings" element={<Settings />} />
-              <Route path="login-history" element={<div>Login History Page</div>} /> {/* Placeholder */}
-              <Route path="delete" element={<div>Delete Account Page</div>} /> {/* Placeholder */}
-            </Route>
-
-            {/* Admin Routes */}
-            <Route path="/admin" element={<Admin />}>
-              <Route path="filter-settings" element={<FilterSettings />} />
-              <Route path="clients" element={<Clients />} />
-              <Route path="import-data" element={<ImportData />} />
-              <Route path="all-quotes" element={<AllQuotes />} />
-            </Route>
-
-            {/* Not Found Route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </SubMenuProvider>
-      </SidebarProvider>
       <Toaster />
     </main>
   )

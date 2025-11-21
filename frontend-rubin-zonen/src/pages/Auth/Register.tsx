@@ -280,7 +280,7 @@ function Register() {
                                 <Label htmlFor="companyWebsite">Company Website <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="companyWebsite"
-                                    type="url"
+                                    type="text"
                                     placeholder="Company website"
                                     value={companyWebsite}
                                     onChange={(e) => setCompanyWebsite(e.target.value)}

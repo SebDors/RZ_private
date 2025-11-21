@@ -51,6 +51,24 @@ const addInRangeMaxFilter = (paramName, rowName, queryParams, filters, values, p
     return paramIndex;
 }
 
+const addCaratRangeFilter = (queryParams, filters, values, paramIndex) => {
+    if (queryParams.carat) {
+        const caratRanges = queryParams.carat.split(',');
+        const rangeConditions = [];
+        caratRanges.forEach(range => {
+            const [min, max] = range.split('-').map(parseFloat);
+            if (!isNaN(min) && !isNaN(max)) {
+                rangeConditions.push(`(weight >= $${paramIndex++} AND weight <= $${paramIndex++})`);
+                values.push(min, max);
+            }
+        });
+        if (rangeConditions.length > 0) {
+            filters.push(`(${rangeConditions.join(' OR ')})`);
+        }
+    }
+    return paramIndex;
+};
+
 // Fonction utilitaire pour construire la clause WHERE des filtres
 const buildWhereClause = (queryParams) => {
     const filters = [];
@@ -59,8 +77,7 @@ const buildWhereClause = (queryParams) => {
 
     paramIndex = addInFilter('shape', queryParams, filters, values, paramIndex);
 
-    paramIndex = addInRangeMinFilter('minCarat', 'weight', queryParams, filters, values, paramIndex);
-    paramIndex = addInRangeMaxFilter('maxCarat', 'weight', queryParams, filters, values, paramIndex);
+    paramIndex = addCaratRangeFilter(queryParams, filters, values, paramIndex);
 
     paramIndex = addInFilter('color', queryParams, filters, values, paramIndex);
     paramIndex = addInFilter('clarity', queryParams, filters, values, paramIndex);

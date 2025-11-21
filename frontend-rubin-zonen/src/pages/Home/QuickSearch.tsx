@@ -6,15 +6,21 @@ import { SidebarInset, SidebarProvider, useSidebar } from "@/components/ui/sideb
 import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { X } from 'lucide-react';
+import { toast } from 'sonner';
 
-const shapes = ["Round", "Princess", "Cushion", "Oval", "Emerald", "Pear", "Marquise", "Asscher", "Radiant", "Heart"];
-const colors = ["D", "E", "F", "G", "H", "I", "J"];
-const clarities = ["IF", "VVS1", "VVS2", "VS1", "VS2", "SI1", "SI2"];
-const carats = ["0.3-0.4", "0.5-0.6", "0.7-0.8", "0.9-1.0", "1.1-1.5", "1.6-2.0", "2.1-3.0"];
-const finishings = ["Excellent", "Very Good", "Good"]; // Placeholder for Finishing
-const fluorescences = ["None", "Faint", "Medium", "Strong"]; // Placeholder for Fluorescence
-const labs = ["GIA", "IGI", "HRD"]; // Placeholder for Lab
-const priceRanges = ["0-1000", "1001-5000", "5001-10000", "10001+"]; // Placeholder for Price Range
+const shapes = ["All", "Round", "Oval", "Pear", "Marquise", "Heart", "Radiant", "Princess", "Emerald", "Square Emerald", "Cushion Modified", "Cushion Brillant", "Cushion", "Long Radiant", "Square Radiant", "Trilliant", "Old Mine Cushion", "Shield", "Baguette", "Traperoid", "Old European Cut", "Special Shape", "Rose Cut", "Other"];
+const colors = ["All", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O-P", "Q-R", "S-T", "U-V", "W-X", "Y-Z", "N-O", "P-R"];
+const clarities = ["All", "FL", "IF", "VVS1", "VVS2", "VS1", "VS2", "SI1", "SI2", "SI3", "I1", "I2"];
+const carats = ["Less than 0.30", "0.30-0.39", "0.40-0.49", "0.50-0.69", "0.70-0.89", "0.90-1.99", "1.00-1.49", "1.50-1.99", "2.00-2.99", "3.00-3.99", "4.00-4.99", "5.00-5.99", "6.00-6.99", "7.00-7.99", "8.00-8.99", "9.00-9.99", "More than 10.00"];
+const cut = ["EX", "VG", "GD", "FR"];
+const polish = ["EX", "VG", "GD", "FR"];
+const symmetry = ["EX", "VG", "GD", "FR"];
+const fluorescences = ["NON", "FNT", "SLT", "VSLT", "MED", "STG", "VST"];
+const labs = ["GIA", "IGI", "HRD"];
+const priceRanges = ["0-1000", "1001-5000", "5001-10000", "10001+"];
 
 function QuickSearchContent() {
     useRedirectIfNotAuth();
@@ -25,11 +31,15 @@ function QuickSearchContent() {
         carat: [],
         color: [],
         clarity: [],
-        finishing: [],
         fluorescence: [],
         lab: [],
         priceRange: [],
+        cut: [],
+        polish: [],
+        symmetry: [],
     });
+    const [minCarat, setMinCarat] = useState('');
+    const [maxCarat, setMaxCarat] = useState('');
 
     const handleOpen = () => {
         if (!open) {
@@ -59,17 +69,56 @@ function QuickSearchContent() {
             carat: [],
             color: [],
             clarity: [],
-            finishing: [],
             fluorescence: [],
             lab: [],
             priceRange: [],
+            cut: [],
+            polish: [],
+            symmetry: [],
         });
+        setMinCarat('');
+        setMaxCarat('');
+    };
+
+    const handleAddRange = () => {
+        const min = parseFloat(minCarat);
+        const max = parseFloat(maxCarat);
+
+        if (isNaN(min) || isNaN(max)) {
+            toast.error("Please enter valid numbers for carat range.");
+            return;
+        }
+        if (min < 0 || max < 0) {
+            toast.error("Carat values cannot be negative.");
+            return;
+        }
+        if (min >= max) {
+            toast.error("Max carat must be greater than min carat.");
+            return;
+        }
+
+        const newRange = `${min}-${max}`;
+        if (!selectedCriteria.carat.includes(newRange)) {
+            setSelectedCriteria(prev => ({
+                ...prev,
+                carat: [...prev.carat, newRange]
+            }));
+        }
+        setMinCarat('');
+        setMaxCarat('');
+    };
+
+    const handleRemoveRange = (rangeToRemove: string) => {
+        setSelectedCriteria(prev => ({
+            ...prev,
+            carat: prev.carat.filter(range => range !== rangeToRemove)
+        }));
     };
 
     const renderGrid = (title: string, key: string, items: string[]) => (
         <div className="mb-4">
             <h3 className="text-lg font-semibold mb-2">{title}</h3>
-            <div className="grid grid-cols-7 gap-2">
+            <div className="grid grid-cols-12 gap-2">
                 {items.map(item => (
                     <Button
                         key={item}
@@ -80,6 +129,38 @@ function QuickSearchContent() {
                     </Button>
                 ))}
             </div>
+            {key === 'carat' && (
+                <div className="flex flex-col gap-2 mt-2">
+                    <div className="flex items-center gap-2">
+                        <Input
+                            type="number"
+                            placeholder="Min"
+                            value={minCarat}
+                            onChange={(e) => setMinCarat(e.target.value)}
+                            className="w-24"
+                        />
+                        <span>-</span>
+                        <Input
+                            type="number"
+                            placeholder="Max"
+                            value={maxCarat}
+                            onChange={(e) => setMaxCarat(e.target.value)}
+                            className="w-24"
+                        />
+                        <Button onClick={handleAddRange}>Add Range</Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                        {selectedCriteria.carat.filter(range => !carats.includes(range)).map(range => (
+                            <Badge key={range} variant="secondary" className="flex items-center gap-1">
+                                {range}
+                                <button onClick={() => handleRemoveRange(range)} className="ml-1">
+                                    <X size={14} />
+                                </button>
+                            </Badge>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 
@@ -98,7 +179,9 @@ function QuickSearchContent() {
                             {renderGrid("Carat", "carat", carats)}
                             {renderGrid("Color", "color", colors)}
                             {renderGrid("Clarity", "clarity", clarities)}
-                            {renderGrid("Finishing", "finishing", finishings)}
+                            {renderGrid("Cut", "cut", cut)}
+                            {renderGrid("Polish", "polish", polish)}
+                            {renderGrid("Symmetry", "symmetry", symmetry)}
                             {renderGrid("Fluorescence", "fluorescence", fluorescences)}
                             {renderGrid("Lab", "lab", labs)}
                             {renderGrid("Price Range", "priceRange", priceRanges)}

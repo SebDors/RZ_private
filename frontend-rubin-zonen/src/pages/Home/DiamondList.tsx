@@ -36,26 +36,60 @@ function DiamondListContent() {
     useEffect(() => {
         const fetchDiamonds = async () => {
             try {
-                let filters = {};
+                let filters: Record<string, string> = {};
                 if (location.state && location.state.searchParams) {
                     const { searchParams } = location.state;
-                    const processedFilters: Record<string, string> = {};
+                    const processedFilters: Record<string, string[] | undefined> = {};
 
-                    if (searchParams.shape && searchParams.shape.length > 0) {
-                        processedFilters.shape = searchParams.shape.join(',');
-                    }
-                    if (searchParams.color && searchParams.color.length > 0) {
-                        processedFilters.color = searchParams.color.join(',');
-                    }
-                    if (searchParams.clarity && searchParams.clarity.length > 0) {
-                        processedFilters.clarity = searchParams.clarity.join(',');
-                    }
+                    const processFilter = (filterName: string) => {
+                        if (searchParams[filterName] && searchParams[filterName].length > 0 && !searchParams[filterName].includes('All') && !searchParams[filterName].includes('ANY')) {
+                            processedFilters[filterName] = searchParams[filterName];
+                        }
+                    };
+
+                    processFilter('shape');
+                    processFilter('color');
+                    processFilter('clarity');
+                    processFilter('lab');
+                    processFilter('cut');
+                    processFilter('polish');
+                    processFilter('symmetry');
+                    processFilter('fluorescence');
+
                     if (searchParams.carat && searchParams.carat.length > 0) {
-                        const allValues = searchParams.carat.flatMap((range: string) => range.split('-').map(Number));
-                        processedFilters.minCarat = String(Math.min(...allValues));
-                        processedFilters.maxCarat = String(Math.max(...allValues));
+                        processedFilters.carat = searchParams.carat.map((range: string) => {
+                            if (range === "Less than 0.30") {
+                                return "0-0.30";
+                            }
+                            if (range === "More than 10.00") {
+                                return "10-9999";
+                            }
+                            return range;
+                        });
                     }
-                    filters = processedFilters;
+                    
+                    const definedFilters: Record<string, string> = {};
+                    const filterMappings: Record<string, string> = {
+                        shape: 'shape',
+                        color: 'color',
+                        clarity: 'clarity',
+                        carat: 'carat',
+                        cut: 'cut_grade',
+                        polish: 'polish',
+                        symmetry: 'symmetry',
+                        fluorescence: 'fluorescence_intensity',
+                        lab: 'lab',
+                    };
+
+                    for (const key in processedFilters) {
+                        if (processedFilters[key]) {
+                            const backendKey = filterMappings[key];
+                            if (backendKey) {
+                                definedFilters[backendKey] = processedFilters[key]!.join(',');
+                            }
+                        }
+                    }
+                    filters = definedFilters;
                 }
                 const diamondsData = await getAllDiamonds(filters);
                 setDiamonds(diamondsData);

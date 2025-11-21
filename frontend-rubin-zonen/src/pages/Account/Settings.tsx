@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import type { User } from '@/models/models';
+import { useTheme } from '@/hooks/use-theme.tsx';
 
 function Settings() {
     const { user } = useAuth();
+    const { theme, setTheme } = useTheme();
     const [emailNotifications, setEmailNotifications] = useState(false);
     const [smsNotifications, setSmsNotifications] = useState(false);
     // Add more notification types as needed
@@ -50,27 +52,38 @@ function Settings() {
     };
 
     return (
-        <form onSubmit={handleSaveChanges} className="space-y-6">
-            <h2 className="text-xl font-bold mb-4">Notification Preferences</h2>
-            <div className="flex items-center justify-between">
-                <Label htmlFor="email-notifications">Email Notifications</Label>
-                <Switch
-                    id="email-notifications"
-                    checked={emailNotifications}
-                    onCheckedChange={setEmailNotifications}
-                />
+        <form onSubmit={handleSaveChanges} className="space-y-8">
+            <div>
+                <h2 className="text-xl font-bold mb-4">Theme</h2>
+                <div className="flex items-center space-x-2">
+                    <Button variant={theme === 'light' ? 'default' : 'outline'} onClick={() => setTheme('light')}>Light</Button>
+                    <Button variant={theme === 'dark' ? 'default' : 'outline'} onClick={() => setTheme('dark')}>Dark</Button>
+                    <Button variant={theme === 'system' ? 'default' : 'outline'} onClick={() => setTheme('system')}>System</Button>
+                </div>
             </div>
-            <div className="flex items-center justify-between">
-                <Label htmlFor="sms-notifications">SMS Notifications</Label>
-                <Switch
-                    id="sms-notifications"
-                    checked={smsNotifications}
-                    onCheckedChange={setSmsNotifications}
-                />
-            </div>
-            {/* Add more notification settings here */}
 
-            <Button type="submit" className="mt-4">Save Changes</Button>
+            <div>
+                <h2 className="text-xl font-bold mb-4">Notification Preferences</h2>
+                <div className="flex items-center justify-between">
+                    <Label htmlFor="email-notifications">Email Notifications</Label>
+                    <Switch
+                        id="email-notifications"
+                        checked={emailNotifications}
+                        onCheckedChange={setEmailNotifications}
+                    />
+                </div>
+                <div className="flex items-center justify-between mt-4">
+                    <Label htmlFor="sms-notifications">SMS Notifications</Label>
+                    <Switch
+                        id="sms-notifications"
+                        checked={smsNotifications}
+                        onCheckedChange={setSmsNotifications}
+                    />
+                </div>
+                {/* Add more notification settings here */}
+            </div>
+
+            <Button type="submit" className="mt-4">Save Preferences</Button>
         </form>
     );
 }

@@ -3,8 +3,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { apiInstance } = require('../services/emailService');
+const { addLog } = require('./logController');
 
-// Fonction d'inscription d'un nouvel utilisateur
+// Function for registering a new user
 exports.register = async (req, res) => {
     const {
         email, password, prefix, first_name, last_name, phone_number,
@@ -14,13 +15,13 @@ exports.register = async (req, res) => {
     } = req.body;
 
     if (!email || !password) {
-        return res.status(400).json({ message: 'Email et mot de passe sont obligatoires.' });
+        return res.status(400).json({ message: 'Email and password are required.' });
     }
     if (!email.includes('@') || !email.includes('.')) {
-         return res.status(400).json({ message: "Format d'email invalide." });
+         return res.status(400).json({ message: 'Invalid email format.' });
     }
     if (password.length < 6) { // Minimum password length
-        return res.status(400).json({ message: 'Le mot de passe doit contenir au moins 6 caractères.' });
+        return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
     }
 
     try {
@@ -50,32 +51,48 @@ exports.register = async (req, res) => {
 
         const user = result.rows[0];
 
-        // Générer un token JWT pour l'utilisateur nouvellement enregistré
+        // Generate a JWT token for the newly registered user
         const token = jwt.sign({ id: user.id, is_admin: user.is_admin }, process.env.JWT_SECRET, {
             expiresIn: '240h'
         });//TODO changer si besoin
 
         res.status(201).json({
-            message: 'Inscription réussie.',
+            message: 'Registration successful.',
             token,
             user: { id: user.id, email: user.email, is_admin: user.is_admin }
         });
+        await addLog({
+            userId: user.id,
+            level: 'info',
+            action: 'USER_REGISTERED',
+            details: { email: user.email }
+        });
 
     } catch (error) {
-        console.error("Erreur lors de l'inscription de l'utilisateur :", error);
+        console.error('Error during user registration:', error);
         if (error.code === '23505') {
-            return res.status(409).json({ message: 'Cet email est déjà enregistré.' });
+            await addLog({
+                level: 'warn',
+                action: 'USER_REGISTRATION_FAILED',
+                details: { email: email, reason: 'Email already registered' }
+            });
+            return res.status(409).json({ message: 'This email is already registered.' });
         }
-        res.status(500).json({ message: "Erreur serveur lors de l'inscription." });
+        await addLog({
+            level: 'error',
+            action: 'USER_REGISTRATION_FAILED',
+            details: { email: email, reason: error.message }
+        });
+        res.status(500).json({ message: 'Server error during registration.' });
     }
 };
 
-// Fonction de connexion d'un utilisateur existant
+// Function for logging in an existing user
 exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-        return res.status(400).json({ message: 'Email et mot de passe sont obligatoires.' });
+        return res.status(400).json({ message: 'Email and password are required.' });
     }
 
     try {
@@ -84,36 +101,62 @@ exports.login = async (req, res) => {
         client.release();
 
         if (result.rows.length === 0) {
-            return res.status(401).json({ message: 'Email ou mot de passe incorrect.' });
+            await addLog({
+                level: 'warn',
+                action: 'USER_LOGIN_FAILED',
+                details: { email: email, reason: 'Incorrect email or password' }
+            });
+            return res.status(401).json({ message: 'Incorrect email or password.' });
         }
 
         const user = result.rows[0];
 
-        // Vérifier le mot de passe haché
+        // Verify hashed password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(401).json({ message: 'Email ou mot de passe incorrect.' });
+            await addLog({
+                level: 'warn',
+                action: 'USER_LOGIN_FAILED',
+                details: { email: email, reason: 'Incorrect email or password' }
+            });
+            return res.status(401).json({ message: 'Incorrect email or password.' });
         }
 
-        // Vérifier si l'utilisateur est actif
+        // Check if user is active
         if (!user.is_active) {
-            return res.status(403).json({ message: "Votre compte est inactif. Veuillez contacter l'administrateur." });
+            await addLog({
+                level: 'warn',
+                action: 'USER_LOGIN_FAILED',
+                details: { email: email, reason: 'Account inactive' }
+            });
+            return res.status(403).json({ message: 'Your account is inactive. Please contact the administrator.' });
         }
 
-        // Générer un token JWT
+        // Generate a JWT token
         const token = jwt.sign({ id: user.id, is_admin: user.is_admin }, process.env.JWT_SECRET, {
             expiresIn: '240h'
         });
 
         res.status(200).json({
-            message: 'Connexion réussie.',
+            message: 'Login successful.',
             token,
             user: { id: user.id, email: user.email, is_admin: user.is_admin, is_active: user.is_active}
         });
+        await addLog({
+            userId: user.id,
+            level: 'info',
+            action: 'USER_LOGIN_SUCCESS',
+            details: { email: user.email }
+        });
 
     } catch (error) {
-        console.error("Erreur lors de la connexion de l'utilisateur :", error);
-        res.status(500).json({ message: 'Erreur serveur lors de la connexion.' });
+        console.error('Error during user login:', error);
+        await addLog({
+            level: 'error',
+            action: 'USER_LOGIN_FAILED',
+            details: { email: email, reason: error.message }
+        });
+        res.status(500).json({ message: 'Server error during login.' });
     }
 };
 
@@ -124,7 +167,7 @@ exports.forgotPassword = async (req, res) => {
         const userResult = await client.query('SELECT * FROM users WHERE email = $1', [email]);
         if (userResult.rows.length === 0) {
             client.release();
-            return res.status(404).json({ message: 'Aucun utilisateur avec cet email.' });
+            return res.status(404).json({ message: 'No user with this email found.' });
         }
 
         const token = crypto.randomBytes(20).toString('hex');
@@ -137,20 +180,29 @@ exports.forgotPassword = async (req, res) => {
 
         let sendSmtpEmail = {
             to: [{ email: email }],
-            subject: 'Réinitialisation de votre mot de passe',
-            textContent: `Vous recevez cet e-mail car vous (ou quelqu'un d'autre) avez demandé la réinitialisation du mot de passe de votre compte.\n\n` +
-                `Veuillez cliquer sur le lien suivant, ou le coller dans votre navigateur pour terminer le processus :\n\n` +
+            subject: 'Password Reset',
+            textContent: `You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n` +
+                `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
                 `${resetURL}\n\n` +
-                `Si vous n'avez pas demandé cela, veuillez ignorer cet e-mail et votre mot de passe restera inchangé.\n`,
+                `If you did not request this, please ignore this email and your password will remain unchanged.\n`,
             sender: { name: 'Rubin & Zonen', email: process.env.BREVO_EMAIL_SENDER},
         };
 
         await apiInstance.sendTransacEmail(sendSmtpEmail);
-
-        res.status(200).json({ message: 'Un e-mail de réinitialisation de mot de passe a été envoyé.' });
+        await addLog({
+            level: 'info',
+            action: 'PASSWORD_RESET_EMAIL_SENT',
+            details: { email: email }
+        });
+        res.status(200).json({ message: 'A password reset email has been sent.' });
     } catch (error) {
-        console.error('Erreur lors de la procédure de mot de passe oublié :', error);
-        res.status(500).json({ message: 'Erreur serveur.' });
+        await addLog({
+            level: 'error',
+            action: 'PASSWORD_RESET_EMAIL_FAILED',
+            details: { email: email, reason: error.message }
+        });
+        console.error('Error during forgot password procedure:', error);
+        res.status(500).json({ message: 'Server error.' });
     }
 };
 
@@ -164,7 +216,13 @@ exports.resetPassword = async (req, res) => {
 
         if (userResult.rows.length === 0) {
             client.release();
-            return res.status(400).json({ message: 'Le jeton de réinitialisation de mot de passe est invalide ou a expiré.' });
+            await addLog({
+                userId: user.id,
+                level: 'warn',
+                action: 'PASSWORD_RESET_FAILED',
+                details: { token: token, reason: 'Invalid or expired token' }
+            });
+            return res.status(400).json({ message: 'The password reset token is invalid or has expired.' });
         }
 
         const user = userResult.rows[0];
@@ -174,23 +232,33 @@ exports.resetPassword = async (req, res) => {
 
         await client.query('UPDATE users SET password = $1, reset_password_token = NULL, reset_password_expires = NULL WHERE id = $2', [hashedPassword, user.id]);
         client.release();
-
-        res.status(200).json({ message: 'Le mot de passe a été réinitialisé avec succès.' });
+        await addLog({
+            userId: user.id,
+            level: 'info',
+            action: 'PASSWORD_RESET_SUCCESS',
+            details: { email: user.email }
+        });
+        res.status(200).json({ message: 'Password has been reset successfully.' });
     } catch (error) {
-        console.error('Erreur lors de la réinitialisation du mot de passe :', error);
-        res.status(500).json({ message: 'Erreur serveur.' });
+        console.error('Error during password reset:', error);
+        await addLog({
+            level: 'error',
+            action: 'PASSWORD_RESET_FAILED',
+            details: { token: token, reason: error.message }
+        });
+        res.status(500).json({ message: 'Server error.' });
     }
 };
 
 exports.checkToken = async (req, res) => {
     const authHeader = req.headers['authorization'];
     if (!authHeader) {
-        return res.status(401).json({ isValid: false, message: 'Accès refusé. Aucun token fourni.' });
+        return res.status(401).json({ isValid: false, message: 'Access denied. No token provided.' });
     }
 
     const token = authHeader.split(' ')[1];
     if (!token) {
-        return res.status(401).json({ isValid: false, message: 'Accès refusé. Format de token invalide.' });
+        return res.status(401).json({ isValid: false, message: 'Access denied. Invalid token format.' });
     }
 
     try {
@@ -200,17 +268,17 @@ exports.checkToken = async (req, res) => {
         client.release();
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ isValid: false, message: 'Utilisateur non trouvé.' });
+            return res.status(404).json({ isValid: false, message: 'User not found.' });
         }
 
         const user = result.rows[0];
         if (!user.is_active) {
-            return res.status(403).json({ isValid: false, message: "Votre compte est inactif. Veuillez contacter l'administrateur." });
+            return res.status(403).json({ isValid: false, message: 'Your account is inactive. Please contact the administrator.' });
         }
 
         res.status(200).json({ isValid: true, is_admin: user.is_admin });
     } catch (error) {
-        console.error('Erreur de validation du token :', error);
-        return res.status(403).json({ isValid: false, message: 'Token invalide ou expiré.' });
+        console.error('Token validation error:', error);
+        return res.status(403).json({ isValid: false, message: 'Invalid or expired token.' });
     }
 };

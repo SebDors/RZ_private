@@ -1,6 +1,7 @@
 const { apiInstance } = require('../services/emailService');
 
 // Exemple de fonction pour envoyer un e-mail de test
+//TODO: tester avec les infos du client
 exports.sendTestEmail = async (req, res) => {
     const { to, subject, textContent } = req.body;
 
@@ -25,3 +26,5 @@ exports.sendTestEmail = async (req, res) => {
         res.status(500).json({ message: 'Erreur lors de l\'envoi de l\'e-mail.', error: error.message });
     }
 }; 
+
+//TODO: Ajouter une fonction pour envoyer des mails modulaires avec des templates Brevo

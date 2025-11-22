@@ -178,6 +178,7 @@ exports.forgotPassword = async (req, res) => {
 
         const resetURL = `http://localhost:3000/reset-password/${token}`;
 
+        //FIXME: Supprimer et mettre la fonction d'envoi d'email dans emailController.js
         let sendSmtpEmail = {
             to: [{ email: email }],
             subject: 'Password Reset',

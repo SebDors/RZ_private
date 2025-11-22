@@ -90,7 +90,8 @@ router.post('/', cartController.addItemToCart);
  *       400:
  *         description: Données invalides
  */
-router.put('/:diamond_stock_id', cartController.updateCartItemQuantity);
+// Deprecated no more used
+// router.put('/:diamond_stock_id', cartController.updateCartItemQuantity);
 
 /**
  * @swagger

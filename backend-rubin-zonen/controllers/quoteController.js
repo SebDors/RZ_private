@@ -1,44 +1,56 @@
 const db = require('../config/db');
+const { addLog } = require('./logController');
 
-// --- Fonctions pour les Utilisateurs ---
-// POST /api/quotes - Créer un nouveau devis
+// --- User Functions ---
+// POST /api/quotes - Create a new quote
 exports.createQuote = async (req, res) => {
     const userId = req.user.id;
-    const { diamond_stock_ids } = req.body; // Attendre un tableau d'ID de diamants
+    const { diamond_stock_ids } = req.body; // Expect an array of diamond IDs
 
     if (!diamond_stock_ids || !Array.isArray(diamond_stock_ids) || diamond_stock_ids.length === 0) {
-        return res.status(400).json({ message: 'Un tableau d\'ID de diamants (diamond_stock_ids) est obligatoire.' });
+        return res.status(400).json({ message: 'An array of diamond IDs (diamond_stock_ids) is required.' });
     }
 
     const client = await db.connect();
     try {
-        await client.query('BEGIN'); // Démarrer une transaction
+        await client.query('BEGIN'); // Start a transaction
 
-        // 1. Insérer le devis principal
+        // 1. Insert the main quote
         const quoteInsertQuery = 'INSERT INTO quotes (user_id) VALUES ($1) RETURNING id, created_at, status;';
         const quoteResult = await client.query(quoteInsertQuery, [userId]);
         const newQuote = quoteResult.rows[0];
 
-        // 2. Insérer chaque diamant dans quote_items
+        // 2. Insert each diamond into quote_items
         const quoteItemsQuery = 'INSERT INTO quote_items (quote_id, diamond_stock_id) VALUES ($1, $2);';
         for (const stockId of diamond_stock_ids) {
             await client.query(quoteItemsQuery, [newQuote.id, stockId]);
         }
 
-        await client.query('COMMIT'); // Valider la transaction
-
-        res.status(201).json({ message: 'Devis créé avec succès.', quote: newQuote });
+        await client.query('COMMIT'); // Commit the transaction
+        await addLog({
+            userId,
+            level: 'info',
+            action: 'CREATE_QUOTE_SUCCESS',
+            details: { quoteId: newQuote.id, diamond_ids: diamond_stock_ids },
+        });
+        res.status(201).json({ message: 'Quote created successfully.', quote: newQuote });
 
     } catch (error) {
-        await client.query('ROLLBACK'); // Annuler la transaction en cas d'erreur
-        console.error('Erreur lors de la création du devis :', error);
-        res.status(500).json({ message: 'Erreur serveur lors de la création du devis.' });
+        await client.query('ROLLBACK'); // Rollback the transaction on error
+        await addLog({
+            userId,
+            level: 'error',
+            action: 'CREATE_QUOTE_FAILED',
+            details: { diamond_ids: diamond_stock_ids, error: error.message },
+        });
+        console.error('Error while creating quote:', error);
+        res.status(500).json({ message: 'Server error while creating quote.' });
     } finally {
         client.release();
     }
 };
 
-// GET /api/quotes - Récupérer les devis de l'utilisateur connecté
+// GET /api/quotes - Get quotes for the connected user
 exports.getUserQuotes = async (req, res) => {
     const userId = req.user.id;
     try {
@@ -55,23 +67,35 @@ exports.getUserQuotes = async (req, res) => {
                     'color', d.color
                 )) AS items
             FROM quotes q
-            JOIN quote_items qi ON q.id = qi.quote_id
-            JOIN diamants d ON qi.diamond_stock_id = d.stock_id
+            LEFT JOIN quote_items qi ON q.id = qi.quote_id
+            LEFT JOIN diamants d ON qi.diamond_stock_id = d.stock_id
             WHERE q.user_id = $1
             GROUP BY q.id
             ORDER BY q.created_at DESC;
         `;
         const result = await client.query(queryText, [userId]);
         client.release();
+        await addLog({
+            userId,
+            level: 'info',
+            action: 'VIEW_USER_QUOTES',
+            details: { message: `User retrieved ${result.rows.length} quotes.` },
+        });
         res.status(200).json(result.rows);
     } catch (error) {
-        console.error('Erreur lors de la récupération des devis de l\'utilisateur :', error);
-        res.status(500).json({ message: 'Erreur serveur lors de la récupération des devis.' });
+        await addLog({
+            userId,
+            level: 'error',
+            action: 'VIEW_USER_QUOTES_FAILED',
+            details: { error: error.message },
+        });
+        console.error('Error retrieving user quotes:', error);
+        res.status(500).json({ message: 'Server error while retrieving quotes.' });
     }
 };
 
-// --- Fonctions pour les Administrateurs ---
-// GET /api/quotes/all - Récupérer tous les devis
+// --- Admin Functions ---
+// GET /api/quotes/all - Get all quotes
 exports.getAllQuotes = async (req, res) => {
     try {
         const client = await db.connect();
@@ -102,14 +126,26 @@ exports.getAllQuotes = async (req, res) => {
         `;
         const result = await client.query(queryText);
         client.release();
+        await addLog({
+            userId: req.user.id,
+            level: 'info',
+            action: 'ADMIN_VIEW_ALL_QUOTES',
+            details: { message: `Admin retrieved ${result.rows.length} quotes.` },
+        });
         res.status(200).json(result.rows);
     } catch (error) {
-        console.error('Erreur lors de la récupération de tous les devis :', error);
-        res.status(500).json({ message: 'Erreur serveur lors de la récupération de tous les devis.' });
+        await addLog({
+            userId: req.user.id,
+            level: 'error',
+            action: 'ADMIN_VIEW_ALL_QUOTES_FAILED',
+            details: { error: error.message },
+        });
+        console.error('Error retrieving all quotes:', error);
+        res.status(500).json({ message: 'Server error while retrieving all quotes.' });
     }
 };
 
-// GET /api/quotes/:id - Récupérer un devis spécifique par son ID
+// GET /api/quotes/:id - Get a specific quote by its ID
 exports.getQuoteById = async (req, res) => {
     const { id } = req.params;
     try {
@@ -146,24 +182,42 @@ exports.getQuoteById = async (req, res) => {
         client.release();
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ message: 'Devis non trouvé.' });
+            await addLog({
+                userId: req.user.id,
+                level: 'warn',
+                action: 'GET_QUOTE_BY_ID_NOT_FOUND',
+                details: { quoteId: id },
+            });
+            return res.status(404).json({ message: 'Quote not found.' });
         }
 
+        await addLog({
+            userId: req.user.id,
+            level: 'info',
+            action: 'GET_QUOTE_BY_ID_SUCCESS',
+            details: { quoteId: id },
+        });
         res.status(200).json(result.rows[0]);
     } catch (error)
     {
-        console.error(`Erreur lors de la récupération du devis ${id} :`, error);
-        res.status(500).json({ message: 'Erreur serveur lors de la récupération du devis.' });
+        await addLog({
+            userId: req.user.id,
+            level: 'error',
+            action: 'GET_QUOTE_BY_ID_FAILED',
+            details: { quoteId: id, error: error.message },
+        });
+        console.error(`Error retrieving quote ${id}:`, error);
+        res.status(500).json({ message: 'Server error while retrieving quote.' });
     }
 };
 
-// PUT /api/quotes/:id - Mettre à jour le statut d'un devis
+// PUT /api/quotes/:id - Update a quote's status
 exports.updateQuoteStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
     if (!status) {
-        return res.status(400).json({ message: 'Le statut est obligatoire.' });
+        return res.status(400).json({ message: 'Status is required.' });
     }
 
     try {
@@ -173,11 +227,30 @@ exports.updateQuoteStatus = async (req, res) => {
         client.release();
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ message: 'Devis non trouvé.' });
+            await addLog({
+                userId: req.user.id,
+                level: 'warn',
+                action: 'UPDATE_QUOTE_STATUS_NOT_FOUND',
+                details: { quoteId: id, status: status },
+            });
+            return res.status(404).json({ message: 'Quote not found.' });
         }
-        res.status(200).json({ message: 'Statut du devis mis à jour.', quote: result.rows[0] });
+
+        await addLog({
+            userId: req.user.id,
+            level: 'info',
+            action: 'UPDATE_QUOTE_STATUS_SUCCESS',
+            details: { quoteId: id, newStatus: status },
+        });
+        res.status(200).json({ message: 'Quote status updated.', quote: result.rows[0] });
     } catch (error) {
-        console.error(`Erreur lors de la mise à jour du statut du devis ${id} :`, error);
-        res.status(500).json({ message: 'Erreur serveur lors de la mise à jour du statut.' });
+        await addLog({
+            userId: req.user.id,
+            level: 'error',
+            action: 'UPDATE_QUOTE_STATUS_FAILED',
+            details: { quoteId: id, status: status, error: error.message },
+        });
+        console.error(`Error updating quote status ${id}:`, error);
+        res.status(500).json({ message: 'Server error while updating status.' });
     }
 };

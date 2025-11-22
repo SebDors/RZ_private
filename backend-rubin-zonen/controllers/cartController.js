@@ -1,8 +1,9 @@
 const db = require('../config/db');
+const { addLog } = require('./logController');
 
-// GET /api/cart - Récupérer le contenu du panier de l'utilisateur
+// GET /api/cart - Retrieve user's cart content
 exports.getCart = async (req, res) => {
-    const userId = req.user.id; // L'ID de l'utilisateur est attaché par le middleware d'authentification
+    const userId = req.user.id; // The user ID is attached by the authentication middleware
     try {
         const client = await db.connect();
         const queryText = `
@@ -23,25 +24,37 @@ exports.getCart = async (req, res) => {
         `;
         const result = await client.query(queryText, [userId]);
         client.release();
+        await addLog({
+            userId,
+            level: 'info',
+            action: 'view_cart',
+            details: { itemCount: result.rows.length }
+        });
         res.status(200).json(result.rows);
     } catch (error) {
-        console.error('Erreur lors de la récupération du panier :', error);
-        res.status(500).json({ message: 'Erreur serveur lors de la récupération du panier.' });
+        await addLog({
+            userId,
+            level: 'error',
+            action: 'view cart',
+            details: { error: error.message }
+        });
+        console.error('Error retrieving cart:', error);
+        res.status(500).json({ message: 'Server error retrieving cart.' });
     }
 };
 
-// POST /api/cart - Ajouter un article au panier
+// POST /api/cart - Add item to cart
 exports.addItemToCart = async (req, res) => {
     const userId = req.user.id;
-    const { diamond_stock_id, quantity = 1 } = req.body; // La quantité est optionnelle, par défaut 1
+    const { diamond_stock_id, quantity = 1 } = req.body; // Quantity is optional, defaults to 1
 
     if (!diamond_stock_id) {
-        return res.status(400).json({ message: 'L\'ID du diamant (diamond_stock_id) est obligatoire.' });
+        return res.status(400).json({ message: 'The diamond ID (diamond_stock_id) is required.' });
     }
 
     try {
         const client = await db.connect();
-        // Utilisation de ON CONFLICT pour gérer les cas où l'article est déjà dans le panier (grâce à notre contrainte UNIQUE)
+        // Use ON CONFLICT to handle cases where the item is already in the cart (thanks to our UNIQUE constraint)
         const queryText = `
             INSERT INTO cart_items (user_id, diamond_stock_id, quantity)
             VALUES ($1, $2, $3)
@@ -51,47 +64,58 @@ exports.addItemToCart = async (req, res) => {
         `;
         const result = await client.query(queryText, [userId, diamond_stock_id, quantity]);
         client.release();
-
+        await addLog({
+            userId,
+            level: 'info',
+            action: 'add_to_cart',
+            details: { diamond_stock_id}
+        })
         res.status(201).json(result.rows[0]);
     } catch (error) {
-        console.error('Erreur lors de l\'ajout de l\'article au panier :', error);
-        res.status(500).json({ message: 'Erreur serveur lors de l\'ajout de l\'article au panier.' });
+        await addLog({
+            userId,
+            level: 'error',
+            action: 'add to cart',
+            details: { diamond_stock_id, error: error.message }
+        });
+        console.error('Error adding item to cart:', error);
+        res.status(500).json({ message: 'Server error adding item to cart.' });
     }
 };
 
-// PUT /api/cart/:diamond_stock_id - Mettre à jour la quantité d'un article
-exports.updateCartItemQuantity = async (req, res) => {
-    const userId = req.user.id;
-    const { diamond_stock_id } = req.params;
-    const { quantity } = req.body;
+// PUT /api/cart/:diamond_stock_id - Deprecated, no longer used
+// exports.updateCartItemQuantity = async (req, res) => {
+//     const userId = req.user.id;
+//     const { diamond_stock_id } = req.params;
+//     const { quantity } = req.body;
 
-    if (typeof quantity !== 'number' || quantity < 1) {
-        return res.status(400).json({ message: 'La quantité doit être un nombre supérieur ou égal à 1.' });
-    }
+//     if (typeof quantity !== 'number' || quantity < 1) {
+//         return res.status(400).json({ message: 'The quantity must be a number greater than or equal to 1.' });
+//     }
 
-    try {
-        const client = await db.connect();
-        const queryText = `
-            UPDATE cart_items
-            SET quantity = $1
-            WHERE user_id = $2 AND diamond_stock_id = $3
-            RETURNING *;
-        `;
-        const result = await client.query(queryText, [quantity, userId, diamond_stock_id]);
-        client.release();
+//     try {
+//         const client = await db.connect();
+//         const queryText = `
+//             UPDATE cart_items
+//             SET quantity = $1
+//             WHERE user_id = $2 AND diamond_stock_id = $3
+//             RETURNING *;
+//         `;
+//         const result = await client.query(queryText, [quantity, userId, diamond_stock_id]);
+//         client.release();
 
-        if (result.rows.length === 0) {
-            return res.status(404).json({ message: 'Article non trouvé dans le panier.' });
-        }
+//         if (result.rows.length === 0) {
+//             return res.status(404).json({ message: 'Item not found in cart.' });
+//         }
 
-        res.status(200).json(result.rows[0]);
-    } catch (error) {
-        console.error('Erreur lors de la mise à jour de la quantité de l\'article :', error);
-        res.status(500).json({ message: 'Erreur serveur lors de la mise à jour de la quantité.' });
-    }
-};
+//         res.status(200).json(result.rows[0]);
+//     } catch (error) {
+//         console.error('Error updating item quantity in cart:', error);
+//         res.status(500).json({ message: 'Server error updating item quantity in cart.' });
+//     }
+// };
 
-// DELETE /api/cart/:diamond_stock_id - Supprimer un article du panier
+// DELETE /api/cart/:diamond_stock_id - Delete item from cart
 exports.deleteCartItem = async (req, res) => {
     const userId = req.user.id;
     const { diamond_stock_id } = req.params;
@@ -103,12 +127,29 @@ exports.deleteCartItem = async (req, res) => {
         client.release();
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ message: 'Article non trouvé dans le panier.' });
+            await addLog({
+                userId,
+                level: 'warn',
+                action: 'diamond not found in cart for deletion',
+                details: { diamond_stock_id }
+            });
+            return res.status(404).json({ message: 'Item not found in cart.' });
         }
-
-        res.status(200).json({ message: 'Article supprimé du panier avec succès.', deletedItem: result.rows[0] });
+        await addLog({
+            userId,
+            level: 'info',
+            action: 'delete_from_cart',
+            details: { diamond_stock_id }
+        });
+        res.status(200).json({ message: 'Item successfully removed from cart.', deletedItem: result.rows[0] });
     } catch (error) {
-        console.error('Erreur lors de la suppression de l\'article du panier :', error);
-        res.status(500).json({ message: 'Erreur serveur lors de la suppression de l\'article.' });
+        await addLog({
+            userId,
+            level: 'error',
+            action: 'delete from cart',
+            details: { diamond_stock_id, error: error.message }
+        });
+        console.error('Error deleting item from cart:', error);
+        res.status(500).json({ message: 'Server error deleting item from cart.' });
     }
 };

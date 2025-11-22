@@ -6,23 +6,23 @@ const { authenticate, authorizeAdmin } = require('../middleware/authMiddleware')
 /**
  * @swagger
  * tags:
- *   name: Utilisateurs
- *   description: Gestion des profils utilisateurs et administration des utilisateurs
+ *   name: Users
+ *   description: User profile management and administration
  */
 
 /**
  * @swagger
  * /api/users/profile:
  *   get:
- *     summary: Récupérer le profil de l'utilisateur connecté
- *     tags: [Utilisateurs]
+ *     summary: Get the profile of the connected user
+ *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Profil de l'utilisateur récupéré avec succès
+ *         description: User profile retrieved successfully
  *       401:
- *         description: Non autorisé
+ *         description: Unauthorized
  */
 router.get('/profile', authenticate, usersController.getConnectedUserProfile);
 
@@ -30,8 +30,8 @@ router.get('/profile', authenticate, usersController.getConnectedUserProfile);
  * @swagger
  * /api/users/profile:
  *   put:
- *     summary: Mettre à jour le profil de l'utilisateur connecté
- *     tags: [Utilisateurs]
+ *     summary: Update the profile of the connected user
+ *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -47,9 +47,9 @@ router.get('/profile', authenticate, usersController.getConnectedUserProfile);
  *                 type: string
  *     responses:
  *       200:
- *         description: Profil mis à jour avec succès
+ *         description: Profile updated successfully
  *       400:
- *         description: Données invalides
+ *         description: Invalid data
  */
 router.put('/profile', authenticate, usersController.updateConnectedUserProfile);
 
@@ -57,15 +57,15 @@ router.put('/profile', authenticate, usersController.updateConnectedUserProfile)
  * @swagger
  * /api/users:
  *   get:
- *     summary: Récupérer la liste de tous les utilisateurs (Admin seulement)
- *     tags: [Utilisateurs]
+ *     summary: Get the list of all users (Admin only)
+ *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Liste des utilisateurs récupérée
+ *         description: List of users retrieved
  *       403:
- *         description: Accès refusé
+ *         description: Access denied
  */
 router.get('/', authenticate, authorizeAdmin, usersController.getAllUsers);
 
@@ -73,8 +73,8 @@ router.get('/', authenticate, authorizeAdmin, usersController.getAllUsers);
  * @swagger
  * /api/users/{id}:
  *   get:
- *     summary: Récupérer un utilisateur par son ID (Admin seulement)
- *     tags: [Utilisateurs]
+ *     summary: Get a user by their ID (Admin only)
+ *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -85,9 +85,9 @@ router.get('/', authenticate, authorizeAdmin, usersController.getAllUsers);
  *           type: integer
  *     responses:
  *       200:
- *         description: Utilisateur trouvé
+ *         description: User found
  *       404:
- *         description: Utilisateur non trouvé
+ *         description: User not found
  */
 router.get('/:id', authenticate, authorizeAdmin, usersController.getUserById);
 
@@ -95,8 +95,8 @@ router.get('/:id', authenticate, authorizeAdmin, usersController.getUserById);
  * @swagger
  * /api/users:
  *   post:
- *     summary: Créer un nouvel utilisateur (Admin seulement)
- *     tags: [Utilisateurs]
+ *     summary: Create a new user (Admin only)
+ *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -114,9 +114,9 @@ router.get('/:id', authenticate, authorizeAdmin, usersController.getUserById);
  *                 type: string
  *     responses:
  *       201:
- *         description: Utilisateur créé
+ *         description: User created
  *       400:
- *         description: Données invalides
+ *         description: Invalid data
  */
 router.post('/', authenticate, authorizeAdmin, usersController.createUser);
 
@@ -124,8 +124,8 @@ router.post('/', authenticate, authorizeAdmin, usersController.createUser);
  * @swagger
  * /api/users/{id}:
  *   put:
- *     summary: Mettre à jour un utilisateur par son ID (Admin seulement)
- *     tags: [Utilisateurs]
+ *     summary: Update a user by their ID (Admin only)
+ *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -147,9 +147,9 @@ router.post('/', authenticate, authorizeAdmin, usersController.createUser);
  *                 type: string
  *     responses:
  *       200:
- *         description: Utilisateur mis à jour
+ *         description: User updated
  *       404:
- *         description: Utilisateur non trouvé
+ *         description: User not found
  */
 router.put('/:id', authenticate, authorizeAdmin, usersController.updateUser);
 
@@ -157,8 +157,8 @@ router.put('/:id', authenticate, authorizeAdmin, usersController.updateUser);
  * @swagger
  * /api/users/{id}:
  *   delete:
- *     summary: Supprimer un utilisateur par son ID (Admin seulement)
- *     tags: [Utilisateurs]
+ *     summary: Delete a user by their ID (Admin only)
+ *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -169,9 +169,9 @@ router.put('/:id', authenticate, authorizeAdmin, usersController.updateUser);
  *           type: integer
  *     responses:
  *       200:
- *         description: Utilisateur supprimé
+ *         description: User deleted
  *       404:
- *         description: Utilisateur non trouvé
+ *         description: User not found
  */
 router.delete('/:id', authenticate, authorizeAdmin, usersController.deleteUser);
 

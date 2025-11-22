@@ -31,4 +31,22 @@ router.use(authenticate, authorizeAdmin);
  */
 router.get('/', logController.getLogs);
 
+/**
+ * @swagger
+ * /api/logs:
+ *   delete:
+ *     summary: Delete all activity logs (Admin only)
+ *     tags: [Logs]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: All logs deleted successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Access denied (not an admin)
+ */
+router.delete('/', logController.deleteAllLogs);
+
 module.exports = router;

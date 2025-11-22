@@ -2,11 +2,13 @@ import { getToken } from "@/hooks/useRedirect";
 import type { Filter } from "@/models/models";
 
 export const getAllFilters = async (): Promise<Filter[]> => {
+    const token = getToken();
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/filters`,
         {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             }
         }
     );

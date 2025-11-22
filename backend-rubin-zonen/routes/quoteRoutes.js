@@ -6,26 +6,26 @@ const { authenticate, authorizeAdmin } = require('../middleware/authMiddleware')
 /**
  * @swagger
  * tags:
- *   name: Devis
- *   description: Gestion des devis pour les utilisateurs et les administrateurs
+ *   name: Quotes
+ *   description: Quote management for users and administrators
  */
 
-// Appliquer l'authentification à toutes les routes
+// Apply authentication to all routes
 router.use(authenticate);
 
 /**
  * @swagger
  * /api/quotes:
  *   get:
- *     summary: Récupérer les devis de l'utilisateur connecté
- *     tags: [Devis]
+ *     summary: Get quotes for the connected user
+ *     tags: [Quotes]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Devis de l'utilisateur récupérés avec succès
+ *         description: User's quotes retrieved successfully
  *       401:
- *         description: Non autorisé
+ *         description: Unauthorized
  */
 router.get('/', quoteController.getUserQuotes);
 
@@ -33,8 +33,8 @@ router.get('/', quoteController.getUserQuotes);
  * @swagger
  * /api/quotes:
  *   post:
- *     summary: Créer un nouveau devis à partir d'une liste de diamants
- *     tags: [Devis]
+ *     summary: Create a new quote from a list of diamonds
+ *     tags: [Quotes]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -50,9 +50,9 @@ router.get('/', quoteController.getUserQuotes);
  *                   type: string
  *     responses:
  *       201:
- *         description: Devis créé avec succès
+ *         description: Quote created successfully
  *       400:
- *         description: Données invalides
+ *         description: Invalid data
  */
 router.post('/', quoteController.createQuote);
 
@@ -60,17 +60,17 @@ router.post('/', quoteController.createQuote);
  * @swagger
  * /api/quotes/all:
  *   get:
- *     summary: Récupérer tous les devis de tous les utilisateurs (Admin seulement)
- *     tags: [Devis]
+ *     summary: Get all quotes from all users (Admin only)
+ *     tags: [Quotes]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Liste de tous les devis
+ *         description: List of all quotes
  *       401:
- *         description: Non autorisé
+ *         description: Unauthorized
  *       403:
- *         description: Accès refusé
+ *         description: Access denied
  */
 router.get('/all', authorizeAdmin, quoteController.getAllQuotes);
 
@@ -78,8 +78,8 @@ router.get('/all', authorizeAdmin, quoteController.getAllQuotes);
  * @swagger
  * /api/quotes/{id}:
  *   get:
- *     summary: Récupérer un devis spécifique par son ID (Admin seulement)
- *     tags: [Devis]
+ *     summary: Get a specific quote by its ID (Admin only)
+ *     tags: [Quotes]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -90,9 +90,9 @@ router.get('/all', authorizeAdmin, quoteController.getAllQuotes);
  *           type: integer
  *     responses:
  *       200:
- *         description: Devis trouvé
+ *         description: Quote found
  *       404:
- *         description: Devis non trouvé
+ *         description: Quote not found
  */
 router.get('/:id', authorizeAdmin, quoteController.getQuoteById);
 
@@ -100,8 +100,8 @@ router.get('/:id', authorizeAdmin, quoteController.getQuoteById);
  * @swagger
  * /api/quotes/{id}:
  *   put:
- *     summary: Mettre à jour le statut d'un devis (Admin seulement)
- *     tags: [Devis]
+ *     summary: Update a quote's status (Admin only)
+ *     tags: [Quotes]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -121,11 +121,11 @@ router.get('/:id', authorizeAdmin, quoteController.getQuoteById);
  *                 type: string
  *     responses:
  *       200:
- *         description: Statut du devis mis à jour
+ *         description: Quote status updated
  *       400:
- *         description: Données invalides
+ *         description: Invalid data
  *       404:
- *         description: Devis non trouvé
+ *         description: Quote not found
  */
 router.put('/:id', authorizeAdmin, quoteController.updateQuoteStatus);
 

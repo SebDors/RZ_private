@@ -20,7 +20,7 @@ const { authenticate, authorizeAdmin } = require('../middleware/authMiddleware')
  *       200:
  *         description: List of filters retrieved successfully
  */
-router.get('/', filtersController.getAllFilters);
+router.get('/', authenticate ,filtersController.getAllFilters);
 
 /**
  * @swagger

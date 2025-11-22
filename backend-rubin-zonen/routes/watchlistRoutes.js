@@ -7,25 +7,25 @@ const { authenticate } = require('../middleware/authMiddleware');
  * @swagger
  * tags:
  *   name: Watchlist
- *   description: Gestion de la watchlist de l'utilisateur
+ *   description: User watchlist management
  */
 
-// Toutes les routes de la watchlist sont protégées et nécessitent une authentification
+// All watchlist routes are protected and require authentication
 router.use(authenticate);
 
 /**
  * @swagger
  * /api/watchlist:
  *   get:
- *     summary: Récupérer la watchlist de l'utilisateur
+ *     summary: Retrieve the user's watchlist
  *     tags: [Watchlist]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Watchlist récupérée avec succès
+ *         description: Watchlist retrieved successfully
  *       401:
- *         description: Non autorisé
+ *         description: Unauthorized
  */
 router.get('/', watchlistController.getWatchlist);
 
@@ -33,7 +33,7 @@ router.get('/', watchlistController.getWatchlist);
  * @swagger
  * /api/watchlist:
  *   post:
- *     summary: Ajouter un article à la watchlist
+ *     summary: Add an item to the watchlist
  *     tags: [Watchlist]
  *     security:
  *       - bearerAuth: []
@@ -50,9 +50,9 @@ router.get('/', watchlistController.getWatchlist);
  *                 type: string
  *     responses:
  *       201:
- *         description: Article ajouté à la watchlist
+ *         description: Item added to watchlist
  *       400:
- *         description: Données invalides
+ *         description: Invalid data
  */
 router.post('/', watchlistController.addItemToWatchlist);
 
@@ -60,7 +60,7 @@ router.post('/', watchlistController.addItemToWatchlist);
  * @swagger
  * /api/watchlist/{diamond_stock_id}:
  *   delete:
- *     summary: Supprimer un article de la watchlist
+ *     summary: Delete an item from the watchlist
  *     tags: [Watchlist]
  *     security:
  *       - bearerAuth: []
@@ -72,9 +72,9 @@ router.post('/', watchlistController.addItemToWatchlist);
  *           type: string
  *     responses:
  *       200:
- *         description: Article supprimé de la watchlist
+ *         description: Item deleted from watchlist
  *       404:
- *         description: Article non trouvé
+ *         description: Item not found
  */
 router.delete('/:diamond_stock_id', watchlistController.deleteWatchlistItem);
 

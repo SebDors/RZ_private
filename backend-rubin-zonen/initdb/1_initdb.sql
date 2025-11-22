@@ -525,6 +525,26 @@ ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users (id) ON DEL
 GRANT ALL ON SCHEMA public TO rubin_user;
 
 --
+-- Name: logs; Type: TABLE; Schema: public; Owner: rubin_user
+--
+CREATE TABLE public.logs (
+    id integer NOT NULL,
+    user_id integer,
+    level character varying(20) NOT NULL,
+    action character varying(255) NOT NULL,
+    details jsonb,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE public.logs OWNER TO rubin_user;
+CREATE SEQUENCE public.logs_id_seq AS integer START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+ALTER SEQUENCE public.logs_id_seq OWNER TO rubin_user;
+ALTER SEQUENCE public.logs_id_seq OWNED BY public.logs.id;
+ALTER TABLE ONLY public.logs ALTER COLUMN id SET DEFAULT nextval('public.logs_id_seq'::regclass);
+ALTER TABLE ONLY public.logs ADD CONSTRAINT logs_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.logs ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+CREATE INDEX idx_logs_user_id ON public.logs USING btree (user_id);
+
+--
 -- PostgreSQL database dump complete
 --
 

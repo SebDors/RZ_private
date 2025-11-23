@@ -1,22 +1,28 @@
 import { useState } from "react";
-import type { SearchRecord } from "@/hooks/useSearchHistory";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Input } from "./ui/input";
 
-interface SavedSearchesProps {
-    title: string;
-    searches: SearchRecord[];
-    onLoad: (params: Record<string, string>) => void;
-    onDelete: (identifier: string | number) => void;
-    deleteIdentifier: 'name' | 'timestamp';
+export type SavedSearchRecord<TParams = Record<string, any>> = {
+    name?: string;
+    timestamp?: number;
+    params: TParams;
+    id?: number;
 }
 
-export function SavedSearches({ title, searches, onLoad, onDelete, deleteIdentifier }: SavedSearchesProps) {
+interface SavedSearchesProps<TParams extends Record<string, any>> {
+    title: string;
+    searches: SavedSearchRecord<TParams>[];
+    onLoad: (params: TParams) => void;
+    onDelete: (identifier: string | number) => void;
+    deleteIdentifier: 'name' | 'timestamp' | 'id';
+}
+
+export function SavedSearches<TParams extends Record<string, any>>({ title, searches, onLoad, onDelete, deleteIdentifier }: SavedSearchesProps<TParams>) {
     const [searchTerm, setSearchTerm] = useState("");
 
     const filteredSearches = searches.filter(search =>
-        (search.name || new Date(search.timestamp).toLocaleString()).toLowerCase().includes(searchTerm.toLowerCase())
+        (search.name || (search.timestamp ? new Date(search.timestamp).toLocaleString() : '')).toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -36,14 +42,14 @@ export function SavedSearches({ title, searches, onLoad, onDelete, deleteIdentif
                 ) : (
                     <ul className="space-y-2">
                         {filteredSearches.map((search) => (
-                            <li key={search.timestamp} className="flex items-center justify-between">
+                            <li key={search.id || search.timestamp || Math.random()} className="flex items-center justify-between">
                                 <div>
-                                    <p className="font-semibold">{search.name || new Date(search.timestamp).toLocaleString()}</p>
-                                    <p className="text-sm text-gray-500">{Object.entries(search.params).map(([key, value]) => `${key}: ${value}`).join(', ')}</p>
+                                    <p className="font-semibold">{search.name || (search.timestamp ? new Date(search.timestamp).toLocaleString() : 'N/A')}</p>
+                                    <p className="text-sm text-gray-500">{Object.entries(search.params).map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`).join(', ')}</p>
                                 </div>
                                 <div className="flex gap-2">
                                     <Button size="sm" onClick={() => onLoad(search.params)}>Load</Button>
-                                    <Button size="sm" variant="destructive" onClick={() => onDelete(deleteIdentifier === 'name' ? search.name! : search.timestamp)}>Delete</Button>
+                                    <Button size="sm" variant="destructive" onClick={() => onDelete(deleteIdentifier === 'name' ? search.name! : search.timestamp as string | number)} >Delete</Button>
                                 </div>
                             </li>
                         ))}

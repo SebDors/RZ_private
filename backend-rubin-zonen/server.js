@@ -11,6 +11,7 @@ const quoteRoutes = require('./routes/quoteRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const filtersRoutes = require('./routes/filtersRoutes');
 const emailRoutes = require('./routes/emailRoutes');
+const savedSearchRoutes = require('./routes/savedSearchRoutes');
 const logRoutes = require('./routes/logRoutes');
 // Documentation API avec Swagger
 const swaggerJsdoc = require('swagger-jsdoc');
@@ -108,6 +109,7 @@ app.use('/api/quotes', quoteRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/filters', filtersRoutes);
 app.use('/api/email', emailRoutes);
+app.use('/api/saved-searches', savedSearchRoutes);
 app.use('/api/logs', logRoutes);
 
 // Gestion des routes non trouvées (404)

@@ -33,7 +33,7 @@ function NewDiamondListContent() {
     }
 
     const [diamonds, setDiamonds] = useState<Diamant[]>([]);
-    const [selectedDiamonds, setSelectedDiamonds] = useState<string[]>([]); // New state for selected diamonds
+    const [selectedDiamonds, setSelectedDiamonds] = useState<string[]>([]);
 
     useEffect(() => {
         const fetchDiamonds = async () => {
@@ -96,9 +96,8 @@ function NewDiamondListContent() {
                 <Header />
                 <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 ml-2 mr-2 rounded-lg">
                     {/* TODO fix the bottom of the screen */}
-                    <div className="w-full max-w-4xl">
-                        <h2 className="text-2xl font-bold mb-4">Diamond List</h2>
-                        <div className="mb-4 flex justify-end">
+                    <div className="w-full ml-2 mr-2">
+                        <div className="mb-4 ml-4 flex">
                             <Button onClick={handleCompare} disabled={selectedDiamonds.length < 2 || selectedDiamonds.length > 3}>
                                 Compare ({selectedDiamonds.length})
                             </Button>
@@ -106,12 +105,11 @@ function NewDiamondListContent() {
                         <ScrollArea className="h-[80vh]">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
                                 {diamonds.map((diamond) => (
-                                    <Card key={diamond.stock_id}>
+                                    <Card key={diamond.stock_id} onClick={() => handleSelectDiamond(diamond.stock_id)}>
                                         <CardHeader className="flex flex-row items-center justify-between space-x-4">
                                             <CardTitle>{diamond.shape} {diamond.weight}ct</CardTitle>
                                             <Checkbox
                                                 checked={selectedDiamonds.includes(diamond.stock_id)}
-                                                onCheckedChange={() => handleSelectDiamond(diamond.stock_id)}
                                             />
                                         </CardHeader>
                                         <CardContent>

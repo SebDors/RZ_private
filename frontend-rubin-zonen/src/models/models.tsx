@@ -114,3 +114,12 @@ export interface Filter {
     filter_name: string;
     is_enabled: boolean;
 };
+
+export interface SavedSearch {
+    id: number;
+    user_id: number;
+    name: string;
+    search_params: Record<string, string[]>;
+    search_type: 'quick' | 'advanced';
+    created_at: string;
+}

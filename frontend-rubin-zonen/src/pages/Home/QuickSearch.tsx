@@ -1,15 +1,17 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from "@/components/Header";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
+import { useQuickSearch } from '@/hooks/useQuickSearch';
+import { SavedSearches } from '@/components/SavedSearches';
 
 const shapes = [
     { Name: "All", db_value: '' },
@@ -35,7 +37,7 @@ const shapes = [
     { Name: "Old European Cut", db_value: 'EU' },
     { Name: "Special Shape", db_value: 'SP' },
     { Name: "Rose Cut", db_value: 'RC' },
-    { Name: "Other", db_value: null }
+    { Name: "Other", db_value: 'null' } // TODO change
 ];
 const colors = ["All", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O-P", "Q-R", "S-T", "U-V", "W-X", "Y-Z", "N-O", "P-R"];
 const clarities = ["All", "FL", "IF", "VVS1", "VVS2", "VS1", "VS2", "SI1", "SI2", "SI3", "I1", "I2"];
@@ -66,6 +68,19 @@ function QuickSearchContent() {
     const [minCarat, setMinCarat] = useState('');
     const [maxCarat, setMaxCarat] = useState('');
 
+    const {
+        lastSearches,
+        savedSearches,
+        addSearchToHistory,
+        saveSearch,
+        deleteSavedSearch,
+        deleteLastSearch
+    } = useQuickSearch();
+
+    const loadSearch = (params: Record<string, string[]>) => {
+        setSelectedCriteria(params);
+    };
+
     const handleOpen = () => {
         if (!open) {
             setOpen(true);
@@ -84,8 +99,19 @@ function QuickSearchContent() {
         });
     };
 
-    const handleSearch = () => {
+    const handleSearch = useCallback(() => {
+        addSearchToHistory(selectedCriteria);
         navigate('/diamond-list', { state: { searchParams: selectedCriteria } });
+    }, [selectedCriteria, addSearchToHistory, navigate]);
+
+    const handleSave = () => {
+        let name = prompt("Enter a name for this search:");
+        if (!name) {
+            name = new Date().toLocaleString();
+        }
+        if (name) {
+            saveSearch(name, selectedCriteria);
+        }
     };
 
     const handleReset = () => {
@@ -140,13 +166,13 @@ function QuickSearchContent() {
         }));
     };
 
-    const renderGrid = (title: string, key: string, items: any[]) => (
+    const renderGrid = (title: string, key: string, items: (string | { Name: string; db_value: string | null })[]) => (
         <div className="mb-4">
-            <h3 className="text-lg font-semibold mb-2">{title}</h3>
-            <div className="grid grid-cols-12 gap-2">
+            <h3 className="text-lg font-semibold mb-1">{title}</h3>
+            <div className="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-9 xl:grid-cols-11 2xl:grid-cols-12 grid-flow-row-dense gap-2">
                 {items.map(item => {
                     const name = typeof item === 'string' ? item : item.Name;
-                    const value = typeof item === 'string' ? item : item.db_value;
+                    const value = typeof item === 'string' ? item : (item.db_value === null ? '' : item.db_value);
                     return (
                         <Button
                             key={name}
@@ -200,9 +226,6 @@ function QuickSearchContent() {
                 <Header />
                 <div className="p-4">
                     <Card>
-                        <CardHeader>
-                            <CardTitle>Quick Search</CardTitle>
-                        </CardHeader>
                         <CardContent>
                             {renderGrid("Shape", "shape", shapes)}
                             {renderGrid("Carat", "carat", carats)}
@@ -214,12 +237,30 @@ function QuickSearchContent() {
                             {renderGrid("Fluorescence", "fluorescence", fluorescences)}
                             {renderGrid("Lab", "lab", labs)}
                             {renderGrid("Price Range", "priceRange", priceRanges)}
-                            <div className="flex justify-end space-x-2 mt-4">
+                            <div className="flex justify-end space-x-2 mt-0">
                                 <Button onClick={handleReset}>Reset</Button>
+                                <Button onClick={handleSave}>Save</Button>
                                 <Button onClick={handleSearch}>Search</Button>
                             </div>
                         </CardContent>
                     </Card>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+                        <SavedSearches<Record<string, string[]>>
+                            title="Last Searches"
+                            searches={lastSearches}
+                            onLoad={loadSearch}
+                            onDelete={(timestamp) => deleteLastSearch(timestamp as number)}
+                            deleteIdentifier="timestamp"
+                        />
+                        <SavedSearches<Record<string, string[]>>
+                            title="Saved Searches"
+                            searches={savedSearches}
+                            onLoad={loadSearch}
+                            onDelete={(id) => deleteSavedSearch(id as number)}
+                            deleteIdentifier="id"
+                        />
+                    </div>
                 </div>
             </SidebarInset>
         </>

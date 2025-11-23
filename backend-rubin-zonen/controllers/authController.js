@@ -2,7 +2,7 @@ const db = require('../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const { apiInstance } = require('../services/emailService');
+const { sendCustomEmail, sendTemplateEmail } = require('./emailController');
 const { addLog } = require('./logController');
 
 // Function for registering a new user
@@ -67,6 +67,9 @@ exports.register = async (req, res) => {
             action: 'USER_REGISTERED',
             details: { email: user.email }
         });
+        
+        // Send welcome email
+        await sendTemplateEmail(user.id, 'New_user', { name: first_name || 'there' });
 
     } catch (error) {
         console.error('Error during user registration:', error);
@@ -170,30 +173,18 @@ exports.forgotPassword = async (req, res) => {
             return res.status(404).json({ message: 'No user with this email found.' });
         }
 
+        const user = userResult.rows[0];
         const token = crypto.randomBytes(20).toString('hex');
         const expires = new Date(Date.now() + 3600000); // 1 hour
 
         await client.query('UPDATE users SET reset_password_token = $1, reset_password_expires = $2 WHERE email = $3', [token, expires, email]);
         client.release();
 
-        const resetURL = `http://localhost:3000/reset-password/${token}`;
+        //TODO: Change the url for production
+        const resetURL = `http://localhost:4173/reset-password/${token}`;
 
-        let sendSmtpEmail = {
-            to: [{ email: email }],
-            subject: 'Password Reset',
-            textContent: `You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n` +
-                `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
-                `${resetURL}\n\n` +
-                `If you did not request this, please ignore this email and your password will remain unchanged.\n`,
-            sender: { name: 'Rubin & Zonen', email: process.env.BREVO_EMAIL_SENDER},
-        };
+        await sendTemplateEmail(user.id, 'Password_Reset', { resetURL: resetURL });
 
-        await apiInstance.sendTransacEmail(sendSmtpEmail);
-        await addLog({
-            level: 'info',
-            action: 'PASSWORD_RESET_EMAIL_SENT',
-            details: { email: email }
-        });
         res.status(200).json({ message: 'A password reset email has been sent.' });
     } catch (error) {
         await addLog({

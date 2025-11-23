@@ -8,12 +8,13 @@ exports.getAllFilters = async (req, res) => {
         const client = await db.connect();
         const result = await client.query('SELECT * FROM search_filters ORDER BY filter_name ASC');
         client.release();
-        await addLog({
-            userId: req.user ? req.user.id : undefined,
-            level: 'INFO',
-            action: 'VIEW_ALL_FILTERS',
-            details: { message: 'All filters retrieved successfully.' },
-        });
+        // I think it's better to log only errors for this endpoint.
+        // await addLog({
+        //     userId: req.user ? req.user.id : undefined,
+        //     level: 'INFO',
+        //     action: 'VIEW_ALL_FILTERS',
+        //     details: { message: 'All filters retrieved successfully.' },
+        // });
         res.status(200).json(result.rows);
     } catch (error) {
         await addLog({

@@ -105,6 +105,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           title: "All Quotes",
           url: "/admin/all-quotes",
         },
+        {
+          title: "Email Templates",
+          url: "/admin/email-templates",
+        },
       ]
     },
   ];

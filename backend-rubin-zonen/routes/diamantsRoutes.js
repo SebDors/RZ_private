@@ -15,16 +15,16 @@ const upload = multer({ dest: uploadDir });
 /**
  * @swagger
  * tags:
- *   name: Diamants
- *   description: Gestion des diamants de la base de données
+ *   name: Diamonds
+ *   description: Diamond database management
  */
 
 /**
  * @swagger
  * /api/diamants/upload_data:
  *   post:
- *     summary: Uploader un fichier CSV pour importer les diamants (Admin seulement)
- *     tags: [Diamants]
+ *     summary: Upload a CSV file to import diamonds (Admin only)
+ *     tags: [Diamonds]
  *     security:
  *       - bearerAuth: []
  *     consumes:
@@ -34,18 +34,18 @@ const upload = multer({ dest: uploadDir });
  *         name: diamonds_csv
  *         type: file
  *         required: true
- *         description: Le fichier CSV des diamants à importer.
+ *         description: The CSV file of diamonds to import.
  *     responses:
  *       200:
- *         description: Données des diamants importées avec succès
+ *         description: Diamond data imported successfully
  *       400:
- *         description: Fichier manquant ou invalide
+ *         description: Missing or invalid file
  *       401:
- *         description: Non autorisé
+ *         description: Unauthorized
  *       403:
- *         description: Accès refusé
+ *         description: Access denied
  *       500:
- *         description: Erreur serveur
+ *         description: Server error
  */
 router.post('/upload_data', authenticate, authorizeAdmin, upload.single('diamonds_csv'), diamantsController.uploadDiamonds);
 
@@ -54,11 +54,11 @@ router.post('/upload_data', authenticate, authorizeAdmin, upload.single('diamond
  * @swagger
  * /api/diamants:
  *   get:
- *     summary: Récupérer la liste de tous les diamants
- *     tags: [Diamants]
+ *     summary: Get the list of all diamonds
+ *     tags: [Diamonds]
  *     responses:
  *       200:
- *         description: Liste des diamants récupérée avec succès
+ *         description: List of diamonds retrieved successfully
  */
 router.get('/',authenticate, diamantsController.getAllDiamants);
 
@@ -66,8 +66,8 @@ router.get('/',authenticate, diamantsController.getAllDiamants);
  * @swagger
  * /api/diamants/{stock_id}:
  *   get:
- *     summary: Récupérer un diamant par son stock_id
- *     tags: [Diamants]
+ *     summary: Get a diamond by its stock_id
+ *     tags: [Diamonds]
  *     parameters:
  *       - in: path
  *         name: stock_id
@@ -76,9 +76,9 @@ router.get('/',authenticate, diamantsController.getAllDiamants);
  *           type: string
  *     responses:
  *       200:
- *         description: Diamant trouvé
+ *         description: Diamond found
  *       404:
- *         description: Diamant non trouvé
+ *         description: Diamond not found
  */
 router.get('/:stock_id', authenticate, diamantsController.getDiamantById);
 

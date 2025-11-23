@@ -43,6 +43,6 @@ const { authenticate, authorizeAdmin } = require('../middleware/authMiddleware')
  *       400:
  *         description: Données invalides
  */
-router.post('/send-test', authenticate, authorizeAdmin, emailController.sendTestEmail);
+router.post('/send-test', authenticate, authorizeAdmin, emailController.sendCustomEmail);
 
 module.exports = router;

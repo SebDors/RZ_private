@@ -71,6 +71,44 @@ router.get('/', authenticate, authorizeAdmin, usersController.getAllUsers);
 
 /**
  * @swagger
+ * /api/users/company-names:
+ *   get:
+ *     summary: Get a list of unique company names (Admin only)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of unique company names retrieved successfully
+ *       403:
+ *         description: Access denied
+ */
+router.get('/company-names', authenticate, authorizeAdmin, usersController.getUniqueCompanyNames);
+
+/**
+ * @swagger
+ * /api/users/by-company/{companyName}:
+ *   get:
+ *     summary: Get users by company name (Admin only)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: companyName
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of users for the given company name
+ *       403:
+ *         description: Access denied
+ */
+router.get('/by-company/:companyName', authenticate, authorizeAdmin, usersController.getUsersByCompanyName);
+
+/**
+ * @swagger
  * /api/users/{id}:
  *   get:
  *     summary: Get a user by their ID (Admin only)
@@ -174,5 +212,22 @@ router.put('/:id', authenticate, authorizeAdmin, usersController.updateUser);
  *         description: User not found
  */
 router.delete('/:id', authenticate, authorizeAdmin, usersController.deleteUser);
+
+/**
+ * @swagger
+ * /api/users/company-names:
+ *   get:
+ *     summary: Get a list of unique company names (Admin only)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of unique company names retrieved successfully
+ *       403:
+ *         description: Access denied
+ */
+router.get('/company-names', authenticate, authorizeAdmin, usersController.getUniqueCompanyNames);
+
 
 module.exports = router;

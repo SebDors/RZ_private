@@ -13,6 +13,7 @@ import FilterSettings from './pages/Admin/FilterSettings'
 import ImportData from './pages/Admin/ImportData'
 import AllQuotes from './pages/Admin/AllQuotes'
 import ClientDetail from './pages/Admin/ClientDetail'
+import EmailTemplates from './pages/Admin/EmailTemplates'
 
 // Home pages
 import Home from './pages/Home/Home'
@@ -82,6 +83,7 @@ function App() {
             <Route path="clients/:id" element={<ClientDetail />} />
             <Route path="import-data" element={<ImportData />} />
             <Route path="all-quotes" element={<AllQuotes />} />
+            <Route path="email-templates" element={<EmailTemplates />} />
           </Route>
         </Route>
 

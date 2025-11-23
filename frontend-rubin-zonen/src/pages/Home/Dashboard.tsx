@@ -38,9 +38,7 @@ function DashboardContent() {
 
   const {
     lastSearches,
-    savedSearches,
     deleteLastSearch,
-    deleteSavedSearch,
   } = useSearchHistory();
 
   useEffect(() => {
@@ -117,15 +115,8 @@ function DashboardContent() {
               onDelete={(timestamp) => deleteLastSearch(timestamp as number)}
               deleteIdentifier="timestamp"
             />
-            <SavedSearches
-              title="Saved Searches"
-              searches={savedSearches}
-              onLoad={handleLoadSearch}
-              onDelete={(name) => deleteSavedSearch(name as string)}
-              deleteIdentifier="name"
-            />
             <SavedSearches<Record<string, string[]>>
-              title="Quick Saved Searches"
+              title="Saved Searches"
               searches={dbSavedSearches}
               onLoad={handleLoadDbSearch}
               onDelete={async (id) => {

@@ -223,159 +223,47 @@ exports.getDiamantById = async (req, res) => {
     }
 };
 
+const { processDiamondCsv } = require('../services/diamondService');
+
+// ... (keep all other functions as they are)
+
 exports.uploadDiamonds = async (req, res) => {
     if (!req.file) {
         return res.status(400).send('No file uploaded.');
     }
 
     const filePath = req.file.path;
-    const diamonds = [];
-
-    const client = await db.connect();
 
     try {
-        const headerMapping = {
-            'Stock #': 'stock_id',
-            'Availability': 'availability',
-            'Shape': 'shape',
-            'Weight': 'weight',
-            'Color': 'color',
-            'Clarity': 'clarity',
-            'Cut Grade': 'cut_grade',
-            'Polish': 'polish',
-            'Symmetry': 'symmetry',
-            'Fluorescence Intensity': 'fluorescence_intensity',
-            'Fluorescence Color': 'fluorescence_color',
-            'Measurements': 'measurements',
-            'Lab': 'lab',
-            'Certificate #': 'certificate_number',
-            'Treatment': 'treatment',
-            'PriceCarat': 'price_carat',
-            'Fancy Color': 'fancy_color',
-            'Fancy Color Intensity': 'fancy_color_intensity',
-            'Fancy Color Overtone': 'fancy_color_overtone',
-            'Depth %': 'depth_pct',
-            'Table %': 'table_pct',
-            'Girdle Thin': 'girdle_thin',
-            'Girdle Thick': 'girdle_thick',
-            'Girdle %': 'girdle_pct',
-            'Girdle Condition': 'girdle_condition',
-            'Culet Size': 'culet_size',
-            'Culet Condition': 'culet_condition',
-            'Crown Height': 'crown_height',
-            'Crown Angle': 'crown_angle',
-            'Pavilion Depth': 'pavilion_depth',
-            'Pavilion Angle': 'pavilion_angle',
-            'Laser Inscription': 'laser_inscription',
-            'Comment': 'comment',
-            'Country': 'country',
-            'State': 'state',
-            'City': 'city',
-            'Is Matched Pair Separable': 'is_matched_pair_separable',
-            'Pair Stock #': 'pair_stock_id',
-            'Allow RapLink Feed': 'allow_raplink_feed',
-            'Parcel Stones': 'parcel_stones',
-            'Certificate Filename': 'certificate_filename',
-            'Diamond Image': 'diamond_image',
-            '3D File': '"3d_file"',
-            'Trade Show': 'trade_show',
-            'Member comments': 'member_comments',
-            'rap': 'rap',
-            'Disc': 'disc',
-            'VideoFile': 'video_file',
-            'ImageFile': 'image_file',
-            'CertificateFile': 'certificate_file'
-        };
+        const result = await processDiamondCsv(filePath);
 
-        const allDbColumns = Object.values(headerMapping);
-
-        await new Promise((resolve, reject) => {
-            const stream = fs.createReadStream(filePath);
-            const csvStream = stream.pipe(csv({
-                mapHeaders: ({ header }) => headerMapping[header.trim()] || header.trim(),
-                removeBOM: true,
-                separator: ',',
-            }));
-
-            csvStream.once('headers', (headers) => {
-                const fileHeaders = headers.map(h => h.trim());
-                const extraHeaders = fileHeaders.filter(header => !allDbColumns.includes(header));
-
-                if (extraHeaders.length > 0) {
-                    const error = new Error(`Invalid CSV format. Unknown columns found: ${extraHeaders.join(', ')}`);
-                    error.isValidationError = true;
-                    csvStream.emit('error', error);
-                }
+        if (result.success) {
+            await addLog({
+                userId: req.user.id,
+                level: 'info',
+                action: 'ADMIN_UPLOAD_DIAMONDS_SUCCESS',
+                details: { fileName: req.file.originalname, importedCount: result.count },
             });
-
-            csvStream.on('data', (row) => {
-                const sanitizedRow = {};
-                for (const key in row) {
-                    const dbColumn = key;
-                    if (dbColumn && allDbColumns.includes(dbColumn)) {
-                        let value = row[key];
-                        if (value === '' || value === 'NULL' || value === undefined) {
-                            sanitizedRow[dbColumn] = null;
-                        } else if (typeof value === 'string') {
-                            const lowerValue = value.toLowerCase();
-                            if (lowerValue === 'true') {
-                                sanitizedRow[dbColumn] = true;
-                            } else if (lowerValue === 'false') {
-                                sanitizedRow[dbColumn] = false;
-                            } else {
-                                sanitizedRow[dbColumn] = value;
-                            }
-                        } else {
-                            sanitizedRow[dbColumn] = value;
-                        }
-                    }
-                }
-                diamonds.push(sanitizedRow);
-            });
-
-            csvStream.on('end', () => {
-                if (diamonds.length === 0) {
-                    const error = new Error('The file does not contain any diamond data.');
-                    error.isValidationError = true;
-                    return reject(error);
-                }
-                resolve();
-            });
-
-            stream.on('error', reject);
-            csvStream.on('error', reject);
-        });
-
-        await client.query('BEGIN');
-        await client.query('DELETE FROM diamants');
-
-        for (const diamond of diamonds) {
-            const columns = Object.keys(diamond).filter(k => diamond[k] !== null && diamond[k] !== undefined);
-            const values = columns.map(k => diamond[k]);
-            const placeholders = columns.map((_, i) => `$${i + 1}`).join(', ');
-            
-            const columnNames = columns.join(', ');
-
-            if(columns.length > 0) {
-                const queryText = `INSERT INTO diamants (${columnNames}) VALUES (${placeholders})`;
-                await client.query(queryText, values);
+            res.status(200).json({ message: result.message });
+        } else {
+            // The service already logs the detailed error
+            if (result.error.isValidationError) {
+                return res.status(400).json({ message: result.message });
             }
+            res.status(500).json({ message: result.message, error: result.error.message });
         }
-
-        await client.query('COMMIT');
-        res.status(200).json({ message: `Successfully imported ${diamonds.length} diamonds.` });
-
     } catch (error) {
-        await client.query('ROLLBACK');
-        console.error('Error during CSV processing:', error);
-
-        if (error.isValidationError) {
-            return res.status(400).json({ message: error.message });
-        }
-        
-        res.status(500).json({ message: 'Error processing file.', error: error.message });
+        // This will catch any unexpected errors not handled by the service
+        await addLog({
+            userId: req.user.id,
+            level: 'error',
+            action: 'ADMIN_UPLOAD_DIAMONDS_UNEXPECTED_FAILURE',
+            details: { fileName: req.file.originalname, error: error.message },
+        });
+        console.error('Unexpected error in uploadDiamonds controller:', error);
+        res.status(500).json({ message: 'An unexpected error occurred.' });
     } finally {
-        client.release();
+        // Clean up the uploaded file
         fs.unlink(filePath, (err) => {
             if (err) {
                 console.error('Error deleting uploaded file:', err);

@@ -1,4 +1,4 @@
-import { getToken } from "@/hooks/useRedirect";
+import { getToken } from "@/lib/utils";
 import type { EmailTemplate } from "@/models/models";
 
 export const getEmailTemplates = async (): Promise<EmailTemplate[]> => {

@@ -65,12 +65,12 @@ function App() {
           <Route path="/quick-search" element={<QuickSearch />} />
           <Route path="/side-stone-search" element={<SideStoneSearch />} />
           <Route path="/stone-detail/:stock_id" element={<StoneDetail />} />
+          <Route path="my-cart" element={<MyCart />} />
+          <Route path="my-quote" element={<MyQuote />} />
+          <Route path="my-watchlist" element={<MyWatchlist />} />
 
           {/* Account Routes */}
           <Route path="/my-account" element={<MyAccount />}>
-            <Route path="/my-cart" element={<MyCart />} />
-            <Route path="/my-quote" element={<MyQuote />} />
-            <Route path="/my-watchlist" element={<MyWatchlist />} />
             <Route path="profile" element={<Profile />} />
             <Route path="orders" element={<div>Order History Page</div>} /> {/* Placeholder */}
             <Route path="settings" element={<Settings />} />

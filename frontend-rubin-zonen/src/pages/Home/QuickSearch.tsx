@@ -128,7 +128,6 @@ function QuickSearchContent() {
             
             setCounts(newCounts);
             setIsLoading(false);
-            toast.success("Data loaded successfully!");
         };
 
         fetchCounts();

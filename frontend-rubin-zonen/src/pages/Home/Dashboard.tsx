@@ -9,11 +9,9 @@ import { useEffect, useState } from "react";
 import { getDashboardStats } from "@/services/dashboard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
-import { useSearchHistory } from "@/hooks/useSearchHistory";
+import { useQuickSearch } from "@/hooks/useQuickSearch";
 import { SavedSearches } from "@/components/SavedSearches";
 import { useNavigate } from "react-router-dom";
-import { getSavedSearches, deleteSavedSearch as apiDeleteSavedSearch } from "@/services/savedSearches"; // New import
-import type { SavedSearchRecord } from "@/components/SavedSearches"; // New import
 
 interface DashboardStats {
   specialStonesCount: number;
@@ -34,13 +32,14 @@ function DashboardContent() {
 
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [dbSavedSearches, setDbSavedSearches] = useState<SavedSearchRecord<Record<string, string[]>>[]>([]); // New state
 
   const {
     lastSearches,
+    savedSearches: dbSavedSearches,
     deleteLastSearch,
-  } = useSearchHistory();
-
+    deleteSavedSearch,
+  } = useQuickSearch();
+  
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -53,31 +52,10 @@ function DashboardContent() {
       }
     };
     
-    const fetchSearches = async () => {
-        try {
-            const dbSearchesData = await getSavedSearches();
-            setDbSavedSearches(dbSearchesData.map(s => ({
-              id: s.id,
-              name: s.name,
-              params: s.search_params,
-              created_at: s.created_at,
-            })));
-        } catch (err) {
-            setError("Failed to fetch saved searches.");
-            console.error(err);
-        }
-    }
-
     fetchStats();
-    fetchSearches();
   }, []);
 
-  const handleLoadSearch = (params: Record<string, string>) => {
-    const searchString = new URLSearchParams(params).toString();
-    navigate(`/search?${searchString}`);
-  };
-
-  const handleLoadDbSearch = (params: Record<string, string[]>) => {
+  const handleLoadSearch = (params: Record<string, string[]>) => {
     navigate('/diamond-list', { state: { searchParams: params } });
   };
 
@@ -118,19 +96,8 @@ function DashboardContent() {
             <SavedSearches<Record<string, string[]>>
               title="Saved Searches"
               searches={dbSavedSearches}
-              onLoad={handleLoadDbSearch}
-              onDelete={async (id) => {
-                // This is a temporary placeholder since the service for deleting quick searches from DB is in useQuickSearch
-                // For now, implement a basic delete that refreshes the list
-                await apiDeleteSavedSearch(id as number);
-                const updatedDbSearches = await getSavedSearches();
-                setDbSavedSearches(updatedDbSearches.map(s => ({
-                  id: s.id,
-                  name: s.name,
-                  params: s.search_params,
-                  created_at: s.created_at,
-                })));
-              }}
+              onLoad={handleLoadSearch}
+              onDelete={(id) => deleteSavedSearch(id as number)}
               deleteIdentifier="id"
             />
           </div>

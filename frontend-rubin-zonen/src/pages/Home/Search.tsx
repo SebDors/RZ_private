@@ -10,6 +10,16 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useQuickSearch } from '@/hooks/useQuickSearch';
 import { SavedSearches } from '@/components/SavedSearches';
 
@@ -67,6 +77,8 @@ function QuickSearchContent() {
     });
     const [minCarat, setMinCarat] = useState('');
     const [maxCarat, setMaxCarat] = useState('');
+    const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
+    const [saveSearchName, setSaveSearchName] = useState("");
 
     const {
         lastSearches,
@@ -105,13 +117,17 @@ function QuickSearchContent() {
     }, [selectedCriteria, addSearchToHistory, navigate]);
 
     const handleSave = () => {
-        let name = prompt("Enter a name for this search:");
+        setIsSaveDialogOpen(true);
+    };
+
+    const handleConfirmSave = () => {
+        let name = saveSearchName.trim();
         if (!name) {
             name = new Date().toLocaleString();
         }
-        if (name) {
-            saveSearch(name, selectedCriteria);
-        }
+        saveSearch(name, selectedCriteria);
+        setIsSaveDialogOpen(false);
+        setSaveSearchName("");
     };
 
     const handleReset = () => {
@@ -263,6 +279,26 @@ function QuickSearchContent() {
                     </div>
                 </div>
             </SidebarInset>
+
+            <AlertDialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Save Search</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Enter a name for your search. If you leave it empty, the current date and time will be used.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <Input
+                        value={saveSearchName}
+                        onChange={(e) => setSaveSearchName(e.target.value)}
+                        placeholder="e.g., My Favorite Search"
+                    />
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmSave}>Save</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     );
 }

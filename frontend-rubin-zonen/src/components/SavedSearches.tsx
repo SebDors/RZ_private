@@ -3,14 +3,14 @@ import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Input } from "./ui/input";
 
-export type SavedSearchRecord<TParams = Record<string, any>> = {
+export type SavedSearchRecord<TParams = Record<string, unknown>> = {
     name?: string;
     timestamp?: number;
     params: TParams;
     id?: number;
 }
 
-interface SavedSearchesProps<TParams extends Record<string, any>> {
+interface SavedSearchesProps<TParams extends Record<string, unknown>> {
     title: string;
     searches: SavedSearchRecord<TParams>[];
     onLoad: (params: TParams) => void;
@@ -18,7 +18,7 @@ interface SavedSearchesProps<TParams extends Record<string, any>> {
     deleteIdentifier: 'name' | 'timestamp' | 'id';
 }
 
-export function SavedSearches<TParams extends Record<string, any>>({ title, searches, onLoad, onDelete, deleteIdentifier }: SavedSearchesProps<TParams>) {
+export function SavedSearches<TParams extends Record<string, unknown>>({ title, searches, onLoad, onDelete, deleteIdentifier }: SavedSearchesProps<TParams>) {
     const [searchTerm, setSearchTerm] = useState("");
 
     const filteredSearches = searches.filter(search =>

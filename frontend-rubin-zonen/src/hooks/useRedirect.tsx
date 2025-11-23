@@ -2,14 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { checkToken } from '@/services/auth';
 import { useAuth } from './useAuth';
-
-/**
- * Retrieves the authentication token from localStorage or sessionStorage.
- * @returns The token string if found, otherwise null.
- */
-export const getToken = (): string | null => {
-  return localStorage.getItem('token') || sessionStorage.getItem('token');
-};
+import { getToken } from '@/lib/utils';
 
 /**
  * It checks for an authentication token

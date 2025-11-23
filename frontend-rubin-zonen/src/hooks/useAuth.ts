@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import { getToken } from './useRedirect';
+import { getToken } from '@/lib/utils';
 import type { User } from '@/models/models';
 import { toast } from 'sonner';
 

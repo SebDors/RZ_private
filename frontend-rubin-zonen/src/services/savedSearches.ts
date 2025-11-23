@@ -1,24 +1,24 @@
-import Cookies from "js-cookie";
+import { getToken } from "@/lib/utils";
 import type { SavedSearch } from "@/models/models";
 
 interface SavedSearchRaw {
     id: number;
     user_id: number;
     name: string;
-    search_params: string | Record<string, string[]>; // It can be a JSON string or already parsed object
+    search_params: string | Record<string, string[]>;
     search_type: 'quick' | 'advanced';
     created_at: string;
 }
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
-export const getSavedSearches = async (type: 'quick' | 'advanced'): Promise<SavedSearch[]> => {
-    const token = Cookies.get("token");
+export const getSavedSearches = async (): Promise<SavedSearch[]> => {
+    const token = getToken();
     if (!token) {
         throw new Error("No token found");
     }
 
-    const response = await fetch(`${API_URL}/api/saved-searches?type=${type}`, {
+    const response = await fetch(`${API_URL}/api/saved-searches`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
@@ -33,8 +33,8 @@ export const getSavedSearches = async (type: 'quick' | 'advanced'): Promise<Save
     return searches.map((s: SavedSearchRaw) => ({ ...s, search_params: typeof s.search_params === 'string' ? JSON.parse(s.search_params) : s.search_params }));
 };
 
-export const saveSearch = async (name: string, search_params: Record<string, string[]>, search_type: 'quick' | 'advanced'): Promise<SavedSearch> => {
-    const token = Cookies.get("token");
+export const saveSearch = async (name: string, search_params: Record<string, string[]>): Promise<SavedSearch> => {
+    const token = getToken();
     if (!token) {
         throw new Error("No token found");
     }
@@ -45,7 +45,7 @@ export const saveSearch = async (name: string, search_params: Record<string, str
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name, search_params, search_type }),
+        body: JSON.stringify({ name, search_params }),
     });
 
     if (!response.ok) {
@@ -55,7 +55,7 @@ export const saveSearch = async (name: string, search_params: Record<string, str
 };
 
 export const deleteSavedSearch = async (id: number): Promise<void> => {
-    const token = Cookies.get("token");
+    const token = getToken();
     if (!token) {
         throw new Error("No token found");
     }

@@ -1,4 +1,4 @@
-import { getToken } from "@/hooks/useRedirect";
+import { getToken } from "@/lib/utils";
 import type { Diamant } from "@/models/models";
 
 export const getAllDiamonds = async (filters?: Record<string, string>): Promise<Diamant[]> => {

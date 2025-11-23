@@ -1,4 +1,4 @@
-import { getToken } from "@/hooks/useRedirect";
+import { getToken } from "@/lib/utils";
 import type { Filter } from "@/models/models";
 
 export const getAllFilters = async (): Promise<Filter[]> => {

@@ -1,4 +1,4 @@
-import { getToken } from "@/hooks/useRedirect";
+import { getToken } from "@/lib/utils";
 
 export const getDashboardStats = async (): Promise<{ specialStonesCount: number; upcomingStonesCount: number; totalAvailableStones: number }> => {
     const token = getToken();

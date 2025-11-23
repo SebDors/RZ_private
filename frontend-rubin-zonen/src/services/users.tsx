@@ -1,4 +1,4 @@
-import { getToken } from "@/hooks/useRedirect";
+import { getToken } from "@/lib/utils";
 import type { User } from "@/models/models";
 
 export const getAllUsers = async (): Promise<User[]> => {

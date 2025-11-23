@@ -169,7 +169,7 @@ function QuickSearchContent() {
     const renderGrid = (title: string, key: string, items: (string | { Name: string; db_value: string | null })[]) => (
         <div className="mb-4">
             <h3 className="text-lg font-semibold mb-1">{title}</h3>
-            <div className="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-9 xl:grid-cols-11 2xl:grid-cols-12 grid-flow-row-dense gap-2">
+            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-12 grid-flow-row-dense gap-2">
                 {items.map(item => {
                     const name = typeof item === 'string' ? item : item.Name;
                     const value = typeof item === 'string' ? item : (item.db_value === null ? '' : item.db_value);

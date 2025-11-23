@@ -1,56 +1,58 @@
 const db = require('../config/db');
 
-exports.getSavedSearches = (req, res) => {
+const getSavedSearches = async (req, res) => {
     const userId = req.user.id;
-    const { type } = req.query; // e.g., 'quick' or 'advanced'
 
-    let query = 'SELECT * FROM saved_searches WHERE user_id = ?';
-    const params = [userId];
+    try {
+        let queryText = "SELECT * FROM saved_searches WHERE user_id = $1 AND search_type = 'quick'";
+        const params = [userId];
 
-    if (type) {
-        query += ' AND search_type = ?';
-        params.push(type);
+        const result = await db.query(queryText, params);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching saved searches:', error);
+        res.status(500).send('Server error');
     }
-
-    db.query(query, params, (err, results) => {
-        if (err) {
-            console.error('Error fetching saved searches:', err);
-            return res.status(500).send('Server error');
-        }
-        res.json(results);
-    });
 };
 
-exports.saveSearch = (req, res) => {
+const saveSearch = async (req, res) => {
     const userId = req.user.id;
-    const { name, search_params, search_type } = req.body;
+    const { name, search_params } = req.body;
 
-    if (!name || !search_params || !search_type) {
-        return res.status(400).send('Missing required fields: name, search_params, search_type');
+    if (!name || !search_params) {
+        return res.status(400).send('Missing required fields: name, search_params');
     }
 
-    const query = 'INSERT INTO saved_searches (user_id, name, search_params, search_type) VALUES (?, ?, ?, ?)';
-    db.query(query, [userId, name, JSON.stringify(search_params), search_type], (err, results) => {
-        if (err) {
-            console.error('Error saving search:', err);
-            return res.status(500).send('Server error');
-        }
-        res.status(201).json({ id: results.insertId, name, search_params, search_type });
-    });
+    try {
+        const queryText = 'INSERT INTO saved_searches (user_id, name, search_params, search_type) VALUES ($1, $2, $3, $4) RETURNING *';
+        const result = await db.query(queryText, [userId, name, search_params, 'quick']);
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error saving search:', error);
+        res.status(500).send('Server error');
+    }
 };
 
-exports.deleteSearch = (req, res) => {
+const deleteSearch = async (req, res) => {
     const userId = req.user.id;
     const { id } = req.params;
-    const query = 'DELETE FROM saved_searches WHERE id = ? AND user_id = ?';
-    db.query(query, [id, userId], (err, results) => {
-        if (err) {
-            console.error('Error deleting saved search:', err);
-            return res.status(500).send('Server error');
-        }
-        if (results.affectedRows === 0) {
+    
+    try {
+        const queryText = 'DELETE FROM saved_searches WHERE id = $1 AND user_id = $2 RETURNING *';
+        const result = await db.query(queryText, [id, userId]);
+
+        if (result.rowCount === 0) {
             return res.status(404).send('Saved search not found or user not authorized');
         }
         res.send('Saved search deleted');
-    });
+    } catch (error) {
+        console.error('Error deleting saved search:', error);
+        res.status(500).send('Server error');
+    }
+};
+
+module.exports = {
+    getSavedSearches,
+    saveSearch,
+    deleteSearch,
 };

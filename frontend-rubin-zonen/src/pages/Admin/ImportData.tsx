@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileSpreadsheet, X } from 'lucide-react';
-import { getToken } from '@/hooks/useRedirect';
+import { getToken } from '@/lib/utils';
 
 const csvMimeTypes = [
   'text/csv',

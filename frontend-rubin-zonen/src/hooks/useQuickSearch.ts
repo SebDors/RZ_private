@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getSavedSearches, saveSearch as apiSaveSearch, deleteSavedSearch as apiDeleteSearch } from '@/services/savedSearches';
-// @ts-ignore
-import type { SavedSearch } from '@/models/models';
 import type { SavedSearchRecord } from '@/components/SavedSearches'; // New import
 import { toast } from 'sonner';
 
@@ -24,7 +22,7 @@ export const useQuickSearch = () => {
 
     const fetchSavedSearches = async () => {
         try {
-            const searches = await getSavedSearches('quick');
+            const searches = await getSavedSearches(); // No type parameter
             // Map SavedSearch to SavedSearchRecord
             setSavedSearches(searches.map(s => ({
                 id: s.id,
@@ -55,7 +53,7 @@ export const useQuickSearch = () => {
 
     const saveSearch = useCallback(async (name: string, searchParams: Record<string, string[]>) => {
         try {
-            await apiSaveSearch(name, searchParams, 'quick');
+            await apiSaveSearch(name, searchParams); // No type parameter
             toast(`Search "${name}" saved.`);
             fetchSavedSearches(); // Refresh list
         } catch (error) {

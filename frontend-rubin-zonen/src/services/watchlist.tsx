@@ -1,4 +1,4 @@
-import { getToken } from "@/hooks/useRedirect";
+import { getToken } from "@/lib/utils";
 
 export interface WatchlistItem {
     diamond_stock_id: string;

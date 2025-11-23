@@ -11,7 +11,12 @@ import {
 import type {
   ColumnDef,
   SortingState,
+  HeaderGroup,
+  Header,
+  Row,
+  Cell,
 } from "@tanstack/react-table"
+
 
 import {
   Table,
@@ -25,17 +30,17 @@ import {
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
+interface DataTableProps<TData> {
+  columns: ColumnDef<TData, unknown>[]
   data: TData[]
-  meta?: Record<string, unknown> // For passing extra data to columns
+  meta?: Record<string, unknown>
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData>({
   columns,
   data,
   meta,
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([])
 
   const table = useReactTable({
@@ -56,9 +61,9 @@ export function DataTable<TData, TValue>({
         <div className="rounded-md border">
         <Table>
             <TableHeader>
-            {table.getHeaderGroups().map((headerGroup: any) => (
+            {table.getHeaderGroups().map((headerGroup: HeaderGroup<TData>) => (
                 <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header: any) => {
+                {headerGroup.headers.map((header: Header<TData, unknown>) => {
                     return (
                     <TableHead key={header.id}>
                         {header.isPlaceholder
@@ -75,12 +80,12 @@ export function DataTable<TData, TValue>({
             </TableHeader>
             <TableBody>
             {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row: any) => (
+                table.getRowModel().rows.map((row: Row<TData>) => (
                 <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
                 >
-                    {row.getVisibleCells().map((cell: any) => (
+                    {row.getVisibleCells().map((cell: Cell<TData, unknown>) => (
                     <TableCell key={cell.id}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>

@@ -66,7 +66,7 @@ function DiamondListContent() {
                             return range;
                         });
                     }
-                    
+
                     const definedFilters: Record<string, string> = {};
                     const filterMappings: Record<string, string> = {
                         shape: 'shape',
@@ -110,11 +110,8 @@ function DiamondListContent() {
             <AppSidebar onClick={handleOpen} className="cursor-pointer" />
             <SidebarInset>
                 <Header />
-                <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 ml-2 mr-2 rounded-lg">
-                    <div className="w-full max-w-4xl">
-                        <h2 className="text-2xl font-bold mb-4">Diamond List</h2>
+                <div className="flex-col items-center w-full justify-center min-h-screen bg-gray-100 dark:bg-gray-900 rounded-lg">
                         <DataTable columns={columns} data={diamonds} meta={{ navigateToDetail }} />
-                    </div>
                 </div>
             </SidebarInset>
         </>

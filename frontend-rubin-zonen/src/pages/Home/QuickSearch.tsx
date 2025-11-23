@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import { cn } from "@/lib/utils";
 
 const shapes = [
     { Name: "Round", db_value: 'RD' },
@@ -88,6 +89,7 @@ function QuickSearchContent() {
     const [counts, setCounts] = useState<Record<string, number>>({});
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [selectedCells, setSelectedCells] = useState<Record<string, CellIdentifier>>({});
+    const [hoveredColorGroup, setHoveredColorGroup] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchCounts = async () => {
@@ -247,9 +249,21 @@ function QuickSearchContent() {
                                             rows.map((row, rowIndex) => {
                                                 const cellIdentifier: CellIdentifier = { color: row.color, clarity: row.clarity, carat: '' };
                                                 return (
-                                                    <TableRow key={`${row.color}-${row.clarity}`}>
+                                                    <TableRow 
+                                                        key={`${row.color}-${row.clarity}`}
+                                                        onMouseEnter={() => setHoveredColorGroup(color)}
+                                                        onMouseLeave={() => setHoveredColorGroup(null)}
+                                                    >
                                                         {rowIndex === 0 && (
-                                                            <TableCell rowSpan={rows.length} className="align-middle font-semibold text-center">{color}</TableCell>
+                                                            <TableCell 
+                                                                rowSpan={rows.length} 
+                                                                className={cn(
+                                                                    "align-middle font-semibold text-center transition-colors",
+                                                                    { "bg-muted/50": hoveredColorGroup === color }
+                                                                )}
+                                                            >
+                                                                {color}
+                                                            </TableCell>
                                                         )}
                                                         <TableCell className="font-medium">{row.clarity}</TableCell>
                                                         {caratRanges.map(carat => {

@@ -79,7 +79,6 @@ function QuickSearchContent() {
     const [maxCarat, setMaxCarat] = useState('');
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
     const [saveSearchName, setSaveSearchName] = useState("");
-
     const {
         lastSearches,
         savedSearches,

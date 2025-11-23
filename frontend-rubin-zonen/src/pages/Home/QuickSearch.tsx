@@ -11,7 +11,32 @@ import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
 
-const shapes = ["All", "Round", "Oval", "Pear", "Marquise", "Heart", "Radiant", "Princess", "Emerald", "Square Emerald", "Cushion Modified", "Cushion Brillant", "Cushion", "Long Radiant", "Square Radiant", "Trilliant", "Old Mine Cushion", "Shield", "Baguette", "Traperoid", "Old European Cut", "Special Shape", "Rose Cut", "Other"];
+const shapes = [
+    { Name: "All", db_value: '' },
+    { Name: "Round", db_value: 'RD' },
+    { Name: "Oval", db_value: 'OV' },
+    { Name: "Pear", db_value: 'PS' },
+    { Name: "Marquise", db_value: 'MQ' },
+    { Name: "Heart", db_value: 'HT' },
+    { Name: "Radiant", db_value: 'RA' },
+    { Name: "Princess", db_value: 'PC' },
+    { Name: "Emerald", db_value: 'EM' },
+    { Name: "Square Emerald", db_value: 'SEM' },
+    { Name: "Cushion Modified", db_value: 'CMB' },
+    { Name: "Cushion Brillant", db_value: 'CB' },
+    { Name: "Cushion", db_value: 'CU' },
+    { Name: "Long Radiant", db_value: 'LRA' },
+    { Name: "Square Radiant", db_value: 'SRA' },
+    { Name: "Trilliant", db_value: 'TR' },
+    { Name: "Old Mine Cushion", db_value: 'OM' },
+    { Name: "Shield", db_value: 'SH' },
+    { Name: "Baguette", db_value: 'BAG' },
+    { Name: "Traperoid", db_value: 'TP' },
+    { Name: "Old European Cut", db_value: 'EU' },
+    { Name: "Special Shape", db_value: 'SP' },
+    { Name: "Rose Cut", db_value: 'RC' },
+    { Name: "Other", db_value: null }
+];
 const colors = ["All", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O-P", "Q-R", "S-T", "U-V", "W-X", "Y-Z", "N-O", "P-R"];
 const clarities = ["All", "FL", "IF", "VVS1", "VVS2", "VS1", "VS2", "SI1", "SI2", "SI3", "I1", "I2"];
 const carats = ["Less than 0.30", "0.30-0.39", "0.40-0.49", "0.50-0.69", "0.70-0.89", "0.90-1.99", "1.00-1.49", "1.50-1.99", "2.00-2.99", "3.00-3.99", "4.00-4.99", "5.00-5.99", "6.00-6.99", "7.00-7.99", "8.00-8.99", "9.00-9.99", "More than 10.00"];
@@ -115,19 +140,23 @@ function QuickSearchContent() {
         }));
     };
 
-    const renderGrid = (title: string, key: string, items: string[]) => (
+    const renderGrid = (title: string, key: string, items: any[]) => (
         <div className="mb-4">
             <h3 className="text-lg font-semibold mb-2">{title}</h3>
             <div className="grid grid-cols-12 gap-2">
-                {items.map(item => (
-                    <Button
-                        key={item}
-                        variant={selectedCriteria[key].includes(item) ? "default" : "outline"}
-                        onClick={() => handleSelect(key, item)}
-                    >
-                        {item}
-                    </Button>
-                ))}
+                {items.map(item => {
+                    const name = typeof item === 'string' ? item : item.Name;
+                    const value = typeof item === 'string' ? item : item.db_value;
+                    return (
+                        <Button
+                            key={name}
+                            variant={selectedCriteria[key].includes(value) ? "default" : "outline"}
+                            onClick={() => handleSelect(key, value)}
+                        >
+                            {name}
+                        </Button>
+                    );
+                })}
             </div>
             {key === 'carat' && (
                 <div className="flex flex-col gap-2 mt-2">

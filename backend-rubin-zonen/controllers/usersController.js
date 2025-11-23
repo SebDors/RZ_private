@@ -275,6 +275,37 @@ exports.deleteUser = async (req, res) => {
     }
 };
 
+// Function to get unique company names
+exports.getUniqueCompanyNames = async (req, res) => {
+    try {
+        const client = await db.connect();
+        const result = await client.query(
+            "SELECT DISTINCT company_name FROM users WHERE company_name IS NOT NULL AND company_name != '' ORDER BY company_name ASC"
+        );
+        client.release();
+
+        const companyNames = result.rows.map(row => row.company_name);
+        
+        await addLog({
+            userId: req.user.id,
+            level: 'info',
+            action: 'ADMIN_GET_UNIQUE_COMPANY_NAMES',
+            details: { message: `Retrieved ${companyNames.length} unique company names.` },
+        });
+
+        res.status(200).json(companyNames);
+    } catch (error) {
+        await addLog({
+            userId: req.user.id,
+            level: 'error',
+            action: 'ADMIN_GET_UNIQUE_COMPANY_NAMES_FAILED',
+            details: { error: error.message },
+        });
+        console.error('Error retrieving unique company names:', error);
+        res.status(500).json({ message: 'Server error while retrieving unique company names.' });
+    }
+};
+
 // Logic to retrieve the connected user's profile
 exports.getConnectedUserProfile = async (req, res) => {
     const userId = req.user.id; // The user ID is attached by the authentication middleware

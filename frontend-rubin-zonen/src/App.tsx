@@ -25,6 +25,7 @@ import CompareDiamonds from './pages/Home/CompareDiamonds'
 import MyQuote from './pages/Account/MyQuote'
 import MyWatchlist from './pages/Account/MyWatchlist'
 import Search from './pages/Home/Search'
+import QuickSearch from './pages/Home/QuickSearch'
 import SideStoneSearch from './pages/Home/SideStoneSearch'
 import StoneDetail from './pages/Home/StoneDetail'
 
@@ -60,15 +61,16 @@ function App() {
           <Route path="/diamond-list" element={<DiamondList />} />
           <Route path="/new-diamond-list" element={<NewDiamondList />} />
           <Route path="/compare-diamonds" element={<CompareDiamonds />} />
-          <Route path="/my-cart" element={<MyCart />} />
-          <Route path="/my-quote" element={<MyQuote />} />
-          <Route path="/my-watchlist" element={<MyWatchlist />} />
           <Route path="/search" element={<Search />} />
+          <Route path="/quick-search" element={<QuickSearch />} />
           <Route path="/side-stone-search" element={<SideStoneSearch />} />
           <Route path="/stone-detail/:stock_id" element={<StoneDetail />} />
 
           {/* Account Routes */}
           <Route path="/my-account" element={<MyAccount />}>
+            <Route path="/my-cart" element={<MyCart />} />
+            <Route path="/my-quote" element={<MyQuote />} />
+            <Route path="/my-watchlist" element={<MyWatchlist />} />
             <Route path="profile" element={<Profile />} />
             <Route path="orders" element={<div>Order History Page</div>} /> {/* Placeholder */}
             <Route path="settings" element={<Settings />} />

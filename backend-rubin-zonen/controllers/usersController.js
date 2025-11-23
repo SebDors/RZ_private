@@ -306,6 +306,34 @@ exports.getUniqueCompanyNames = async (req, res) => {
     }
 };
 
+// Function to get users by company name
+exports.getUsersByCompanyName = async (req, res) => {
+    const { companyName } = req.params;
+    try {
+        const client = await db.connect();
+        const result = await client.query('SELECT * FROM users WHERE company_name = $1', [companyName]);
+        client.release();
+
+        await addLog({
+            userId: req.user.id,
+            level: 'info',
+            action: 'ADMIN_GET_USERS_BY_COMPANY',
+            details: { companyName, count: result.rows.length },
+        });
+
+        res.status(200).json(result.rows);
+    } catch (error) {
+        await addLog({
+            userId: req.user.id,
+            level: 'error',
+            action: 'ADMIN_GET_USERS_BY_COMPANY_FAILED',
+            details: { companyName, error: error.message },
+        });
+        console.error(`Error retrieving users for company ${companyName}:`, error);
+        res.status(500).json({ message: 'Server error while retrieving users by company name.' });
+    }
+};
+
 // Logic to retrieve the connected user's profile
 exports.getConnectedUserProfile = async (req, res) => {
     const userId = req.user.id; // The user ID is attached by the authentication middleware

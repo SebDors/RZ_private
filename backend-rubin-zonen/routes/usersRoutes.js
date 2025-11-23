@@ -87,6 +87,28 @@ router.get('/company-names', authenticate, authorizeAdmin, usersController.getUn
 
 /**
  * @swagger
+ * /api/users/by-company/{companyName}:
+ *   get:
+ *     summary: Get users by company name (Admin only)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: companyName
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of users for the given company name
+ *       403:
+ *         description: Access denied
+ */
+router.get('/by-company/:companyName', authenticate, authorizeAdmin, usersController.getUsersByCompanyName);
+
+/**
+ * @swagger
  * /api/users/{id}:
  *   get:
  *     summary: Get a user by their ID (Admin only)
@@ -207,6 +229,5 @@ router.delete('/:id', authenticate, authorizeAdmin, usersController.deleteUser);
  */
 router.get('/company-names', authenticate, authorizeAdmin, usersController.getUniqueCompanyNames);
 
-//TODO: Ajouter un endpoint pour list user by company name
 
 module.exports = router;

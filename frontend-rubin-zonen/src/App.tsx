@@ -18,12 +18,11 @@ import ClientDetail from './pages/Admin/ClientDetail'
 import Home from './pages/Home/Home'
 import Dashboard from './pages/Home/Dashboard'
 import MyCart from './pages/Account/MyCart'
-import DiamondList from './pages/Home/DiamondList'
+import DiamondList from './pages/Home/depreciatedDiamondList'
 import NewDiamondList from './pages/Home/NewDiamondList'
 import CompareDiamonds from './pages/Home/CompareDiamonds'
 import MyQuote from './pages/Account/MyQuote'
 import MyWatchlist from './pages/Account/MyWatchlist'
-import QuickSearch from './pages/Home/QuickSearch'
 import Search from './pages/Home/Search'
 import SideStoneSearch from './pages/Home/SideStoneSearch'
 import StoneDetail from './pages/Home/StoneDetail'
@@ -57,16 +56,12 @@ function App() {
           {/* Home Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          {/* The old diamond list page, QuickSearch uses it */}
           <Route path="/diamond-list" element={<DiamondList />} />
-          {/* The new diamond list page with comparison features */}
           <Route path="/new-diamond-list" element={<NewDiamondList />} />
-          {/* The compare diamonds page */}
           <Route path="/compare-diamonds" element={<CompareDiamonds />} />
           <Route path="/my-cart" element={<MyCart />} />
           <Route path="/my-quote" element={<MyQuote />} />
           <Route path="/my-watchlist" element={<MyWatchlist />} />
-          <Route path="/quick-search" element={<QuickSearch />} />
           <Route path="/search" element={<Search />} />
           <Route path="/side-stone-search" element={<SideStoneSearch />} />
           <Route path="/stone-detail/:stock_id" element={<StoneDetail />} />

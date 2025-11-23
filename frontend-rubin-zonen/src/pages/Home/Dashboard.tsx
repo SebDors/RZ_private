@@ -36,6 +36,13 @@ function DashboardContent() {
   const [error, setError] = useState<string | null>(null);
   const [dbSavedSearches, setDbSavedSearches] = useState<SavedSearchRecord<Record<string, string[]>>[]>([]); // New state
 
+  const {
+    lastSearches,
+    savedSearches,
+    deleteLastSearch,
+    deleteSavedSearch,
+  } = useSearchHistory();
+
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -66,6 +73,11 @@ function DashboardContent() {
     fetchStats();
     fetchSearches();
   }, []);
+
+  const handleLoadSearch = (params: Record<string, string>) => {
+    const searchString = new URLSearchParams(params).toString();
+    navigate(`/search?${searchString}`);
+  };
 
   const handleLoadDbSearch = (params: Record<string, string[]>) => {
     navigate('/diamond-list', { state: { searchParams: params } });
@@ -98,8 +110,22 @@ function DashboardContent() {
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <SavedSearches<Record<string, string[]>>
+            <SavedSearches
+              title="Last Searches"
+              searches={lastSearches}
+              onLoad={handleLoadSearch}
+              onDelete={(timestamp) => deleteLastSearch(timestamp as number)}
+              deleteIdentifier="timestamp"
+            />
+            <SavedSearches
               title="Saved Searches"
+              searches={savedSearches}
+              onLoad={handleLoadSearch}
+              onDelete={(name) => deleteSavedSearch(name as string)}
+              deleteIdentifier="name"
+            />
+            <SavedSearches<Record<string, string[]>>
+              title="Quick Saved Searches"
               searches={dbSavedSearches}
               onLoad={handleLoadDbSearch}
               onDelete={async (id) => {

@@ -3,7 +3,6 @@
 import * as React from "react"
 import {
   Search,
-  Settings2,
   Gem,
   LayoutDashboard,
   ShieldUser,
@@ -52,10 +51,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           title: "Dashboard",
           url: "/dashboard",
         },
-        {
-          title: "Truc1",
-          url: "/dashboard",
-        },
       ]
     },
     {
@@ -69,16 +64,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           url: "/search",
         },
         {
-          title: "Favorite Stones",
-          url: "/search",
-        },
-        {
           title: "Quick Search",
           url: "/quick-search",
-        },
-        {
-          title: "Side Stone Search",
-          url: "/side-stone-search",
         },
       ],
     },
@@ -119,29 +106,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           url: "/admin/all-quotes",
         },
       ]
-    },
-    {
-      title: "Settings",
-      url: "/settings",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "/settings",
-        },
-        {
-          title: "Truc1",
-          url: "/settings",
-        },
-        {
-          title: "Truc2",
-          url: "/settings",
-        },
-        {
-          title: "Truc3",
-          url: "#",
-        },
-      ],
     },
   ];
 

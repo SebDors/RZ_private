@@ -1,15 +1,13 @@
 const db = require('../config/db');
 
 const getSavedSearches = async (req, res) => {
-    const userId = req.user.id;
-
-    try {
-        let queryText = "SELECT * FROM saved_searches WHERE user_id = $1 AND search_type = 'quick'";
-        const params = [userId];
-
-        const result = await db.query(queryText, params);
-        res.json(result.rows);
-    } catch (error) {
+        const userId = req.user.id;
+        try {
+            let queryText = "SELECT * FROM saved_searches WHERE user_id = $1";
+            const params = [userId];
+            const result = await db.query(queryText, params);
+            res.json(result.rows);
+        } catch (error) {
         console.error('Error fetching saved searches:', error);
         res.status(500).send('Server error');
     }
@@ -42,12 +40,12 @@ const deleteSearch = async (req, res) => {
         const result = await db.query(queryText, [id, userId]);
 
         if (result.rowCount === 0) {
-            return res.status(404).send('Saved search not found or user not authorized');
+            return res.status(404).json({ message: 'Saved search not found or user not authorized' });
         }
-        res.send('Saved search deleted');
+        res.status(200).json({ message: 'Saved search deleted' });
     } catch (error) {
         console.error('Error deleting saved search:', error);
-        res.status(500).send('Server error');
+        res.status(500).json({ message: 'Server error' });
     }
 };
 

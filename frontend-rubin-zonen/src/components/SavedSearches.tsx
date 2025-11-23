@@ -49,7 +49,7 @@ export function SavedSearches<TParams extends Record<string, unknown>>({ title, 
                                 </div>
                                 <div className="flex gap-2">
                                     <Button size="sm" onClick={() => onLoad(search.params)}>Load</Button>
-                                    <Button size="sm" variant="destructive" onClick={() => onDelete(deleteIdentifier === 'name' ? search.name! : search.timestamp as string | number)} >Delete</Button>
+                                    <Button size="sm" variant="destructive" onClick={() => onDelete(search[deleteIdentifier] as string | number)} >Delete</Button>
                                 </div>
                             </li>
                         ))}

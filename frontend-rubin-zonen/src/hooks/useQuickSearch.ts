@@ -22,14 +22,12 @@ export const useQuickSearch = () => {
 
     const fetchSavedSearches = async () => {
         try {
-            const searches = await getSavedSearches(); // No type parameter
-            // Map SavedSearch to SavedSearchRecord
+            const searches = await getSavedSearches();
             setSavedSearches(searches.map(s => ({
                 id: s.id,
                 name: s.name,
-                params: s.search_params, // Map search_params to params
+                params: s.search_params,
                 created_at: s.created_at,
-                // user_id and search_type are not needed for display in SavedSearchRecord
             })));
         } catch (error) {
             console.error("Failed to fetch saved searches:", error);

@@ -215,7 +215,7 @@ function QuickSearchContent() {
                         <CardContent>
                             <div className="mb-4">
                                 <h3 className="text-lg font-semibold mb-2">Shape</h3>
-                                <div className="grid grid-cols-6 md:grid-cols-8 lg:grid-cols-12 gap-2">
+                                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-12 grid-flow-row-dense gap-2">
                                     {shapes.map(shape => (
                                         <Button
                                             key={shape.db_value}
@@ -259,7 +259,7 @@ function QuickSearchContent() {
                                                                 rowSpan={rows.length} 
                                                                 className={cn(
                                                                     "align-middle font-semibold text-center transition-colors",
-                                                                    { "bg-muted/50": hoveredColorGroup === color }
+                                                                    { "bg-accent": hoveredColorGroup === color }
                                                                 )}
                                                             >
                                                                 {color}

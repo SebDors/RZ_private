@@ -78,10 +78,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           title: "List",
           url: "/new-diamond-list",
         },
-        {
-          title: "Compare",
-          url: "/compare-diamonds",
-        },
       ],
     },
     {

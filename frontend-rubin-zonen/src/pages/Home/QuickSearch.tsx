@@ -14,6 +14,7 @@ import { Loader2 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
 const shapes = [
+    { Name: "All", db_value: '' },
     { Name: "Round", db_value: 'RD' },
     { Name: "Oval", db_value: 'OV' },
     { Name: "Pear", db_value: 'PS' },
@@ -23,7 +24,7 @@ const shapes = [
     { Name: "Princess", db_value: 'PC' },
     { Name: "Emerald", db_value: 'EM' },
     { Name: "Square Emerald", db_value: 'SEM' },
-    { Name: "Asscher", db_value: 'AS' },
+    { Name: "Asscher", db_value: 'AS'},
     { Name: "Cushion Modified", db_value: 'CMB' },
     { Name: "Cushion Brilliant", db_value: 'CB' },
     { Name: "Cushion", db_value: 'CU' },
@@ -37,7 +38,7 @@ const shapes = [
     { Name: "Old European Cut", db_value: 'EU' },
     { Name: "Special Shape", db_value: 'SP' },
     { Name: "Rose Cut", db_value: 'RC' },
-    { Name: "Other", db_value: 'OT' }
+    // { Name: "Other", db_value: 'null' } // TODO change
 ];
 
 const caratRanges = ["0.30-0.399", "0.40-0.499", "0.50-0.699", "0.70-0.899", "0.90-0.999", "1.00-1.49", "1.50-1.99", "2.00-2.99", "3.00-3.99", "4.00-4.99", "5.00-5.99", "6.00-7.99", "8.00-9.99", "10.00+"];
@@ -94,7 +95,7 @@ function QuickSearchContent() {
     useEffect(() => {
         const fetchCounts = async () => {
             setIsLoading(true);
-            toast.info(`Fetching data for ${shapes.find(s => s.db_value === selectedShape)?.Name} diamonds...`);
+            const loadingToastId = toast.loading(`Fetching data for ${shapes.find(s => s.db_value === selectedShape)?.Name} diamonds...`);
 
             const promises = [];
             for (const row of colorClarityRows) {
@@ -130,6 +131,7 @@ function QuickSearchContent() {
             
             setCounts(newCounts);
             setIsLoading(false);
+            toast.dismiss(loadingToastId);
         };
 
         fetchCounts();
@@ -209,9 +211,6 @@ function QuickSearchContent() {
                 <Header />
                 <div className="p-4">
                     <Card>
-                        <CardHeader>
-                            <CardTitle>Quick Search by Grid</CardTitle>
-                        </CardHeader>
                         <CardContent>
                             <div className="mb-4">
                                 <h3 className="text-lg font-semibold mb-2">Shape</h3>

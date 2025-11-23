@@ -34,8 +34,9 @@ const shapes = [
     { Name: "Princess", db_value: 'PC' },
     { Name: "Emerald", db_value: 'EM' },
     { Name: "Square Emerald", db_value: 'SEM' },
+    { Name: "Asscher", db_value: 'AS'},
     { Name: "Cushion Modified", db_value: 'CMB' },
-    { Name: "Cushion Brillant", db_value: 'CB' },
+    { Name: "Cushion Brilliant", db_value: 'CB' },
     { Name: "Cushion", db_value: 'CU' },
     { Name: "Long Radiant", db_value: 'LRA' },
     { Name: "Square Radiant", db_value: 'SRA' },
@@ -43,11 +44,11 @@ const shapes = [
     { Name: "Old Mine Cushion", db_value: 'OM' },
     { Name: "Shield", db_value: 'SH' },
     { Name: "Baguette", db_value: 'BAG' },
-    { Name: "Traperoid", db_value: 'TP' },
+    { Name: "Trapezoid", db_value: 'TP' },
     { Name: "Old European Cut", db_value: 'EU' },
     { Name: "Special Shape", db_value: 'SP' },
     { Name: "Rose Cut", db_value: 'RC' },
-    { Name: "Other", db_value: 'null' } // TODO change
+    // { Name: "Other", db_value: 'null' } // TODO change
 ];
 const colors = ["All", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O-P", "Q-R", "S-T", "U-V", "W-X", "Y-Z", "N-O", "P-R"];
 const clarities = ["All", "FL", "IF", "VVS1", "VVS2", "VS1", "VS2", "SI1", "SI2", "SI3", "I1", "I2"];

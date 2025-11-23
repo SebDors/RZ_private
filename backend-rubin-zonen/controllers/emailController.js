@@ -1,7 +1,8 @@
 const { apiInstance } = require('../services/emailService');
+const db = require('../config/db');
+const { addLog } = require('./logController');
 
-// TODO: Ajouter la lisaison avec la BDD
-const sendEmail = async (to, subject, textContent) => {
+const sendCustomEmail = async (to, subject, textContent) => {
     if (!to || !subject || !textContent) {
         throw new Error('The `to`, `subject`, and `textContent` fields are required.');
     }
@@ -16,28 +17,80 @@ const sendEmail = async (to, subject, textContent) => {
     try {
         const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
         console.log('API called successfully. Returned data: ' + JSON.stringify(data));
-        return data; // Returns data for potential future use
+        return data;
     } catch (error) {
         console.error('Failed to send email:', error);
-        throw error; // Rethrow the error so the caller can handle it
+        throw error;
     }
 };
 
-exports.sendEmail = sendEmail;
-
-// Example function to send a test email
-// TODO: test with client info
-exports.sendTestEmail = async (req, res) => {
-    const { to, subject, textContent } = req.body;
-
-    if (!to || !subject || !textContent) {
-        return res.status(400).json({ message: 'The `to`, `subject`, and `textContent` fields are required.' });
-    }
-
+const sendTemplateEmail = async (userId, template_name, data = {}) => {
+    const client = await db.connect();
     try {
-        await sendEmail(to, subject, textContent);
-        res.status(200).json({ message: 'Email sent successfully!' });
+        // Fetch user email
+        const userResult = await client.query('SELECT email FROM users WHERE id = $1', [userId]);
+        if (userResult.rows.length === 0) {
+            // Log this error but don't throw, as it might be a non-critical email
+            console.error(`User with ID '${userId}' not found for sending email.`);
+            await addLog({
+                userId: userId,
+                level: 'error',
+                action: `SEND_${template_name.toUpperCase()}_EMAIL_FAILED`,
+                details: { reason: `User with ID ${userId} not found.` }
+            });
+            return; 
+        }
+        const user = userResult.rows[0];
+        const to = user.email;
+
+        // Fetch email template
+        const templateResult = await client.query('SELECT * FROM email_templates WHERE template_name = $1', [template_name]);
+        if (templateResult.rows.length === 0) {
+            throw new Error(`Email template '${template_name}' not found.`);
+        }
+
+        const template = templateResult.rows[0];
+        let { subject, body } = template;
+
+        // Replace placeholders
+        for (const key in data) {
+            const regex = new RegExp(`{{${key}}}`, 'g');
+            subject = subject.replace(regex, data[key]);
+            body = body.replace(regex, data[key]);
+        }
+        
+        try {
+            await sendCustomEmail(to, subject, body);
+            await addLog({
+                userId: userId,
+                level: 'info',
+                action: `SEND_${template_name.toUpperCase()}_EMAIL_SUCCESS`,
+                details: { email: to }
+            });
+        } catch (emailError) {
+            console.error(`Failed to send ${template_name} email:`, emailError);
+            await addLog({
+                userId: userId,
+                level: 'error',
+                action: `SEND_${template_name.toUpperCase()}_EMAIL_FAILED`,
+                details: { email: to, error: emailError.message }
+            });
+        }
+
     } catch (error) {
-        res.status(500).json({ message: 'Error sending email.', error: error.message });
+        console.error('Error preparing to send template email:', error);
+        await addLog({
+            userId: userId,
+            level: 'error',
+            action: `PREPARE_EMAIL_${template_name.toUpperCase()}_FAILED`,
+            details: { error: error.message }
+        });
+    }
+    finally {
+        client.release();
     }
 };
+
+
+exports.sendCustomEmail = sendCustomEmail;
+exports.sendTemplateEmail = sendTemplateEmail;

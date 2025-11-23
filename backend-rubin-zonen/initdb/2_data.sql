@@ -736,5 +736,16 @@ SELECT pg_catalog.setval (
     );
 
 --
+-- Data for Name: email_templates; Type: TABLE DATA; Schema: public; Owner: rubin_user
+--
+
+
+COPY public.email_templates (template_name, subject, body) FROM stdin;
+New_user	Bonjour chez Rubin & Zonen	Bonjour {{name}}, bienvenue chez rubin et zonen
+Test_Regex	Hello {{name}}, your {{product}} is ready!	Dear {{name}}, your order for {{product}} is complete. Click here: {{link}}
+Password_Reset	Password Reset	You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\nPlease click on the following link, or paste this into your browser to complete the process:\n\n{{resetURL}}\n\nIf you did not request this, please ignore this email and your password will remain unchanged.\n
+\.
+
+--
 -- PostgreSQL database dump complete
 --

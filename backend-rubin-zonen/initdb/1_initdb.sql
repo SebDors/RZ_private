@@ -545,6 +545,26 @@ ALTER TABLE ONLY public.logs ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERE
 CREATE INDEX idx_logs_user_id ON public.logs USING btree (user_id);
 
 --
+-- Name: email_templates; Type: TABLE; Schema: public; Owner: rubin_user
+--
+CREATE TABLE public.email_templates (
+    id integer NOT NULL,
+    template_name character varying(255) UNIQUE NOT NULL,
+    subject character varying(255) NOT NULL,
+    body text NOT NULL,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE public.email_templates OWNER TO rubin_user;
+CREATE SEQUENCE public.email_templates_id_seq AS integer START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+ALTER SEQUENCE public.email_templates_id_seq OWNER TO rubin_user;
+ALTER SEQUENCE public.email_templates_id_seq OWNED BY public.email_templates.id;
+ALTER TABLE ONLY public.email_templates ALTER COLUMN id SET DEFAULT nextval('public.email_templates_id_seq'::regclass);
+ALTER TABLE ONLY public.email_templates ADD CONSTRAINT email_templates_pkey PRIMARY KEY (id);
+CREATE TRIGGER update_email_templates_updated_at BEFORE UPDATE ON public.email_templates FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
 -- PostgreSQL database dump complete
 --
 

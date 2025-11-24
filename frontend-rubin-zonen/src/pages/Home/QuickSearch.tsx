@@ -38,48 +38,29 @@ const shapes = [
     { Name: "Old European Cut", db_value: 'EU' },
     { Name: "Special Shape", db_value: 'SP' },
     { Name: "Rose Cut", db_value: 'RC' },
-    // { Name: "Other", db_value: 'null' } // TODO change
 ];
 
 const caratRanges = ["0.30-0.399", "0.40-0.499", "0.50-0.699", "0.70-0.899", "0.90-0.999", "1.00-1.49", "1.50-1.99", "2.00-2.99", "3.00-3.99", "4.00-4.99", "5.00-5.99", "6.00-7.99", "8.00-9.99", "10.00+"];
 
 const colorClarityRows = [
-    { color: 'DEF', clarity: 'FL-IF' },
-    { color: 'DEF', clarity: 'VVS' },
-    { color: 'DEF', clarity: 'VS' },
-    { color: 'DEF', clarity: 'SI' },
-    { color: 'DEF', clarity: 'I' },
-    { color: 'GHI', clarity: 'FL-IF' },
-    { color: 'GHI', clarity: 'VVS' },
-    { color: 'GHI', clarity: 'VS' },
-    { color: 'GHI', clarity: 'SI' },
-    { color: 'GHI', clarity: 'I' },
-    { color: 'J-', clarity: 'FL-IF' },
-    { color: 'J-', clarity: 'VVS' },
-    { color: 'J-', clarity: 'VS' },
-    { color: 'J-', clarity: 'SI' },
-    { color: 'J-', clarity: 'I' },
+    { color: 'DEF', clarity: 'FL-IF' }, { color: 'DEF', clarity: 'VVS' }, { color: 'DEF', clarity: 'VS' },
+    { color: 'DEF', clarity: 'SI' }, { color: 'DEF', clarity: 'I' }, { color: 'GHI', clarity: 'FL-IF' },
+    { color: 'GHI', clarity: 'VVS' }, { color: 'GHI', clarity: 'VS' }, { color: 'GHI', clarity: 'SI' },
+    { color: 'GHI', clarity: 'I' }, { color: 'J-', clarity: 'FL-IF' }, { color: 'J-', clarity: 'VVS' },
+    { color: 'J-', clarity: 'VS' }, { color: 'J-', clarity: 'SI' }, { color: 'J-', clarity: 'I' },
 ];
 
 const colorMap: Record<string, string[]> = {
-    'DEF': ['D', 'E', 'F'],
-    'GHI': ['G', 'H', 'I'],
+    'DEF': ['D', 'E', 'F'], 'GHI': ['G', 'H', 'I'],
     'J-': ['J', 'K', 'L', 'M', 'N', 'O-P', 'Q-R', 'S-T', 'U-V', 'W-X', 'Y-Z', 'N-O', 'P-R']
 };
 
 const clarityMap: Record<string, string[]> = {
-    'FL-IF': ['FL', 'IF'],
-    'VVS': ['VVS1', 'VVS2'],
-    'VS': ['VS1', 'VS2'],
-    'SI': ['SI1', 'SI2', 'SI3'],
-    'I': ['I1', 'I2']
+    'FL-IF': ['FL', 'IF'], 'VVS': ['VVS1', 'VVS2'], 'VS': ['VS1', 'VS2'],
+    'SI': ['SI1', 'SI2', 'SI3'], 'I': ['I1', 'I2']
 };
 
-interface CellIdentifier {
-    color: string;
-    clarity: string;
-    carat: string;
-}
+interface CellIdentifier { color: string; clarity: string; carat: string; }
 
 function QuickSearchContent() {
     useRedirectIfNotAuth();
@@ -95,30 +76,31 @@ function QuickSearchContent() {
     useEffect(() => {
         const fetchCounts = async () => {
             setIsLoading(true);
-            const loadingToastId = toast.loading(`Fetching data for ${shapes.find(s => s.db_value === selectedShape)?.Name} diamonds...`);
+            const shapeName = shapes.find(s => s.db_value === selectedShape)?.Name || 'All';
+            const loadingToastId = toast.loading(`Fetching data for ${shapeName} diamonds...`);
 
             const promises = [];
             for (const row of colorClarityRows) {
                 for (const carat of caratRanges) {
-                    const filters: Record<string, string> = { shape: selectedShape };
+                    const filters: Record<string, string> = {
+                        shape: selectedShape,
+                        color: colorMap[row.color].join(','),
+                        clarity: clarityMap[row.clarity].join(',')
+                    };
                     
-                    filters.color = colorMap[row.color].join(',');
-                    filters.clarity = clarityMap[row.clarity].join(',');
-
+                    // --- FIX: Send the carat filter as a single range string ---
+                    // This aligns the API call with the format used in handleSearch.
                     if (carat === "10.00+") {
-                        filters.carat_min = "10.00";
-                        filters.carat_max = "99.00";
+                        filters.carat = "10.00-99.00"; 
                     } else {
-                        const [min, max] = carat.split('-');
-                        filters.carat_min = min;
-                        filters.carat_max = max;
+                        filters.carat = carat; 
                     }
                     
                     const key = `${row.color}-${row.clarity}-${carat}`;
                     promises.push(
                         getAllDiamonds(filters)
                             .then(data => ({ key, count: data.length }))
-                            .catch(() => ({ key, count: 0 })) // Handle API errors gracefully
+                            .catch(() => ({ key, count: 0 }))
                     );
                 }
             }
@@ -157,10 +139,7 @@ function QuickSearchContent() {
         }
 
         const searchParams: Record<string, string[]> = {
-            shape: [selectedShape],
-            carat: [],
-            color: [],
-            clarity: [],
+            shape: [selectedShape], carat: [], color: [], clarity: [],
         };
 
         const caratSet = new Set<string>();
@@ -168,14 +147,9 @@ function QuickSearchContent() {
         const claritySet = new Set<string>();
 
         criteria.forEach(cell => {
-            // Add carat range
             const caratRange = cell.carat === '10.00+' ? '10.00-99.00' : cell.carat;
             caratSet.add(caratRange);
-
-            // Add all colors from the color group
             colorMap[cell.color]?.forEach(c => colorSet.add(c));
-            
-            // Add all clarities from the clarity group
             clarityMap[cell.clarity]?.forEach(c => claritySet.add(c));
         });
 
@@ -186,19 +160,12 @@ function QuickSearchContent() {
         navigate('/diamond-list', { state: { searchParams } });
     };
 
-    const handleReset = () => {
-        setSelectedCells({});
-    };
-
-    const handleOpen = () => {
-        if (!open) setOpen(true);
-    };
+    const handleReset = () => setSelectedCells({});
+    const handleOpen = () => { if (!open) setOpen(true); };
 
     const colorGroups = useMemo(() => {
         return colorClarityRows.reduce((acc, row) => {
-            if (!acc[row.color]) {
-                acc[row.color] = [];
-            }
+            if (!acc[row.color]) acc[row.color] = [];
             acc[row.color].push(row);
             return acc;
         }, {} as Record<string, typeof colorClarityRows>);
@@ -211,7 +178,7 @@ function QuickSearchContent() {
                 <Header />
                 <div className="p-4">
                     <Card>
-                        <CardContent>
+                        <CardContent className="pt-6">
                             <div className="mb-4">
                                 <h3 className="text-lg font-semibold mb-2">Shape</h3>
                                 <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-12 grid-flow-row-dense gap-2">
@@ -245,51 +212,47 @@ function QuickSearchContent() {
                                     </TableHeader>
                                     <TableBody>
                                         {Object.entries(colorGroups).map(([color, rows]) => (
-                                            rows.map((row, rowIndex) => {
-                                                const cellIdentifier: CellIdentifier = { color: row.color, clarity: row.clarity, carat: '' };
-                                                return (
-                                                    <TableRow 
-                                                        key={`${row.color}-${row.clarity}`}
-                                                        onMouseEnter={() => setHoveredColorGroup(color)}
-                                                        onMouseLeave={() => setHoveredColorGroup(null)}
-                                                    >
-                                                        {rowIndex === 0 && (
-                                                            <TableCell 
-                                                                rowSpan={rows.length} 
-                                                                className={cn(
-                                                                    "align-middle font-semibold text-center transition-colors",
-                                                                    { "bg-accent": hoveredColorGroup === color }
-                                                                )}
-                                                            >
-                                                                {color}
-                                                            </TableCell>
-                                                        )}
-                                                        <TableCell className="font-medium">{row.clarity}</TableCell>
-                                                        {caratRanges.map(carat => {
-                                                            const key = `${row.color}-${row.clarity}-${carat}`;
-                                                            const count = counts[key];
-                                                            const isChecked = !!selectedCells[key];
-                                                            const currentCell = { ...cellIdentifier, carat };
+                                            rows.map((row, rowIndex) => (
+                                                <TableRow 
+                                                    key={`${row.color}-${row.clarity}`}
+                                                    onMouseEnter={() => setHoveredColorGroup(color)}
+                                                    onMouseLeave={() => setHoveredColorGroup(null)}
+                                                >
+                                                    {rowIndex === 0 && (
+                                                        <TableCell 
+                                                            rowSpan={rows.length} 
+                                                            className={cn( "align-middle font-semibold text-center transition-colors",
+                                                                { "bg-accent": hoveredColorGroup === color }
+                                                            )}
+                                                        >
+                                                            {color}
+                                                        </TableCell>
+                                                    )}
+                                                    <TableCell className="font-medium">{row.clarity}</TableCell>
+                                                    {caratRanges.map(carat => {
+                                                        const key = `${row.color}-${row.clarity}-${carat}`;
+                                                        const count = counts[key];
+                                                        const isChecked = !!selectedCells[key];
+                                                        const currentCell = { color: row.color, clarity: row.clarity, carat };
 
-                                                            return (
-                                                                <TableCell key={key} className="text-center">
-                                                                    <div className='flex items-center justify-center space-x-2'>
-                                                                        <Checkbox
-                                                                            id={key}
-                                                                            checked={isChecked}
-                                                                            onCheckedChange={() => handleCellToggle(currentCell, key)}
-                                                                            disabled={!count}
-                                                                        />
-                                                                        <label htmlFor={key} className="cursor-pointer">
-                                                                            {count !== undefined ? (count > 0 ? count : '-') : ''}
-                                                                        </label>
-                                                                    </div>
-                                                                </TableCell>
-                                                            );
-                                                        })}
-                                                    </TableRow>
-                                                );
-                                            })
+                                                        return (
+                                                            <TableCell key={key} className="text-center">
+                                                                <div className='flex items-center justify-center space-x-2'>
+                                                                    <Checkbox
+                                                                        id={key}
+                                                                        checked={isChecked}
+                                                                        onCheckedChange={() => handleCellToggle(currentCell, key)}
+                                                                        disabled={!count || count === 0}
+                                                                    />
+                                                                    <label htmlFor={key} className="cursor-pointer">
+                                                                        {count !== undefined ? (count > 0 ? count : '-') : ''}
+                                                                    </label>
+                                                                </div>
+                                                            </TableCell>
+                                                        );
+                                                    })}
+                                                </TableRow>
+                                            ))
                                         ))}
                                     </TableBody>
                                 </Table>

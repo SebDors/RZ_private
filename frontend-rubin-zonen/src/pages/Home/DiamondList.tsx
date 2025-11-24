@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getAllDiamonds } from "@/services/diamonds";
 import type { Diamant } from "@/models/models";
-// Removed Card, CardContent, CardHeader, CardTitle imports
 import { AppSidebar } from "@/components/sidebar/app-sidebar"
 import Header from "@/components/Header"
 import {
@@ -10,11 +9,7 @@ import {
     SidebarProvider,
     useSidebar,
 } from "@/components/ui/sidebar"
-// Removed ScrollArea import
 import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
-// Removed Button import
-
-// New imports for DataTable
 import { DataTable } from "@/components/datatable/data-table";
 import { columns } from "@/components/datatable/columns"; // Using the corrected columns.tsx
 

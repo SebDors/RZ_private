@@ -62,13 +62,12 @@ app.get('/test-db', async (req, res) => {
     }
 });
 
-//TODO: Réactiver le cron job une fois le dev terminé
 // Schedule FTP download and processing of diamonds
-// This cron job runs every 5 minutes for demonstration purposes.
-// cron.schedule('*/5 * * * *', () => {
-//     console.log('Running the scheduled job to download and process diamonds from FTP...');
-//     downloadAndProcessDiamonds();
-// });
+// This cron job runs every 5 minutes.
+cron.schedule('*/5 * * * *', () => {
+    console.log('Running the scheduled job to download and process diamonds from FTP...');
+    downloadAndProcessDiamonds();
+});
 
 
 const swaggerOptions = {

@@ -14,8 +14,7 @@ const ftpConfig = {
 };
 
 // The path to the file on the FTP server
-// TODO: This should be configurable, maybe from .env
-const remoteFilePath = "/httpdocs/test_JE_Sebastien/RUBIN_4Diamonds.csv"; 
+const remoteFilePath = process.env.FTP_REMOTE_PATH; 
 
 // The local path to save the downloaded file
 const localDir = path.join(__dirname, '..', 'uploads');

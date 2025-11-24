@@ -225,55 +225,6 @@ exports.getDiamantById = async (req, res) => {
     }
 };
 
-const { processDiamondCsv } = require('../services/diamondService');
-
-// ... (keep all other functions as they are)
-
-exports.uploadDiamonds = async (req, res) => {
-    if (!req.file) {
-        return res.status(400).send('No file uploaded.');
-    }
-
-    const filePath = req.file.path;
-
-    try {
-        const result = await processDiamondCsv(filePath);
-
-        if (result.success) {
-            await addLog({
-                userId: req.user.id,
-                level: 'info',
-                action: 'ADMIN_UPLOAD_DIAMONDS_SUCCESS',
-                details: { fileName: req.file.originalname, importedCount: result.count },
-            });
-            res.status(200).json({ message: result.message });
-        } else {
-            // The service already logs the detailed error
-            if (result.error.isValidationError) {
-                return res.status(400).json({ message: result.message });
-            }
-            res.status(500).json({ message: result.message, error: result.error.message });
-        }
-    } catch (error) {
-        // This will catch any unexpected errors not handled by the service
-        await addLog({
-            userId: req.user.id,
-            level: 'error',
-            action: 'ADMIN_UPLOAD_DIAMONDS_UNEXPECTED_FAILURE',
-            details: { fileName: req.file.originalname, error: error.message },
-        });
-        console.error('Unexpected error in uploadDiamonds controller:', error);
-        res.status(500).json({ message: 'An unexpected error occurred.' });
-    } finally {
-        // Clean up the uploaded file
-        fs.unlink(filePath, (err) => {
-            if (err) {
-                console.error('Error deleting uploaded file:', err);
-            }
-        });
-    }
-};
-
 exports.refreshDiamonds = async (req, res) => {
     try {
         await addLog({

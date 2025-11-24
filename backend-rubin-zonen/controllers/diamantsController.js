@@ -2,6 +2,8 @@ const db = require('../config/db');
 const fs = require('fs');
 const csv = require('csv-parser');
 const { addLog } = require('./logController');
+const { downloadAndProcessDiamonds } = require('../services/ftpService');
+
 
 
 const addInFilter = (paramName, queryParams, filters, values, paramIndex) => {
@@ -223,51 +225,27 @@ exports.getDiamantById = async (req, res) => {
     }
 };
 
-const { processDiamondCsv } = require('../services/diamondService');
-
-// ... (keep all other functions as they are)
-
-exports.uploadDiamonds = async (req, res) => {
-    if (!req.file) {
-        return res.status(400).send('No file uploaded.');
-    }
-
-    const filePath = req.file.path;
-
+exports.refreshDiamonds = async (req, res) => {
     try {
-        const result = await processDiamondCsv(filePath);
+        await addLog({
+            userId: req.user.id,
+            level: 'info',
+            action: 'ADMIN_REFRESH_DIAMONDS_START',
+            details: { message: 'Diamond refresh process started.' },
+        });
 
-        if (result.success) {
-            await addLog({
-                userId: req.user.id,
-                level: 'info',
-                action: 'ADMIN_UPLOAD_DIAMONDS_SUCCESS',
-                details: { fileName: req.file.originalname, importedCount: result.count },
-            });
-            res.status(200).json({ message: result.message });
-        } else {
-            // The service already logs the detailed error
-            if (result.error.isValidationError) {
-                return res.status(400).json({ message: result.message });
-            }
-            res.status(500).json({ message: result.message, error: result.error.message });
-        }
+        // We don't await this because it can be a long process
+        downloadAndProcessDiamonds();
+
+        res.status(202).json({ message: 'Diamond refresh process started. This may take a while.' });
     } catch (error) {
-        // This will catch any unexpected errors not handled by the service
         await addLog({
             userId: req.user.id,
             level: 'error',
-            action: 'ADMIN_UPLOAD_DIAMONDS_UNEXPECTED_FAILURE',
-            details: { fileName: req.file.originalname, error: error.message },
+            action: 'ADMIN_REFRESH_DIAMONDS_FAILURE',
+            details: { error: error.message },
         });
-        console.error('Unexpected error in uploadDiamonds controller:', error);
-        res.status(500).json({ message: 'An unexpected error occurred.' });
-    } finally {
-        // Clean up the uploaded file
-        fs.unlink(filePath, (err) => {
-            if (err) {
-                console.error('Error deleting uploaded file:', err);
-            }
-        });
+        console.error('Error starting diamond refresh process:', error);
+        res.status(500).json({ message: 'Failed to start diamond refresh process.' });
     }
 };

@@ -2,6 +2,8 @@ const db = require('../config/db');
 const fs = require('fs');
 const csv = require('csv-parser');
 const { addLog } = require('./logController');
+const { downloadAndProcessDiamonds } = require('../services/ftpService');
+
 
 
 const addInFilter = (paramName, queryParams, filters, values, paramIndex) => {
@@ -269,5 +271,30 @@ exports.uploadDiamonds = async (req, res) => {
                 console.error('Error deleting uploaded file:', err);
             }
         });
+    }
+};
+
+exports.refreshDiamonds = async (req, res) => {
+    try {
+        await addLog({
+            userId: req.user.id,
+            level: 'info',
+            action: 'ADMIN_REFRESH_DIAMONDS_START',
+            details: { message: 'Diamond refresh process started.' },
+        });
+
+        // We don't await this because it can be a long process
+        downloadAndProcessDiamonds();
+
+        res.status(202).json({ message: 'Diamond refresh process started. This may take a while.' });
+    } catch (error) {
+        await addLog({
+            userId: req.user.id,
+            level: 'error',
+            action: 'ADMIN_REFRESH_DIAMONDS_FAILURE',
+            details: { error: error.message },
+        });
+        console.error('Error starting diamond refresh process:', error);
+        res.status(500).json({ message: 'Failed to start diamond refresh process.' });
     }
 };

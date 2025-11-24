@@ -102,32 +102,3 @@ router.get('/:id', [authenticate, authorizeAdmin], emailTemplateController.getEm
 router.put('/:id', [authenticate, authorizeAdmin], emailTemplateController.updateEmailTemplate);
 
 module.exports = router;
-
-/**
- * @swagger
- * components:
- *   schemas:
- *     EmailTemplate:
- *       type: object
- *       properties:
- *         id:
- *           type: integer
- *           description: The template ID.
- *         template_name:
- *           type: string
- *           description: The name of the template.
- *         subject:
- *           type: string
- *           description: The subject of the email.
- *         body:
- *           type: string
- *           description: The body of the email.
- *         created_at:
- *           type: string
- *           format: date-time
- *           description: The timestamp of when the template was created.
- *         updated_at:
- *           type: string
- *           format: date-time
- *           description: The timestamp of the last update.
- */

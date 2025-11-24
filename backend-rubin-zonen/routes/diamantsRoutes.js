@@ -49,6 +49,26 @@ const upload = multer({ dest: uploadDir });
  */
 router.post('/upload_data', authenticate, authorizeAdmin, upload.single('diamonds_csv'), diamantsController.uploadDiamonds);
 
+/**
+ * @swagger
+ * /api/diamants/refresh:
+ *   post:
+ *     summary: Refresh diamonds from the FTP source (Admin only)
+ *     tags: [Diamonds]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       202:
+ *         description: Diamond refresh process started
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Access denied
+ *       500:
+ *         description: Server error
+ */
+router.post('/refresh', authenticate, authorizeAdmin, diamantsController.refreshDiamonds);
+
 
 /**
  * @swagger

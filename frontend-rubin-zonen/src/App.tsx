@@ -20,7 +20,6 @@ import Home from './pages/Home/Home'
 import Dashboard from './pages/Home/Dashboard'
 import MyCart from './pages/Account/MyCart'
 import DiamondList from './pages/Home/DiamondList'
-import NewDiamondList from './pages/Home/NewDiamondList'
 import CompareDiamonds from './pages/Home/CompareDiamonds'
 import MyQuote from './pages/Account/MyQuote'
 import MyWatchlist from './pages/Account/MyWatchlist'
@@ -59,7 +58,6 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/diamond-list" element={<DiamondList />} />
-          <Route path="/new-diamond-list" element={<NewDiamondList />} />
           <Route path="/compare-diamonds" element={<CompareDiamonds />} />
           <Route path="/search" element={<Search />} />
           <Route path="/quick-search" element={<QuickSearch />} />

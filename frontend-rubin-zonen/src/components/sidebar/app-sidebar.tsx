@@ -71,12 +71,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     {
       title: "Diamond List",
-      url: "/new-diamond-list",
+      url: "/diamond-list",
       icon: Gem,
       items: [
         {
           title: "List",
-          url: "/new-diamond-list",
+          url: "/diamond-list",
         },
       ],
     },

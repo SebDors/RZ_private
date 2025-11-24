@@ -62,39 +62,44 @@ const clarityMap: Record<string, string[]> = {
 
 interface CellIdentifier { color: string; clarity: string; carat: string; }
 
+// Memoized lists of shape values for performance
+const allShapeDbValues = shapes.map(s => s.db_value);
+const concreteShapeDbValues = shapes.filter(s => s.db_value !== '').map(s => s.db_value);
+
 function QuickSearchContent() {
     useRedirectIfNotAuth();
     const navigate = useNavigate();
     const { setOpen, open } = useSidebar();
 
-    const [selectedShape, setSelectedShape] = useState<string>('RD');
+    const [selectedShapes, setSelectedShapes] = useState<string[]>([]);
     const [counts, setCounts] = useState<Record<string, number>>({});
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [selectedCells, setSelectedCells] = useState<Record<string, CellIdentifier>>({});
     const [hoveredColorGroup, setHoveredColorGroup] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchCounts = async () => {
-            setIsLoading(true);
-            const shapeName = shapes.find(s => s.db_value === selectedShape)?.Name || 'All';
-            const loadingToastId = toast.loading(`Fetching data for ${shapeName} diamonds...`);
+            const concreteShapes = selectedShapes.filter(s => s !== '');
+            if (concreteShapes.length === 0) {
+                setCounts({});
+                setIsLoading(false);
+                return;
+            }
 
+            setIsLoading(true);
+            const loadingToastId = toast.loading(`Fetching data for selected shapes...`);
+            
+            const shapeFilter = concreteShapes.join(',');
             const promises = [];
+
             for (const row of colorClarityRows) {
                 for (const carat of caratRanges) {
                     const filters: Record<string, string> = {
-                        shape: selectedShape,
+                        shape: shapeFilter,
                         color: colorMap[row.color].join(','),
-                        clarity: clarityMap[row.clarity].join(',')
+                        clarity: clarityMap[row.clarity].join(','),
+                        carat: carat === "10.00+" ? "10.00-99.00" : carat
                     };
-                    
-                    // --- FIX: Send the carat filter as a single range string ---
-                    // This aligns the API call with the format used in handleSearch.
-                    if (carat === "10.00+") {
-                        filters.carat = "10.00-99.00"; 
-                    } else {
-                        filters.carat = carat; 
-                    }
                     
                     const key = `${row.color}-${row.clarity}-${carat}`;
                     promises.push(
@@ -117,8 +122,28 @@ function QuickSearchContent() {
         };
 
         fetchCounts();
-    }, [selectedShape]);
+    }, [selectedShapes]);
 
+    const handleShapeSelection = (clickedDbValue: string) => {
+        if (clickedDbValue === '') {
+            const isAllSelected = selectedShapes.includes('');
+            setSelectedShapes(isAllSelected ? [] : allShapeDbValues);
+            return;
+        }
+
+        const newSelection = selectedShapes.includes(clickedDbValue)
+            ? selectedShapes.filter(s => s !== clickedDbValue)
+            : [...selectedShapes, clickedDbValue];
+
+        const selectionWithoutAll = newSelection.filter(s => s !== '');
+
+        if (selectionWithoutAll.length === concreteShapeDbValues.length) {
+            setSelectedShapes([...selectionWithoutAll, '']);
+        } else {
+            setSelectedShapes(selectionWithoutAll);
+        }
+    };
+    
     const handleCellToggle = (cell: CellIdentifier, cellKey: string) => {
         setSelectedCells(prev => {
             const newSelection = { ...prev };
@@ -132,6 +157,12 @@ function QuickSearchContent() {
     };
 
     const handleSearch = () => {
+        const concreteSelectedShapes = selectedShapes.filter(s => s !== '');
+        if (concreteSelectedShapes.length === 0) {
+            toast.error("Please select at least one shape to search.");
+            return;
+        }
+
         const criteria = Object.values(selectedCells);
         if (criteria.length === 0) {
             toast.error("Please select at least one cell to search.");
@@ -139,7 +170,7 @@ function QuickSearchContent() {
         }
 
         const searchParams: Record<string, string[]> = {
-            shape: [selectedShape], carat: [], color: [], clarity: [],
+            shape: concreteSelectedShapes, carat: [], color: [], clarity: [],
         };
 
         const caratSet = new Set<string>();
@@ -185,8 +216,8 @@ function QuickSearchContent() {
                                     {shapes.map(shape => (
                                         <Button
                                             key={shape.db_value}
-                                            variant={selectedShape === shape.db_value ? "default" : "outline"}
-                                            onClick={() => setSelectedShape(shape.db_value)}
+                                            variant={selectedShapes.includes(shape.db_value) ? "default" : "outline"}
+                                            onClick={() => handleShapeSelection(shape.db_value)}
                                         >
                                             {shape.Name}
                                         </Button>

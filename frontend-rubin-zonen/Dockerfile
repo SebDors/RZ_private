@@ -3,7 +3,7 @@ WORKDIR /app
 #TODO change for prod
 ENV VITE_BASE_URL=http://localhost:3000/api 
 
-COPY package.json package-lock.json ./
+COPY package*.json ./
 RUN npm install
 
 COPY . .

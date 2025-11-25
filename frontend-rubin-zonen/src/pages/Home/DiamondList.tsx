@@ -2,36 +2,53 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getAllDiamonds } from "@/services/diamonds";
 import type { Diamant } from "@/models/models";
-import { AppSidebar } from "@/components/sidebar/app-sidebar"
-import Header from "@/components/Header"
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import Header from "@/components/Header";
 import {
     SidebarInset,
     SidebarProvider,
     useSidebar,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 import { DataTable } from "@/components/datatable/data-table";
-import { columns } from "@/components/datatable/columns"; // Using the corrected columns.tsx
+import { columns } from "@/components/datatable/columns";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
 
 function DiamondListContent() {
     useRedirectIfNotAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
-    const { setOpen, open } = useSidebar()
+    const { setOpen, open } = useSidebar();
     const handleOpen = () => {
         if (!open) {
-            setOpen(true)
+            setOpen(true);
         }
-    }
+    };
 
     const [diamonds, setDiamonds] = useState<Diamant[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [showNoResultsDialog, setShowNoResultsDialog] = useState(false);
 
     useEffect(() => {
         const fetchDiamonds = async () => {
+            setLoading(true);
             try {
                 let filters: Record<string, string> = {};
-                if (location.state && location.state.searchParams) {
+                const hasSearchParams = location.state && location.state.searchParams;
+
+                if (hasSearchParams) {
                     const { searchParams } = location.state;
                     const processedFilters: Record<string, string[] | undefined> = {};
 
@@ -87,18 +104,43 @@ function DiamondListContent() {
                 }
                 const diamondsData = await getAllDiamonds(filters);
                 setDiamonds(diamondsData);
+
+                if (hasSearchParams && diamondsData.length === 0) {
+                    setShowNoResultsDialog(true);
+                }
+
             } catch (error) {
                 console.error("Error fetching diamonds:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchDiamonds();
     }, [location.state]);
 
-    // Function to navigate to stone detail
     const navigateToDetail = (stock_id: string) => {
         navigate(`/stone-detail/${stock_id}`);
     };
+
+    const handleCustomDemand = () => {
+        toast("We will look at your demand.");//TODO change the message and send a mail to the admin
+        setShowNoResultsDialog(false);
+        navigate(-1);
+    };
+
+    const handleBackToSearch = () => {
+        setShowNoResultsDialog(false);
+        navigate(-1);
+    };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Spinner className="h-12 w-12" />
+            </div>
+        );
+    }
 
     return (
         <>
@@ -106,11 +148,26 @@ function DiamondListContent() {
             <SidebarInset>
                 <Header />
                 <div className="flex-col items-center w-full justify-center min-h-screen bg-gray-100 dark:bg-gray-900 rounded-lg">
-                        <DataTable columns={columns} data={diamonds} meta={{ navigateToDetail }} />
+                    <DataTable columns={columns} data={diamonds} meta={{ navigateToDetail }} />
                 </div>
             </SidebarInset>
+
+            <AlertDialog open={showNoResultsDialog} onOpenChange={setShowNoResultsDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>No Results</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            No diamonds matching your criteria are available. Would you like to make a custom demand?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={handleBackToSearch}>No</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleCustomDemand}>Yes</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
-    )
+    );
 }
 
 export default function DiamondList() {
@@ -118,5 +175,5 @@ export default function DiamondList() {
         <SidebarProvider>
             <DiamondListContent />
         </SidebarProvider>
-    )
+    );
 }

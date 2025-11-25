@@ -102,11 +102,84 @@ function QuickSearchContent() {
     const handleSelect = (category: string, value: string) => {
         setSelectedCriteria(prev => {
             const newSelection = { ...prev };
-            if (newSelection[category].includes(value)) {
-                newSelection[category] = newSelection[category].filter(item => item !== value);
-            } else {
-                newSelection[category] = [...newSelection[category], value];
+            let allValues: string[] = [];
+
+            // Determine all possible values for the current category
+            switch (category) {
+                case 'shape':
+                    allValues = shapes.map(s => s.db_value);
+                    break;
+                case 'color':
+                    allValues = colors;
+                    break;
+                case 'clarity':
+                    allValues = clarities;
+                    break;
+                case 'carat':
+                    // carat has custom values in the state based on user input, so "All" behavior needs careful handling.
+                    // For simplicity, let's assume "All" for carat means to deselect all carat ranges,
+                    // as dynamically added ranges won't be part of a static 'allValues'.
+                    // If 'All' is selected, clear all custom carat ranges as well.
+                    allValues = carats;
+                    break;
+                case 'cut':
+                    allValues = cut;
+                    break;
+                case 'polish':
+                    allValues = polish;
+                    break;
+                case 'symmetry':
+                    allValues = symmetry;
+                    break;
+                case 'fluorescence':
+                    allValues = fluorescences;
+                    break;
+                case 'lab':
+                    allValues = labs;
+                    break;
+                case 'priceRange':
+                    allValues = priceRanges;
+                    break;
+                default:
+                    // Should not happen for predefined categories
+                    console.warn(`Unknown category: ${category}`);
+                    return prev;
             }
+
+            const allOptionValue = (category === 'shape' ? '' : 'All'); // 'All' for strings, '' for shapes
+            const isAllClicked = (value === allOptionValue);
+            let currentSelection = newSelection[category] || [];
+
+            if (isAllClicked) {
+                // If "All" is already selected, deselect all. Otherwise, select all.
+                const shouldDeselectAll = currentSelection.includes(allOptionValue);
+                newSelection[category] = shouldDeselectAll ? [] : allValues;
+            } else {
+                // If a specific item is clicked
+                if (currentSelection.includes(value)) {
+                    // Deselect the item
+                    currentSelection = currentSelection.filter(item => item !== value);
+                } else {
+                    // Select the item
+                    currentSelection = [...currentSelection, value];
+                }
+
+                // After toggling a specific item, adjust "All" state
+                const allExceptAll = allValues.filter(item => item !== allOptionValue);
+                const currentSelectionWithoutAll = currentSelection.filter(item => item !== allOptionValue);
+
+                if (currentSelectionWithoutAll.length === allExceptAll.length && allExceptAll.length > 0) {
+                    // All individual items are selected, so "All" should be selected too
+                    if (!currentSelection.includes(allOptionValue)) {
+                        currentSelection = [...currentSelection, allOptionValue];
+                    }
+                } else {
+                    // Not all individual items are selected, so "All" should be deselected
+                    currentSelection = currentSelection.filter(item => item !== allOptionValue);
+                }
+                newSelection[category] = currentSelection;
+            }
+
             return newSelection;
         });
     };

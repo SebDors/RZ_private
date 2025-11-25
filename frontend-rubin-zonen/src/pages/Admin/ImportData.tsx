@@ -114,7 +114,7 @@ export default function ImportData() {
   };
 
   return (
-    <div className="p-8 bg-secondary h-full">
+    <div className="p-4 bg-secondary rounded-md h-full">
       <Card>
         <CardHeader>
           <CardTitle>Import Data</CardTitle>

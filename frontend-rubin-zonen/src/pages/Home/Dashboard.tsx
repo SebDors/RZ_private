@@ -12,6 +12,7 @@ import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 import { useQuickSearch } from "@/hooks/useQuickSearch";
 import { SavedSearches } from "@/components/SavedSearches";
 import { useNavigate } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface DashboardStats {
   specialStonesCount: number;
@@ -39,7 +40,7 @@ function DashboardContent() {
     deleteLastSearch,
     deleteSavedSearch,
   } = useQuickSearch();
-  
+
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -51,7 +52,7 @@ function DashboardContent() {
         console.error(err);
       }
     };
-    
+
     fetchStats();
   }, []);
 
@@ -64,27 +65,30 @@ function DashboardContent() {
       <AppSidebar onClick={handleOpen} className="cursor-pointer" />
       <SidebarInset>
         <Header />
-        <div className="p-4">
-          {error && <p className="text-red-500">{error}</p>}
-          {stats ? (
-            <div className="mb-8">
-              <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-                Dashboard Statistics
-              </h2>
-              <p>Special Stones: {stats.specialStonesCount}</p>
-              <p>Upcoming Stones: {stats.upcomingStonesCount}</p>
-              <p>Total Available Stones: {stats.totalAvailableStones}</p>
-            </div>
-          ) : (
-            !error && (
-              <div className="space-y-2 mb-8">
-                <Skeleton className="h-4 w-[250px]" />
-                <Skeleton className="h-4 w-[250px]" />
-                <Skeleton className="h-4 w-[250px]" />
-              </div>
-            )
-          )}
-
+        <div className="p-4 bg-secondary rounded-md h-full">
+          <Card>
+            <CardContent>
+              {error && <p className="text-red-500">{error}</p>}
+              {stats ? (
+                <div className="mb-8">
+                  <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+                    Dashboard Statistics
+                  </h2>
+                  <p>Special Stones: {stats.specialStonesCount}</p>
+                  <p>Upcoming Stones: {stats.upcomingStonesCount}</p>
+                  <p>Total Available Stones: {stats.totalAvailableStones}</p>
+                </div>
+              ) : (
+                !error && (
+                  <div className="space-y-2 mb-8">
+                    <Skeleton className="h-4 w-[250px]" />
+                    <Skeleton className="h-4 w-[250px]" />
+                    <Skeleton className="h-4 w-[250px]" />
+                  </div>
+                )
+              )}
+            </CardContent>
+          </Card>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <SavedSearches
               title="Last Searches"

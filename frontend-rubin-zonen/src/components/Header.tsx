@@ -19,7 +19,7 @@ export function Header() {
   const { isMobile, toggleSidebar } = useSidebar();
 
   return (
-    <header className="flex items-center justify-between p-4 bg-white dark:bg-gray-950">
+    <header className="flex items-center justify-between p-4 bg-sidebar dark:bg-gray-950">
       <div className="flex items-center">
         {isMobile && (
           <Button variant="ghost" size="icon" onClick={toggleSidebar}>

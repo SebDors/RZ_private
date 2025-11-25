@@ -207,7 +207,7 @@ function QuickSearchContent() {
             <AppSidebar onClick={handleOpen} className="cursor-pointer" />
             <SidebarInset>
                 <Header />
-                <div className="p-4">
+                <div className="p-4 bg-secondary rounded-md h-full">
                     <Card>
                         <CardContent className="pt-6">
                             <div className="mb-4">

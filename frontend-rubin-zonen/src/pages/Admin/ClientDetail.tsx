@@ -42,7 +42,7 @@ function ClientDetail() {
     }
 
     return (
-        <div className="p-8">
+        <div className="p-4 bg-secondary rounded-md h-full">
             <Card>
                 <CardHeader>
                     <CardTitle>{user.first_name} {user.last_name}</CardTitle>

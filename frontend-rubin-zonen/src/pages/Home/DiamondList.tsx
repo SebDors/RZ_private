@@ -147,8 +147,8 @@ function DiamondListContent() {
             <AppSidebar onClick={handleOpen} className="cursor-pointer" />
             <SidebarInset>
                 <Header />
-                <div className="p-2 flex-col items-center w-full justify-center min-h-screen bg-gray-100 dark:bg-gray-900 rounded-lg">
-                    <DataTable columns={columns} data={diamonds} meta={{ navigateToDetail }} />
+                <div className="p-4 bg-secondary rounded-md h-full">
+                    <DataTable columns={columns} data={diamonds} meta={{ navigateToDetail }}/>
                 </div>
             </SidebarInset>
 

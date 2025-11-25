@@ -15,7 +15,44 @@ import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { Clock, ShoppingCart, Send, Download, FileText, Image as ImageIcon, Video } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+// Helper component to render the detail rows using theme colors
+const DetailRow = ({ 
+    label1, 
+    value1, 
+    label2, 
+    value2, 
+    className 
+}: { 
+    label1: string, 
+    value1: string | number | undefined | null, 
+    label2?: string, 
+    value2?: string | number | undefined | null,
+    className?: string
+}) => (
+    <div className={cn("grid grid-cols-1 md:grid-cols-4 border-b border-border last:border-0 text-sm", className)}>
+        <div className="bg-muted/50 p-2 font-semibold text-muted-foreground flex items-center">
+            {label1}
+        </div>
+        <div className="p-2 flex items-center border-r border-border bg-card text-foreground">
+            {value1 || "-"}
+        </div>
+        {label2 && (
+            <>
+                <div className="bg-muted/50 p-2 font-semibold text-muted-foreground flex items-center border-t border-border md:border-t-0">
+                    {label2}
+                </div>
+                <div className="p-2 flex items-center bg-card text-foreground border-t border-border md:border-t-0">
+                    {value2 || "-"}
+                </div>
+            </>
+        )}
+    </div>
+);
 
 function StoneDetailContent() {
     useRedirectIfNotAuth();
@@ -24,6 +61,7 @@ function StoneDetailContent() {
     const { setOpen, open } = useSidebar();
     const [diamond, setDiamond] = useState<Diamant | null>(null);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState("cert");
 
     const handleOpen = () => {
         if (!open) {
@@ -37,8 +75,15 @@ function StoneDetailContent() {
                 try {
                     const diamondData = await getDiamondById(stock_id);
                     setDiamond(diamondData);
+                    
+                    // Determine initial active tab based on availability
+                    if (diamondData.certificate_file) setActiveTab("cert");
+                    else if (diamondData.diamond_image || diamondData.image_file) setActiveTab("image");
+                    else if (diamondData.video_file) setActiveTab("video");
+                    
                 } catch (error) {
                     console.error("Error fetching diamond details:", error);
+                    toast.error("Could not load diamond details.");
                 } finally {
                     setLoading(false);
                 }
@@ -82,86 +127,196 @@ function StoneDetailContent() {
         }
     };
 
+    const handleExport = () => {
+        toast.info("Exporting to Excel...", {
+            description: "This feature will be available soon."
+        });
+    };
+
     if (loading) {
         return (
-            <div className="p-4">
-                <Skeleton className="h-8 w-1/2 mb-4" />
-                <Skeleton className="h-96 w-full" />
+            <div className="p-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Skeleton className="h-[600px] w-full rounded-xl" />
+                <div className="space-y-4">
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-64 w-full" />
+                    <Skeleton className="h-64 w-full" />
+                </div>
             </div>
         );
     }
 
     if (!diamond) {
-        return <div>Diamond not found.</div>;
+        return <div className="p-8 text-center text-lg text-muted-foreground">Diamond not found.</div>;
     }
+
+    // Safely parse numbers from the diamond data to avoid .toFixed errors
+    const pricePerCarat = diamond.price_carat ? parseFloat(String(diamond.price_carat)) : 0;
+    const weight = diamond.weight ? parseFloat(String(diamond.weight)) : 0;
+    const totalAmount = (pricePerCarat && weight) ? (pricePerCarat * weight) : 0;
+    const imageUrl = diamond.diamond_image || diamond.image_file;
 
     return (
         <>
             <AppSidebar onClick={handleOpen} className="cursor-pointer" />
             <SidebarInset>
                 <Header />
-                <div className="p-4">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>{diamond.shape} {diamond.weight}ct</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 md:p-6 bg-muted/20 min-h-full">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        
+                        {/* LEFT COLUMN: Media (Cert, Image, Video) */}
+                        <Card className="h-full flex flex-col overflow-hidden border-border bg-card">
+                            <CardContent className="p-0 flex-1 flex flex-col h-full">
+                                <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col h-full w-full">
+                                    <div className="flex-1 bg-muted/30 relative min-h-[500px] lg:min-h-0 flex items-center justify-center">
+                                        
+                                        {/* Certificate Tab */}
+                                        <TabsContent value="cert" className="m-0 h-full w-full absolute inset-0">
+                                            {diamond.certificate_file ? (
+                                                <iframe 
+                                                    src={diamond.certificate_file} 
+                                                    className="w-full h-full border-0" 
+                                                    title="Certificate"
+                                                />
+                                            ) : (
+                                                <div className="flex items-center justify-center h-full text-muted-foreground">No Certificate Available</div>
+                                            )}
+                                        </TabsContent>
+
+                                        {/* Image Tab */}
+                                        <TabsContent value="image" className="m-0 h-full w-full absolute inset-0 bg-background">
+                                            {imageUrl ? (
+                                                <img 
+                                                    src={imageUrl} 
+                                                    alt="Diamond" 
+                                                    className="w-full h-full object-contain" 
+                                                />
+                                            ) : (
+                                                <div className="flex items-center justify-center h-full text-muted-foreground">No Image Available</div>
+                                            )}
+                                        </TabsContent>
+
+                                        {/* Video Tab */}
+                                        <TabsContent value="video" className="m-0 h-full w-full absolute inset-0 bg-black">
+                                            {diamond.video_file ? (
+                                                <div className="w-full h-full flex items-center justify-center">
+                                                    <video controls src={diamond.video_file} className="max-h-full max-w-full">
+                                                        Your browser does not support the video tag.
+                                                    </video>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center justify-center h-full text-muted-foreground bg-muted/30">No Video Available</div>
+                                            )}
+                                        </TabsContent>
+                                    </div>
+
+                                    {/* Tabs Navigation */}
+                                    <div className="border-t border-border bg-card">
+                                        <TabsList className="w-full justify-start rounded-none h-12 bg-card p-0">
+                                            {diamond.certificate_file && (
+                                                <TabsTrigger 
+                                                    value="cert" 
+                                                    className="h-full px-6 data-[state=active]:bg-muted data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none text-muted-foreground data-[state=active]:text-foreground"
+                                                >
+                                                    <FileText className="w-4 h-4 mr-2" />
+                                                    Certificate
+                                                </TabsTrigger>
+                                            )}
+                                            {imageUrl && (
+                                                <TabsTrigger 
+                                                    value="image" 
+                                                    className="h-full px-6 data-[state=active]:bg-muted data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none text-muted-foreground data-[state=active]:text-foreground"
+                                                >
+                                                    <ImageIcon className="w-4 h-4 mr-2" />
+                                                    Image
+                                                </TabsTrigger>
+                                            )}
+                                            {diamond.video_file && (
+                                                <TabsTrigger 
+                                                    value="video" 
+                                                    className="h-full px-6 data-[state=active]:bg-muted data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none text-muted-foreground data-[state=active]:text-foreground"
+                                                >
+                                                    <Video className="w-4 h-4 mr-2" />
+                                                    Video
+                                                </TabsTrigger>
+                                            )}
+                                        </TabsList>
+                                    </div>
+                                </Tabs>
+                            </CardContent>
+                        </Card>
+
+                        {/* RIGHT COLUMN: Stone Detail */}
+                        <Card className="h-full border-t-4 border-t-primary border-border bg-card">
+                            <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-border">
+                                <CardTitle className="text-xl font-normal text-foreground">Stone Detail</CardTitle>
+                                <div className="flex space-x-2">
+                                    <Button size="icon" className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleAddToWatchlist} title="Add to Watchlist">
+                                        <Clock className="h-4 w-4" />
+                                    </Button>
+                                    <Button size="icon" className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleAddToCart} title="Add to Cart">
+                                        <ShoppingCart className="h-4 w-4" />
+                                    </Button>
+                                    <Button size="icon" className="bg-primary hover:bg-primary/90 text-primary-foreground opacity-50 cursor-not-allowed" title="Share (Coming Soon)">
+                                        <Send className="h-4 w-4" />
+                                    </Button>
+                                    <Button size="icon" className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleExport} title="Export to Excel">
+                                        <Download className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-6 space-y-8">
+                                
+                                {/* BASIC DETAILS */}
                                 <div>
-                                    <h3 className="text-lg font-semibold mb-2">Details</h3>
-                                    <p><strong>Stock ID:</strong> {diamond.stock_id}</p>
-                                    <p><strong>Color:</strong> {diamond.color}</p>
-                                    <p><strong>Clarity:</strong> {diamond.clarity}</p>
-                                    <p><strong>Cut:</strong> {diamond.cut_grade}</p>
-                                    <p><strong>Polish:</strong> {diamond.polish}</p>
-                                    <p><strong>Symmetry:</strong> {diamond.symmetry}</p>
-                                    <p><strong>Fluorescence:</strong> {diamond.fluorescence_intensity}</p>
-                                    <p><strong>Lab:</strong> {diamond.lab}</p>
-                                    <p>
-                                        <strong>Certificate:</strong>{' '}
-                                        {diamond.certificate_file ? (
-                                            <a href={diamond.certificate_file} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                                                {diamond.certificate_number}
-                                            </a>
-                                        ) : (
-                                            diamond.certificate_number
-                                        )}
-                                    </p>
+                                    <h3 className="text-sm font-bold text-muted-foreground uppercase mb-2 tracking-wide">Basic Details</h3>
+                                    <div className="border border-border rounded-sm overflow-hidden">
+                                        <DetailRow label1="Stone ID" value1={diamond.stock_id} label2="Shape" value2={diamond.shape} />
+                                        <DetailRow label1="Lab" value1={diamond.lab} label2="Certificate No" value2={diamond.certificate_number} />
+                                        <DetailRow label1="Carat" value1={diamond.weight} label2="Color" value2={diamond.color} />
+                                        <DetailRow label1="Clarity" value1={diamond.clarity} label2="" value2="" />
+                                    </div>
                                 </div>
+
+                                {/* PRICE DETAILS */}
                                 <div>
-                                    <h3 className="text-lg font-semibold mb-2">Measurements</h3>
-                                    <p>{diamond.measurements}</p>
-                                    <p><strong>Price/Carat :</strong> ${diamond.price_carat}</p>
-                                    <p><strong>Weight :</strong> {diamond.weight}</p>
-                                    <h3 className="text-lg font-semibold mb-2 mt-4">
-                                        Price : <span className="text-base font-normal">{(diamond.price_carat * diamond.weight).toFixed(2)} €</span>
-                                    </h3>
+                                    <h3 className="text-sm font-bold text-muted-foreground uppercase mb-2 tracking-wide">Price Details</h3>
+                                    <div className="border border-border rounded-sm overflow-hidden">
+                                        <DetailRow label1="Rap Price" value1={(diamond as any).rap_price || "-"} label2="Disc %" value2={(diamond as any).discount || "-"} />
+                                        <DetailRow 
+                                            label1="Pr/Ct" 
+                                            value1={pricePerCarat ? pricePerCarat.toFixed(2) : "-"} 
+                                            label2="Stone Amount" 
+                                            value2={totalAmount ? totalAmount.toFixed(2) : "-"} 
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="mt-4">
-                                <h3 className="text-lg font-semibold mb-2">Media</h3>
-                                <div className="flex space-x-4">
-                                    {(diamond.diamond_image || diamond.image_file) && (
-                                        <div className="w-32 h-32 flex items-center justify-center border rounded-md overflow-hidden">
-                                            <img src={diamond.diamond_image || diamond.image_file} alt="Diamond" className="object-cover h-full w-full" />
-                                        </div>
-                                    )}
-                                    {diamond.video_file && (
-                                        <div className="w-32 h-32 flex items-center justify-center border rounded-md overflow-hidden">
-                                            <video controls src={diamond.video_file} className="object-cover h-full w-full">
-                                                Your browser does not support the video tag.
-                                            </video>
-                                        </div>
-                                    )}
+
+                                {/* MAKE DETAILS */}
+                                <div>
+                                    <h3 className="text-sm font-bold text-muted-foreground uppercase mb-2 tracking-wide">Make Details</h3>
+                                    <div className="border border-border rounded-sm overflow-hidden">
+                                        <DetailRow label1="Cut" value1={diamond.cut_grade} label2="Polish" value2={diamond.polish} />
+                                        <DetailRow label1="Symmetry" value1={diamond.symmetry} label2="Fluorescence" value2={diamond.fluorescence_intensity} />
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="mt-6 flex space-x-2">
-                                <Button onClick={handleAddToCart}>Add to Cart</Button>
-                                <Button variant="outline" onClick={handleAddToWatchlist}>Add to Watchlist</Button>
-                                <Button variant="outline">Make a Custom Offer</Button>
-                            </div>
-                        </CardContent>
-                    </Card>
+
+                                {/* PARAMETER DETAILS */}
+                                <div>
+                                    <h3 className="text-sm font-bold text-muted-foreground uppercase mb-2 tracking-wide">Parameter Details</h3>
+                                    <div className="border border-border rounded-sm overflow-hidden">
+                                        <DetailRow label1="Measurement" value1={diamond.measurements} label2="Table %" value2={(diamond as any).table_percent || "-"} />
+                                        <DetailRow label1="Depth%" value1={(diamond as any).depth_percent || "-"} label2="Ratio" value2={(diamond as any).ratio || "-"} />
+                                        <DetailRow label1="Crown Angle" value1={(diamond as any).crown_angle || "-"} label2="Crown Height" value2={(diamond as any).crown_height || "-"} />
+                                        <DetailRow label1="Pavilion Angle" value1={(diamond as any).pavilion_angle || "-"} label2="Pv. Depth" value2={(diamond as any).pavilion_depth || "-"} />
+                                        <DetailRow label1="Girdle%" value1={(diamond as any).girdle || "-"} label2="Star Length" value2={(diamond as any).star_length || "-"} />
+                                        <DetailRow label1="Lower Half" value1={(diamond as any).lower_half || "-"} label2="" value2="" />
+                                    </div>
+                                </div>
+
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
             </SidebarInset>
         </>

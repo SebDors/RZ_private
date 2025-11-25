@@ -62,7 +62,7 @@ function Clients() {
     }
 
     return (
-        <div className="p-8 bg-secondary h-full">
+        <div className="p-4 bg-secondary rounded-md h-full">
             <Card>
                 <CardContent>
                     <Input

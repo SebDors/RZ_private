@@ -82,7 +82,8 @@ export function DataTable<TData>({
         <Table>
             <TableHeader>
             {table.getHeaderGroups().map((headerGroup: HeaderGroup<TData>) => (
-                <TableRow key={headerGroup.id} className="bg-black/10">
+                <TableRow key={headerGroup.id} className="font-bold">
+                  {/* TODO problème bordure carré */}
                 {headerGroup.headers.map((header: Header<TData, unknown>, index) => {
                     return (
                     <TableHead key={header.id} className={cn("text-center", { "border-r": index < headerGroup.headers.length - 1 })}>

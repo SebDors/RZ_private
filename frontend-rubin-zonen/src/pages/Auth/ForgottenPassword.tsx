@@ -14,6 +14,7 @@ import { useRedirectIfAuth } from "@/hooks/useRedirect";
 import { Link } from "react-router-dom";
 import { forgotPassword } from "@/services/auth";
 import { toast } from "sonner";
+import logo from '@/assets/logos/logo blanc front BLEU_page-0001.jpg';
 
 function ForgottenPassword() {
     useRedirectIfAuth();
@@ -34,8 +35,9 @@ function ForgottenPassword() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-            <Card className="w-[350px]">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
+            <img src={logo} alt="Company Logo" className="mb-8 h-24" />
+            <Card className="w-full max-w-lg">
                 <CardHeader>
                     <CardTitle>Forgot your password?</CardTitle>
                     <CardDescription>

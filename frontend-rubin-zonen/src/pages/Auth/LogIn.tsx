@@ -18,6 +18,7 @@ import {
 } from "lucide-react"
 import { loginUser } from "@/services/auth";
 import { useRedirectIfAuth } from "@/hooks/useRedirect";
+import logo from '@/assets/logos/logo blanc front BLEU_page-0001.jpg';
 
 export function LogIn() {
   useRedirectIfAuth();
@@ -62,8 +63,9 @@ export function LogIn() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-    <Card className="w-[350px] mx-auto my-6">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
+    <img src={logo} alt="Company Logo" className="mb-8 h-24" />
+    <Card className="w-full max-w-lg mx-auto my-6">
       <CardHeader>
         <CardTitle className="text-center">Login</CardTitle>
         <CardDescription className="text-center">

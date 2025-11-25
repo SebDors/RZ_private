@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { resetPassword } from "@/services/auth";
+import logo from '@/assets/logos/logo blanc front BLEU_page-0001.jpg';
 
 function ResetPassword() {
     const { token } = useParams<{ token: string }>();
@@ -45,8 +46,9 @@ function ResetPassword() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-            <Card className="w-[350px]">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
+            <img src={logo} alt="Company Logo" className="mb-8 h-24" />
+            <Card className="w-full max-w-lg">
                 <CardHeader>
                     <CardTitle>Reset Password</CardTitle>
                     <CardDescription>Enter your new password.</CardDescription>

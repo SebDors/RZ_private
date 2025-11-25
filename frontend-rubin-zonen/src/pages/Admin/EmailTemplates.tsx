@@ -65,67 +65,70 @@ function EmailTemplates() {
     }
 
     return (
-        <div className="p-4">
-            <h2 className="text-2xl font-bold mb-4">Email Templates</h2>
-            <ScrollArea className="h-[80vh]">
-                <div className="space-y-4">
-                    {templates.map((template) => (
-                        <Card key={template.id}>
-                            <CardHeader>
-                                <CardTitle className="flex justify-between items-center">
-                                    <span>{template.name}</span>
-                                    <Button onClick={() => handleEditClick(template)}>Edit</Button>
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p><strong>Subject:</strong> {template.subject}</p>
-                                <p className="mt-2"><strong>Body:</strong></p>
-                                <div className="p-2 border rounded-md mt-1 bg-gray-50 dark:bg-gray-800">
-                                    <pre className="whitespace-pre-wrap font-sans">{template.body}</pre>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            </ScrollArea>
+        <div className="p-8 bg-secondary h-full">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Email Templates</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <ScrollArea className="h-[80vh]">
+                        <div className="space-y-4">
+                            {templates.map((template) => (
+                                <Card key={template.id}>
+                                    <CardContent className="p-6">
+                                        <div className="flex justify-between items-start">
+                                            <p><strong>Subject</strong> : {template.subject}</p>
+                                            <Button onClick={() => handleEditClick(template)}>Edit</Button>
+                                        </div>
+                                        <p><strong>Body</strong> :</p>
+                                        <div className="p-2 border rounded-md mt-1 bg-secondary dark:bg-gray-800">
+                                            <pre className="whitespace-pre-wrap font-sans">{template.body}</pre>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    </ScrollArea>
 
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-[600px]">
-                    <DialogHeader>
-                        <DialogTitle>Edit Template: {selectedTemplate?.name}</DialogTitle>
-                        <DialogDescription>
-                            Make changes to your email template here. Click save when you're done.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="subject" className="text-right">
-                                Subject
-                            </Label>
-                            <Input
-                                id="subject"
-                                value={selectedTemplate?.subject || ""}
-                                onChange={(e) => setSelectedTemplate(prev => prev ? { ...prev, subject: e.target.value } : null)}
-                                className="col-span-3"
-                            />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="body" className="text-right">
-                                Body
-                            </Label>
-                            <Textarea
-                                id="body"
-                                value={selectedTemplate?.body || ""}
-                                onChange={(e) => setSelectedTemplate(prev => prev ? { ...prev, body: e.target.value } : null)}
-                                className="col-span-3 min-h-[200px]"
-                            />
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button onClick={handleSaveChanges}>Save changes</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                        <DialogContent className="sm:max-w-[600px]">
+                            <DialogHeader>
+                                <DialogTitle>Edit Template: {selectedTemplate?.name}</DialogTitle>
+                                <DialogDescription>
+                                    Make changes to your email template here. Click save when you're done.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="subject" className="text-right">
+                                        Subject
+                                    </Label>
+                                    <Input
+                                        id="subject"
+                                        value={selectedTemplate?.subject || ""}
+                                        onChange={(e) => setSelectedTemplate(prev => prev ? { ...prev, subject: e.target.value } : null)}
+                                        className="col-span-3"
+                                    />
+                                </div>
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="body" className="text-right">
+                                        Body
+                                    </Label>
+                                    <Textarea
+                                        id="body"
+                                        value={selectedTemplate?.body || ""}
+                                        onChange={(e) => setSelectedTemplate(prev => prev ? { ...prev, body: e.target.value } : null)}
+                                        className="col-span-3 min-h-[200px]"
+                                    />
+                                </div>
+                            </div>
+                            <DialogFooter>
+                                <Button onClick={handleSaveChanges}>Save changes</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                </CardContent>
+            </Card>
         </div>
     );
 }

@@ -3,11 +3,11 @@ import { getAllUsers, updateUser } from "@/services/users";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
 } from "@/components/ui/card"
 import type { User } from "../../models/models"
 import { Button } from "@/components/ui/button";
@@ -62,36 +62,40 @@ function Clients() {
     }
 
     return (
-        <div className="p-8">
-            <Input
-                type="text"
-                placeholder="Search by name, email, or company..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="mb-4"
-            />
+        <div className="p-8 bg-secondary h-full">
+            <Card>
+                <CardContent>
+                    <Input
+                        type="text"
+                        placeholder="Search by name, email, or company..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="mb-4"
+                    />
 
-            <div className="clients-list grid gap-4">
-                {filteredUsers.map(client => (
-                    <Card key={client.id} className={!client.is_active ? 'bg-gray-100 dark:bg-gray-700 opacity-70' : ''}>
-                        <CardHeader>
-                            <CardTitle>{client.company_name}</CardTitle>
-                            <CardDescription>{client.email}</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <p>{client.first_name} {client.last_name}</p>
-                            <p>{client.company_address}, {client.company_city}, {client.company_zip_code}, {client.company_country}</p>
-                            <p>{client.phone_number}</p>
-                            <div className="flex justify-end space-x-2 mt-4">
-                                <Button onClick={() => handleToggleActive(client)}>
-                                    {client.is_active ? 'Deactivate' : 'Activate'}
-                                </Button>
-                                <Button variant="outline" onClick={() => navigate(`/admin/clients/${client.id}`)}>View Details</Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
+                    <div className="clients-list grid gap-4">
+                        {filteredUsers.map(client => (
+                            <Card key={client.id} className={!client.is_active ? 'bg-gray-100 dark:bg-gray-700 opacity-70' : ''}>
+                                <CardHeader>
+                                    <CardTitle>{client.company_name}</CardTitle>
+                                    <CardDescription>{client.email}</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <p>{client.first_name} {client.last_name}</p>
+                                    <p>{client.company_address}, {client.company_city}, {client.company_zip_code}, {client.company_country}</p>
+                                    <p>{client.phone_number}</p>
+                                    <div className="flex justify-end space-x-2 mt-4">
+                                        <Button onClick={() => handleToggleActive(client)}>
+                                            {client.is_active ? 'Deactivate' : 'Activate'}
+                                        </Button>
+                                        <Button variant="outline" onClick={() => navigate(`/admin/clients/${client.id}`)}>View Details</Button>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     );
 }

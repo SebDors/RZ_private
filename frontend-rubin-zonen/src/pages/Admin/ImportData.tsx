@@ -81,8 +81,8 @@ export default function ImportData() {
 
   const handleUpload = async () => {
     if (selectedFiles.length === 0) {
-        toast.error('No file selected for upload.');
-        return;
+      toast.error('No file selected for upload.');
+      return;
     }
 
     const file = selectedFiles[0];
@@ -91,30 +91,30 @@ export default function ImportData() {
     const token = getToken();
 
     try {
-        const response = await fetch(`${import.meta.env.VITE_BASE_URL}/diamants/upload_data`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            },
-            body: formData,
-        });
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/diamants/upload_data`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
 
-        const data = await response.json();
+      const data = await response.json();
 
-        if (response.ok) {
-            toast.success(data.message || 'File uploaded successfully!');
-            setSelectedFiles([]);
-        } else {
-            toast.error(data.message || 'File upload failed.');
-        }
+      if (response.ok) {
+        toast.success(data.message || 'File uploaded successfully!');
+        setSelectedFiles([]);
+      } else {
+        toast.error(data.message || 'File upload failed.');
+      }
     } catch (error) {
-        console.error('Upload error:', error);
-        toast.error('An error occurred during file upload.');
+      console.error('Upload error:', error);
+      toast.error('An error occurred during file upload.');
     }
   };
 
   return (
-    <div className="p-4">
+    <div className="p-8 bg-secondary h-full">
       <Card>
         <CardHeader>
           <CardTitle>Import Data</CardTitle>

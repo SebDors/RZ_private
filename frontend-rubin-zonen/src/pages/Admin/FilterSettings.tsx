@@ -35,27 +35,31 @@ export default function FilterSettings() {
     };
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Search Filter Settings</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-4">
-                    {filters.map(filter => (
-                        // TODO fix the cursor pointer that work 
-                        <div key={filter.filter_name} className="flex items-center space-x-2 cursor-pointer">
-                            <Checkbox
-                                id={filter.filter_name}
-                                checked={filter.is_enabled}
-                                onCheckedChange={(checked) => handleFilterToggle(filter.filter_name, !!checked)}
-                            />
-                            <Label htmlFor={filter.filter_name} className="capitalize">
-                                {filter.filter_name.replace(/_/g, ' ')}
-                            </Label>
-                        </div>
-                    ))}
-                </div>
-            </CardContent>
-        </Card>
+        <div className="p-8 bg-secondary h-full">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Search Filter Settings</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Card>
+                    <div className="space-y-4 p-8">
+                        {filters.map(filter => (
+                            <div key={filter.filter_name} className="flex items-center space-x-2">
+                                <Checkbox
+                                    id={filter.filter_name}
+                                    checked={filter.is_enabled}
+                                    onCheckedChange={(checked) => handleFilterToggle(filter.filter_name, !!checked)}
+                                    className="cursor-pointer"
+                                />
+                                <Label htmlFor={filter.filter_name} className="capitalize cursor-pointer">
+                                    {filter.filter_name.replace(/_/g, ' ')}
+                                </Label>
+                            </div>
+                        ))}
+                    </div>
+                    </Card>
+                </CardContent>
+            </Card>
+        </div>
     );
 }

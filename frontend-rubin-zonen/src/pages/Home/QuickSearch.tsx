@@ -71,7 +71,7 @@ function QuickSearchContent() {
     const navigate = useNavigate();
     const { setOpen, open } = useSidebar();
 
-    const [selectedShapes, setSelectedShapes] = useState<string[]>([]);
+    const [selectedShapes, setSelectedShapes] = useState<string[]>(allShapeDbValues);
     const [counts, setCounts] = useState<Record<string, number>>({});
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [selectedCells, setSelectedCells] = useState<Record<string, CellIdentifier>>({});

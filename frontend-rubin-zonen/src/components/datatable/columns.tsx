@@ -3,10 +3,11 @@
 import type { ColumnDef } from "@tanstack/react-table" // flexRender is a value, not a type
 import type { Diamant } from "@/models/models"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+// import { Checkbox } from "@/components/ui/checkbox"
 import { ArrowUpDown } from "lucide-react"
 
 export const columns: ColumnDef<Diamant, unknown>[] = [
+  /*
   {
     id: "select",
     header: ({ table }) => (
@@ -29,6 +30,7 @@ export const columns: ColumnDef<Diamant, unknown>[] = [
     enableSorting: false,
     enableHiding: false,
   },
+  */
   {
     accessorKey: "availability",
     header: "Availability",
@@ -67,7 +69,7 @@ export const columns: ColumnDef<Diamant, unknown>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Carat
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="ml-1 h-4 " />
         </Button>
       )
     },
@@ -117,7 +119,7 @@ export const columns: ColumnDef<Diamant, unknown>[] = [
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Rap
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <ArrowUpDown className="ml-1 h-4 " />
           </Button>
         )
     },
@@ -140,7 +142,7 @@ export const columns: ColumnDef<Diamant, unknown>[] = [
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Discount
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <ArrowUpDown className="ml-1 h-4 " />
           </Button>
         )
     },
@@ -158,7 +160,7 @@ export const columns: ColumnDef<Diamant, unknown>[] = [
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Price/Carat
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <ArrowUpDown className="ml-1 h-4 " />
           </Button>
         )
     },
@@ -182,7 +184,7 @@ export const columns: ColumnDef<Diamant, unknown>[] = [
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Price
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <ArrowUpDown className="ml-1 h-4 " />
           </Button>
         )
     },
@@ -202,7 +204,7 @@ export const columns: ColumnDef<Diamant, unknown>[] = [
       const meta = table.options.meta as { navigateToDetail: (id: string) => void };
       
       return (
-        <Button onClick={() => meta.navigateToDetail(diamant.stock_id)}>Show Details</Button>
+        <Button onClick={() => meta.navigateToDetail(diamant.stock_id)}>Details</Button>
       )
     },
   },

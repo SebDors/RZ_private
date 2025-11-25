@@ -1,5 +1,3 @@
-"use client"
-
 import {
   flexRender,
   getCoreRowModel,
@@ -40,6 +38,7 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
+import { cn } from "@/lib/utils"
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData, unknown>[]
@@ -83,10 +82,10 @@ export function DataTable<TData>({
         <Table>
             <TableHeader>
             {table.getHeaderGroups().map((headerGroup: HeaderGroup<TData>) => (
-                <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header: Header<TData, unknown>) => {
+                <TableRow key={headerGroup.id} className="bg-black/10">
+                {headerGroup.headers.map((header: Header<TData, unknown>, index) => {
                     return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className={cn("text-center", { "border-r": index < headerGroup.headers.length - 1 })}>
                         {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -106,8 +105,8 @@ export function DataTable<TData>({
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
                 >
-                    {row.getVisibleCells().map((cell: Cell<TData, unknown>) => (
-                    <TableCell key={cell.id}>
+                    {row.getVisibleCells().map((cell: Cell<TData, unknown>, index) => (
+                    <TableCell key={cell.id} className={cn("text-center", { "border-r": index < row.getVisibleCells().length - 1 })}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                     ))}
@@ -172,3 +171,4 @@ export function DataTable<TData>({
     </div>
   )
 }
+

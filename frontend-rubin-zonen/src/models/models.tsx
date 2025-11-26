@@ -35,18 +35,18 @@ export interface Diamant {
     fancy_color: string;
     fancy_color_intensity: string;
     fancy_color_overtone: string;
-    depth_pct: number;
-    table_pct: number;
+    depth_pct?: number;
+    table_pct?: number;
     girdle_thin: string;
     girdle_thick: string;
     girdle_pct: number;
     girdle_condition: string;
     culet_size: string;
     culet_condition: string;
-    crown_height: number;
-    crown_angle: number;
-    pavilion_depth: number;
-    pavilion_angle: number;
+    crown_height?: number;
+    crown_angle?: number;
+    pavilion_depth?: number;
+    pavilion_angle?: number;
     laser_inscription: boolean;
     comment?: string;
     country: string;
@@ -68,6 +68,12 @@ export interface Diamant {
     certificate_file: string;
     is_special: boolean;
     is_upcoming: boolean;
+    rap_price?: number;
+    discount?: number;
+    ratio?: number;
+    girdle?: string;
+    star_length?: number;
+    lower_half?: number;
 };
 
 export interface QuoteItem {

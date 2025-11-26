@@ -62,6 +62,8 @@ function StoneDetailContent() {
     const [diamond, setDiamond] = useState<Diamant | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("cert");
+    const [imageLoadError, setImageLoadError] = useState(false);
+    const [videoLoadError, setVideoLoadError] = useState(false);
 
     const handleOpen = () => {
         if (!open) {
@@ -133,6 +135,12 @@ function StoneDetailContent() {
         });
     };
 
+    // Reset error states when diamond changes or tab changes
+    useEffect(() => {
+        setImageLoadError(false);
+        setVideoLoadError(false);
+    }, [diamond, activeTab]);
+
     if (loading) {
         return (
             <div className="p-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -171,41 +179,66 @@ function StoneDetailContent() {
                                     <div className="flex-1 bg-muted/30 relative min-h-[500px] lg:min-h-0 flex items-center justify-center">
                                         
                                         {/* Certificate Tab */}
-                                        <TabsContent value="cert" className="m-0 h-full w-full absolute inset-0">
+                                        <TabsContent value="cert" className="m-0 h-full w-full absolute inset-0 bg-background">
                                             {diamond.certificate_file ? (
-                                                <iframe 
-                                                    src={diamond.certificate_file} 
+                                                <object 
+                                                    data={diamond.certificate_file} 
+                                                    type="application/pdf"
                                                     className="w-full h-full border-0" 
                                                     title="Certificate"
-                                                />
+                                                >
+                                                    <div className="flex items-center justify-center h-full text-muted-foreground">
+                                                        <span>Certificate failed to load. Please contact the seller.</span>
+                                                    </div>
+                                                </object>
                                             ) : (
-                                                <div className="flex items-center justify-center h-full text-muted-foreground">No Certificate Available</div>
+                                                <div className="flex items-center justify-center h-full text-muted-foreground">
+                                                    <span>No Certificate Available</span>
+                                                </div>
                                             )}
                                         </TabsContent>
 
                                         {/* Image Tab */}
                                         <TabsContent value="image" className="m-0 h-full w-full absolute inset-0 bg-background">
-                                            {imageUrl ? (
+                                            {imageUrl && !imageLoadError ? (
                                                 <img 
                                                     src={imageUrl} 
                                                     alt="Diamond" 
                                                     className="w-full h-full object-contain" 
+                                                    onError={() => setImageLoadError(true)}
                                                 />
                                             ) : (
-                                                <div className="flex items-center justify-center h-full text-muted-foreground">No Image Available</div>
+                                                <div className="flex items-center justify-center h-full text-muted-foreground">
+                                                    {imageUrl && imageLoadError ? (
+                                                        <span>Image failed to load. Please contact the seller.</span>
+                                                    ) : (
+                                                        <span>No Image Available</span>
+                                                    )}
+                                                </div>
                                             )}
                                         </TabsContent>
 
                                         {/* Video Tab */}
-                                        <TabsContent value="video" className="m-0 h-full w-full absolute inset-0 bg-black">
-                                            {diamond.video_file ? (
+                                        <TabsContent value="video" className="m-0 h-full w-full absolute inset-0 bg-background">
+                                            {diamond.video_file && !videoLoadError ? (
                                                 <div className="w-full h-full flex items-center justify-center">
-                                                    <video controls src={diamond.video_file} className="max-h-full max-w-full">
+                                                    <video 
+                                                        controls 
+                                                        src={diamond.video_file} 
+                                                        className="max-h-full max-w-full"
+                                                        onError={() => setVideoLoadError(true)}
+                                                    >
                                                         Your browser does not support the video tag.
                                                     </video>
                                                 </div>
                                             ) : (
-                                                <div className="flex items-center justify-center h-full text-muted-foreground bg-muted/30">No Video Available</div>
+                                                <div className="flex items-center justify-center h-full text-muted-foreground">
+                                                    {diamond.video_file && videoLoadError ? (
+                                                        <span>Video failed to load. Please contact the seller.</span>
+                                                    ) : (
+                                                        <span>No Video Available</span>
+                                                    )}
+                                                </div>
                                             )}
                                         </TabsContent>
                                     </div>
@@ -280,7 +313,7 @@ function StoneDetailContent() {
                                 <div>
                                     <h3 className="text-sm font-bold text-muted-foreground uppercase mb-2 tracking-wide">Price Details</h3>
                                     <div className="border border-border rounded-sm overflow-hidden">
-                                        <DetailRow label1="Rap Price" value1={(diamond as any).rap_price || "-"} label2="Disc %" value2={(diamond as any).discount || "-"} />
+                                        <DetailRow label1="Rap Price" value1={diamond.rap_price || "-"} label2="Disc %" value2={diamond.discount || "-"} />
                                         <DetailRow 
                                             label1="Pr/Ct" 
                                             value1={pricePerCarat ? pricePerCarat.toFixed(2) : "-"} 
@@ -303,12 +336,12 @@ function StoneDetailContent() {
                                 <div>
                                     <h3 className="text-sm font-bold text-muted-foreground uppercase mb-2 tracking-wide">Parameter Details</h3>
                                     <div className="border border-border rounded-sm overflow-hidden">
-                                        <DetailRow label1="Measurement" value1={diamond.measurements} label2="Table %" value2={(diamond as any).table_percent || "-"} />
-                                        <DetailRow label1="Depth%" value1={(diamond as any).depth_percent || "-"} label2="Ratio" value2={(diamond as any).ratio || "-"} />
-                                        <DetailRow label1="Crown Angle" value1={(diamond as any).crown_angle || "-"} label2="Crown Height" value2={(diamond as any).crown_height || "-"} />
-                                        <DetailRow label1="Pavilion Angle" value1={(diamond as any).pavilion_angle || "-"} label2="Pv. Depth" value2={(diamond as any).pavilion_depth || "-"} />
-                                        <DetailRow label1="Girdle%" value1={(diamond as any).girdle || "-"} label2="Star Length" value2={(diamond as any).star_length || "-"} />
-                                        <DetailRow label1="Lower Half" value1={(diamond as any).lower_half || "-"} label2="" value2="" />
+                                        <DetailRow label1="Measurement" value1={diamond.measurements} label2="Table %" value2={diamond.table_pct || "-"} />
+                                        <DetailRow label1="Depth%" value1={diamond.depth_pct || "-"} label2="Ratio" value2={diamond.ratio || "-"} />
+                                        <DetailRow label1="Crown Angle" value1={diamond.crown_angle || "-"} label2="Crown Height" value2={diamond.crown_height || "-"} />
+                                        <DetailRow label1="Pavilion Angle" value1={diamond.pavilion_angle || "-"} label2="Pv. Depth" value2={diamond.pavilion_depth || "-"} />
+                                        <DetailRow label1="Girdle%" value1={diamond.girdle || "-"} label2="Star Length" value2={diamond.star_length || "-"} />
+                                        <DetailRow label1="Lower Half" value1={diamond.lower_half || "-"} label2="" value2="" />
                                     </div>
                                 </div>
 

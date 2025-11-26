@@ -17,7 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Clock, ShoppingCart, Send, Download, FileText, Image as ImageIcon, Video } from "lucide-react";
+import { Clock, ShoppingCart, Download, FileText, Image as ImageIcon, Video } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Helper component to render the detail rows using theme colors
@@ -257,11 +257,9 @@ function StoneDetailContent() {
                                     <Button size="icon" className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleAddToCart} title="Add to Cart">
                                         <ShoppingCart className="h-4 w-4" />
                                     </Button>
-                                    <Button size="icon" className="bg-primary hover:bg-primary/90 text-primary-foreground opacity-50 cursor-not-allowed" title="Share (Coming Soon)">
-                                        <Send className="h-4 w-4" />
-                                    </Button>
                                     <Button size="icon" className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleExport} title="Export to Excel">
                                         <Download className="h-4 w-4" />
+                                        {/* TODO envoyer le mail */}
                                     </Button>
                                 </div>
                             </CardHeader>

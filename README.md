@@ -2,7 +2,13 @@
 
 ## Installation
 
+### Requirements
+
+To launch the app you will need [docker](https://docs.docker.com/engine/install/)
+
 Rename the .env.shared (in `backend-rubin-zonen\.env.shared`) to .env and complete the informations in the file.
+
+### Launch
 
 In the terminal paste this to launch the backend :
 

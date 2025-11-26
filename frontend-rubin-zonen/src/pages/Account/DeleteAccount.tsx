@@ -1,4 +1,15 @@
 import { Button } from "@/components/ui/button";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { deleteUser } from "@/services/users";
 import { toast } from "sonner";
@@ -14,17 +25,13 @@ function DeleteAccount() {
             return;
         }
 
-        const isConfirmed = window.confirm("Are you sure you want to delete your account? This action cannot be undone.");
-
-        if (isConfirmed) {
-            try {
-                await deleteUser(user.id);
-                toast.success("Your account has been successfully deleted.");
-                logout();
-                navigate('/login');
-            } catch {
-                toast.error("Failed to delete your account. Please try again later.");
-            }
+        try {
+            await deleteUser(user.id);
+            toast.success("Your account has been successfully deleted.");
+            logout();
+            navigate('/login');
+        } catch {
+            toast.error("Failed to delete your account. Please try again later.");
         }
     };
 
@@ -34,9 +41,23 @@ function DeleteAccount() {
             <p className="text-sm text-gray-600 dark:text-gray-400">
                 Once you delete your account, there is no going back. Please be certain.
             </p>
-            <Button variant="destructive" onClick={handleDelete}>
-                Delete My Account
-            </Button>
+            <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <Button variant="destructive">Delete My Account</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete your account and remove your data from our servers.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDelete}>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }

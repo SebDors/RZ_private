@@ -1,4 +1,4 @@
-import { Outlet, Link, useNavigate } from "react-router-dom"
+import { Outlet, Link } from "react-router-dom"
 import { AppSidebar } from "@/components/sidebar/app-sidebar"
 import Header from "@/components/Header"
 import {
@@ -12,14 +12,13 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { useAuth } from "@/hooks/useAuth"
 import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 
 function MyAccountContent() {
     useRedirectIfNotAuth();
     const { setOpen, open } = useSidebar()
-    const { logout } = useAuth();
-    const navigate = useNavigate();
+    // const { logout } = useAuth();
+    // const navigate = useNavigate();
 
     const handleOpen = () => {
         if (!open) {
@@ -27,10 +26,10 @@ function MyAccountContent() {
         }
     }
 
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
-    };
+    // const handleLogout = () => {
+    //     logout();
+    //     navigate('/login');
+    // };
 
     return (
         <>
@@ -48,11 +47,11 @@ function MyAccountContent() {
                                     <nav className="flex flex-col space-y-2">
                                         {/* fix color */}
                                         <Link to="/my-account/profile" className="hover:grey">Profile</Link>
-                                        <Link to="/my-account/orders" className="hover:grey">Order History</Link>
+                                        {/* <Link to="/my-account/orders" className="hover:grey">Order History</Link> */}
                                         <Link to="/my-account/settings" className="hover:grey">Settings</Link>
-                                        <Link to="/my-account/login-history" className="hover:grey">Login History</Link>
+                                        {/* <Link to="/my-account/login-history" className="hover:grey">Login History</Link> */}
                                         <Link to="/my-account/delete" className="hover:grey">Delete Account</Link>
-                                        <button onClick={handleLogout} className="hover:grey text-left">Logout</button>
+                                        {/* <button onClick={handleLogout} className="hover:grey text-left">Logout</button> */}
                                     </nav>
                                 </div>
                                 <div className="w-3/4 pl-4">

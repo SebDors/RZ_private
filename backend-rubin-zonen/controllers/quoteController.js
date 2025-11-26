@@ -211,6 +211,55 @@ exports.getQuoteById = async (req, res) => {
     }
 };
 
+// DELETE /api/quotes/:id - Delete a quote
+exports.deleteQuote = async (req, res) => {
+    const { id } = req.params;
+
+    const client = await db.connect();
+    try {
+        await client.query('BEGIN'); // Start transaction
+
+        // First, delete related quote items
+        await client.query('DELETE FROM quote_items WHERE quote_id = $1;', [id]);
+
+        // Then, delete the quote itself
+        const result = await client.query('DELETE FROM quotes WHERE id = $1 RETURNING id;', [id]);
+
+        if (result.rowCount === 0) {
+            await client.query('ROLLBACK'); // Rollback if quote was not found
+            await addLog({
+                userId: req.user.id,
+                level: 'warn',
+                action: 'DELETE_QUOTE_NOT_FOUND',
+                details: { quoteId: id },
+            });
+            return res.status(404).json({ message: 'Quote not found.' });
+        }
+
+        await client.query('COMMIT'); // Commit transaction
+        await addLog({
+            userId: req.user.id,
+            level: 'info',
+            action: 'DELETE_QUOTE_SUCCESS',
+            details: { quoteId: id },
+        });
+        res.status(200).json({ message: 'Quote deleted successfully.' });
+
+    } catch (error) {
+        await client.query('ROLLBACK'); // Rollback on error
+        await addLog({
+            userId: req.user.id,
+            level: 'error',
+            action: 'DELETE_QUOTE_FAILED',
+            details: { quoteId: id, error: error.message },
+        });
+        console.error(`Error deleting quote ${id}:`, error);
+        res.status(500).json({ message: 'Server error while deleting quote.' });
+    } finally {
+        client.release();
+    }
+};
+
 // PUT /api/quotes/:id - Update a quote's status
 exports.updateQuoteStatus = async (req, res) => {
     const { id } = req.params;

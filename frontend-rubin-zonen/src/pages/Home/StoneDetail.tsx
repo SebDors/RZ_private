@@ -96,7 +96,7 @@ function StoneDetailContent() {
     const handleAddToCart = async () => {
         if (stock_id) {
             try {
-                await addItemToCart(stock_id, 1);
+                await addItemToCart(stock_id);
                 toast.success("Item added to cart", {
                     action: {
                         label: "View Cart",

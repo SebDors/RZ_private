@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import { getCart, updateCartItemQuantity, deleteCartItem, addItemToCart } from "@/services/cart";
+import { getCart, deleteCartItem, addItemToCart } from "@/services/cart";
 import { addItemToWatchlist, deleteWatchlistItem } from "@/services/watchlist";
 import type { CartItem } from "@/services/cart";
+
 import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import Header from "@/components/Header";
@@ -50,21 +49,6 @@ function MyCartContent() {
         fetchCartItems();
     }, []);
 
-    const handleUpdateQuantity = async (stock_id: string, quantity: number) => {
-        if (quantity <= 0) {
-            handleRemoveItem(stock_id);
-            return;
-        }
-        try {
-            await updateCartItemQuantity(stock_id, quantity);
-            toast.success("Cart updated.");
-            fetchCartItems(); // Refresh the list
-        } catch (error) {
-            console.error("Error updating cart item quantity:", error);
-            toast.error("Failed to update cart item quantity.");
-        }
-    };
-
     const handleRemoveItem = async (stock_id: string) => {
         try {
             const { deletedItem } = await deleteCartItem(stock_id);
@@ -83,7 +67,7 @@ function MyCartContent() {
 
     const handleUndoRemoveItem = async (item: CartItem) => {
         try {
-            await addItemToCart(item.diamond_stock_id, item.quantity);
+            await addItemToCart(item.diamond_stock_id);
             fetchCartItems();
         } catch (error) {
             console.error("Error undoing remove from cart:", error);
@@ -115,7 +99,7 @@ function MyCartContent() {
 
     const handleUndoMoveToWatchlist = async (item: CartItem) => {
         try {
-            await addItemToCart(item.diamond_stock_id, item.quantity);
+            await addItemToCart(item.diamond_stock_id);
             await deleteWatchlistItem(item.diamond_stock_id);
             fetchCartItems();
         } catch (error) {
@@ -154,7 +138,7 @@ function MyCartContent() {
 
 
     const calculateTotal = () => {
-        return cartItems.reduce((total, item) => total + Number(item.price_carat) * item.weight * item.quantity, 0);
+        return cartItems.reduce((total, item) => total + Number(item.price_carat) * item.weight, 0);
     };
 
     return (
@@ -181,17 +165,6 @@ function MyCartContent() {
                                                     <p>Clarity: {item.clarity}</p>
                                                                                                         <p>Price/Carat: ${Number(item.price_carat).toFixed(2)}</p>
                                                                                                         <p>Weight: {item.weight}</p>                                                    
-                                                                                                        <p>Total Price: ${(Number(item.price_carat) * item.weight * item.quantity).toFixed(2)}</p>                                                    <div className="flex items-center mt-4">
-                                                        <Label htmlFor={`quantity-${item.diamond_stock_id}`} className="mr-2">Qty:</Label>
-                                                        <Input
-                                                            id={`quantity-${item.diamond_stock_id}`}
-                                                            type="number"
-                                                            min="1"
-                                                            value={item.quantity}
-                                                            onChange={(e) => handleUpdateQuantity(item.diamond_stock_id, parseInt(e.target.value))}
-                                                            className="w-20"
-                                                        />
-                                                    </div>
                                                     <div className="flex flex-col space-y-2 mt-4">
                                                         <Button variant="destructive" onClick={() => handleRemoveItem(item.diamond_stock_id)}>
                                                             Remove
@@ -212,14 +185,6 @@ function MyCartContent() {
                                         <CardTitle>Cart Summary</CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                        <div className="flex justify-between mb-2">
-                                            <span>Subtotal</span>
-                                            <span>${calculateTotal().toFixed(2)}</span>
-                                        </div>
-                                        <div className="flex justify-between mb-2">
-                                            <span>Shipping</span>
-                                            <span>Free</span>
-                                        </div>
                                         <div className="flex justify-between font-bold text-lg">
                                             <span>Total</span>
                                             <span>${calculateTotal().toFixed(2)}</span>

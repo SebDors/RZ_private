@@ -129,4 +129,6 @@ router.get('/:id', authorizeAdmin, quoteController.getQuoteById);
  */
 router.put('/:id', authorizeAdmin, quoteController.updateQuoteStatus);
 
+router.delete('/:id', authorizeAdmin, quoteController.deleteQuote);
+
 module.exports = router;

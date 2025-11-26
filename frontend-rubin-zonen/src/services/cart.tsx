@@ -2,7 +2,6 @@ import { getToken } from "@/lib/utils";
 
 export interface CartItem {
     diamond_stock_id: string;
-    quantity: number;
     shape: string;
     weight: number;
     color: string;
@@ -27,7 +26,7 @@ export const getCart = async (): Promise<CartItem[]> => {
     return data;
 };
 
-export const addItemToCart = async (diamond_stock_id: string, quantity: number): Promise<CartItem> => {
+export const addItemToCart = async (diamond_stock_id: string): Promise<CartItem> => {
     const token = getToken();
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/cart`,
         {
@@ -36,23 +35,7 @@ export const addItemToCart = async (diamond_stock_id: string, quantity: number):
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ diamond_stock_id, quantity })
-        }
-    );
-    const data = await response.json();
-    return data;
-};
-
-export const updateCartItemQuantity = async (diamond_stock_id: string, quantity: number): Promise<CartItem> => {
-    const token = getToken();
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/cart/${diamond_stock_id}`,
-        {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ quantity })
+            body: JSON.stringify({ diamond_stock_id })
         }
     );
     const data = await response.json();

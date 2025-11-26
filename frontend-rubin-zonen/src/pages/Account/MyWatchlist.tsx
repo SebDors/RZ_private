@@ -52,7 +52,7 @@ function MyWatchlistContent() {
 
     const handleAddToCart = async (stock_id: string) => {
         try {
-            await addItemToCart(stock_id, 1);
+            await addItemToCart(stock_id);
             toast.success("Item added to cart.");
         } catch (error) {
             console.error("Error adding item to cart:", error);

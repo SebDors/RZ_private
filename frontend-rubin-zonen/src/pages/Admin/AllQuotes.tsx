@@ -1,32 +1,66 @@
 import { useState, useEffect } from "react";
-import { getAllQuotes } from "@/services/quote";
+import { getAllQuotes, deleteQuote } from "@/services/quote";
 import type { Quote } from "@/services/quote";
 import { useRedirectIfNotAdmin } from "@/hooks/useRedirect";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 function AllQuotesContent() {
     useRedirectIfNotAdmin();
     const [quotes, setQuotes] = useState<Quote[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
+    const [quoteToDeleteId, setQuoteToDeleteId] = useState<number | null>(null);
+
+    const fetchAllQuotes = async () => {
+        try {
+            const allQuotes = await getAllQuotes();
+            setQuotes(allQuotes);
+        } catch (error) {
+            console.error("Error fetching all quotes:", error);
+            toast.error("Failed to fetch all quotes.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchAllQuotes = async () => {
-            try {
-                const allQuotes = await getAllQuotes();
-                setQuotes(allQuotes);
-            } catch (error) {
-                console.error("Error fetching all quotes:", error);
-                toast.error("Failed to fetch all quotes.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchAllQuotes();
     }, []);
+
+    const handleConfirmDelete = async () => {
+        if (quoteToDeleteId) {
+            try {
+                await deleteQuote(quoteToDeleteId);
+                toast.success("Quote deleted successfully.");
+                fetchAllQuotes(); // Refresh the list
+            } catch (error) {
+                console.error("Error deleting quote:", error);
+                toast.error("Failed to delete quote.");
+            } finally {
+                setIsAlertDialogOpen(false);
+                setQuoteToDeleteId(null);
+            }
+        }
+    };
+
+    const handleRemoveClick = (id: number) => {
+        setQuoteToDeleteId(id);
+        setIsAlertDialogOpen(true);
+    };
 
     return (
         <div className="p-4 bg-secondary rounded-md h-full">
@@ -46,7 +80,12 @@ function AllQuotesContent() {
                                             <CardHeader>
                                                 <CardTitle className="flex justify-between items-center">
                                                     <span>Quote #{quote.id} - {quote.user?.first_name} {quote.user?.last_name} ({quote.user?.email})</span>
-                                                    <Badge>{quote.status}</Badge>
+                                                    <div>
+                                                        <Badge>{quote.status}</Badge>
+                                                        <Button variant="destructive" size="sm" onClick={() => handleRemoveClick(quote.id)} className="ml-4">
+                                                            Remove
+                                                        </Button>
+                                                    </div>
                                                 </CardTitle>
                                                 <p className="text-sm text-gray-500">
                                                     Created on: {new Date(quote.created_at).toLocaleDateString()}
@@ -72,6 +111,21 @@ function AllQuotesContent() {
                     )}
                 </CardContent>
             </Card>
+
+            <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the quote and remove its data from our servers.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmDelete}>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }

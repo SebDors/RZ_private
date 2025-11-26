@@ -89,6 +89,22 @@ export const getQuoteById = async (id: number): Promise<Quote> => {
     return data;
 };
 
+export const deleteQuote = async (id: number): Promise<{ message: string }> => {
+    const token = getToken();
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/quotes/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.message || 'Failed to delete quote.');
+    }
+    return data;
+};
+
 export const updateQuoteStatus = async (id: number, status: string): Promise<{ message: string; quote: Quote }> => {
     const token = getToken();
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/quotes/${id}`, {

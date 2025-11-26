@@ -68,12 +68,6 @@ export interface Diamant {
     certificate_file: string;
     is_special: boolean;
     is_upcoming: boolean;
-    rap_price?: number;
-    discount?: number;
-    ratio?: number;
-    girdle?: string;
-    star_length?: number;
-    lower_half?: number;
 };
 
 export interface QuoteItem {

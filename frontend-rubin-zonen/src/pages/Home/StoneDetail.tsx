@@ -164,6 +164,21 @@ function StoneDetailContent() {
     const totalAmount = (pricePerCarat && weight) ? (pricePerCarat * weight) : 0;
     const imageUrl = diamond.diamond_image || diamond.image_file;
 
+    const measurements = diamond.measurements;
+    let ratio: number | undefined;
+
+    if (measurements) {
+        // Assuming format like "5.06-3.94*2.73"
+        const parts = measurements.split(/[*-]/);
+        if (parts.length >= 2) {
+            const length = parseFloat(parts[0]);
+            const width = parseFloat(parts[1]);
+            if (length && width && width > 0) {
+                ratio = length / width;
+            }
+        }
+    }
+
     return (
         <>
             <AppSidebar onClick={handleOpen} className="cursor-pointer" />
@@ -313,7 +328,7 @@ function StoneDetailContent() {
                                 <div>
                                     <h3 className="text-sm font-bold text-muted-foreground uppercase mb-2 tracking-wide">Price Details</h3>
                                     <div className="border border-border rounded-sm overflow-hidden">
-                                        <DetailRow label1="Rap Price" value1={diamond.rap_price || "-"} label2="Disc %" value2={diamond.discount || "-"} />
+                                        <DetailRow label1="Rap Price" value1={diamond.rap || "-"} label2="Disc %" value2={diamond.disc || "-"} />
                                         <DetailRow 
                                             label1="Pr/Ct" 
                                             value1={pricePerCarat ? pricePerCarat.toFixed(2) : "-"} 
@@ -337,11 +352,10 @@ function StoneDetailContent() {
                                     <h3 className="text-sm font-bold text-muted-foreground uppercase mb-2 tracking-wide">Parameter Details</h3>
                                     <div className="border border-border rounded-sm overflow-hidden">
                                         <DetailRow label1="Measurement" value1={diamond.measurements} label2="Table %" value2={diamond.table_pct || "-"} />
-                                        <DetailRow label1="Depth%" value1={diamond.depth_pct || "-"} label2="Ratio" value2={diamond.ratio || "-"} />
+                                        <DetailRow label1="Depth%" value1={diamond.depth_pct || "-"} label2="Ratio" value2={ratio ? ratio.toFixed(2) : "-"} />
                                         <DetailRow label1="Crown Angle" value1={diamond.crown_angle || "-"} label2="Crown Height" value2={diamond.crown_height || "-"} />
                                         <DetailRow label1="Pavilion Angle" value1={diamond.pavilion_angle || "-"} label2="Pv. Depth" value2={diamond.pavilion_depth || "-"} />
-                                        <DetailRow label1="Girdle%" value1={diamond.girdle || "-"} label2="Star Length" value2={diamond.star_length || "-"} />
-                                        <DetailRow label1="Lower Half" value1={diamond.lower_half || "-"} label2="" value2="" />
+                                        <DetailRow label1="Girdle%" value1={diamond.girdle_pct || "-"} label2="" value2="" />
                                     </div>
                                 </div>
 

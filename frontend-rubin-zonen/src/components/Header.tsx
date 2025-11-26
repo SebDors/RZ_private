@@ -28,7 +28,7 @@ export function Header() {
         )}
       </div>
       <div className="flex items-center">
-        <Link to="/my-account/settings">
+        <Link to="/my-account/settings" className='mr-2'>
           <Button variant="outline">My Account</Button>
         </Link>
         <Select value={language || ''} onValueChange={setLanguage}>

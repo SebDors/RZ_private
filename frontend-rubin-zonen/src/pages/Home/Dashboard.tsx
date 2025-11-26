@@ -12,7 +12,7 @@ import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 import { useQuickSearch } from "@/hooks/useQuickSearch";
 import { SavedSearches } from "@/components/SavedSearches";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface DashboardStats {
   specialStonesCount: number;
@@ -41,6 +41,17 @@ function DashboardContent() {
     deleteSavedSearch,
   } = useQuickSearch();
 
+  const handleCardClick = (type: "special" | "upcoming" | "total") => {
+    if (type === "total") {
+      navigate("/search");
+    } else {
+      const stoneType = type === "special" ? "SPECIAL_STONE" : "UPCOMING_STONE";
+      navigate("/diamond-list", {
+        state: { searchParams: { stone_type: [stoneType] } },
+      });
+    }
+  };
+
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -66,29 +77,76 @@ function DashboardContent() {
       <SidebarInset>
         <Header />
         <div className="p-4 bg-secondary rounded-md h-full">
-          <Card>
-            <CardContent>
-              {error && <p className="text-red-500">{error}</p>}
-              {stats ? (
+          <div className="mb-2">
+            {error && <p className="text-red-500">{error}</p>}
+            {stats ? (
+              <div className="mb-8">
+                <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0 mb-4">
+                  Dashboard Statistics
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Card
+                    className="cursor-pointer hover:bg-muted"
+                    onClick={() => handleCardClick("special")}
+                  >
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">
+                        Special Stones
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">
+                        {stats.specialStonesCount}
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card
+                    className="cursor-pointer hover:bg-muted"
+                    onClick={() => handleCardClick("upcoming")}
+                  >
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">
+                        Upcoming Stones
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">
+                        {stats.upcomingStonesCount}
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card
+                    className="cursor-pointer hover:bg-muted"
+                    onClick={() => handleCardClick("total")}
+                  >
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">
+                        Total Available Stones
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">
+                        {stats.totalAvailableStones}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            ) : (
+              !error && (
                 <div className="mb-8">
-                  <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+                  <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0 mb-4">
                     Dashboard Statistics
                   </h2>
-                  <p>Special Stones: {stats.specialStonesCount}</p>
-                  <p>Upcoming Stones: {stats.upcomingStonesCount}</p>
-                  <p>Total Available Stones: {stats.totalAvailableStones}</p>
-                </div>
-              ) : (
-                !error && (
-                  <div className="space-y-2 mb-8">
-                    <Skeleton className="h-4 w-[250px]" />
-                    <Skeleton className="h-4 w-[250px]" />
-                    <Skeleton className="h-4 w-[250px]" />
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Skeleton className="h-28" />
+                    <Skeleton className="h-28" />
+                    <Skeleton className="h-28" />
                   </div>
-                )
-              )}
-            </CardContent>
-          </Card>
+                </div>
+              )
+            )}
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <SavedSearches
               title="Last Searches"

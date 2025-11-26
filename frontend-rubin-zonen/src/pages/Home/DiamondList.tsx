@@ -66,7 +66,8 @@ function DiamondListContent() {
                     processFilter('polish');
                     processFilter('symmetry');
                     processFilter('fluorescence');
-                    processFilter('stone_type');
+                    processFilter('is_special');
+                    processFilter('is_upcoming');
 
                     if (searchParams.carat && searchParams.carat.length > 0) {
                         processedFilters.carat = searchParams.carat.map((range: string) => {
@@ -91,7 +92,8 @@ function DiamondListContent() {
                         symmetry: 'symmetry',
                         fluorescence: 'fluorescence_intensity',
                         lab: 'lab',
-                        stone_type: 'stone_type',
+                        is_special: 'is_special',
+                        is_upcoming: 'is_upcoming',
                     };
 
                     for (const key in processedFilters) {

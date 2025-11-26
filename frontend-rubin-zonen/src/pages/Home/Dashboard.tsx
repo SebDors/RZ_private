@@ -44,11 +44,14 @@ function DashboardContent() {
   const handleCardClick = (type: "special" | "upcoming" | "total") => {
     if (type === "total") {
       navigate("/search");
-    } else {
-      const stoneType = type === "special" ? "SPECIAL_STONE" : "UPCOMING_STONE";
+    } else if (type === "special") {
       navigate("/diamond-list", {
-        state: { searchParams: { stone_type: [stoneType] } },
+        state: { searchParams: { is_special: ["true"] } },
       });
+    } else if (type === "upcoming") {
+        navigate("/diamond-list", {
+            state: { searchParams: { is_upcoming: ["true"] } },
+        });
     }
   };
 

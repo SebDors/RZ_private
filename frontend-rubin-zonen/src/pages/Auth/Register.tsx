@@ -102,7 +102,7 @@ function Register() {
 
         try {
             await registerUser(userData as User);
-
+            
             const loginData = await loginUser(email, password);
 
             if (loginData.token) {

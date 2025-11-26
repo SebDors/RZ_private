@@ -78,3 +78,21 @@ export const deleteDiamond = async (stock_id: string): Promise<{ message: string
     const data = await response.json();
     return data;
 };
+
+export const refreshDiamonds = async (): Promise<{ message: string }> => {
+    const token = getToken();
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/diamants/refresh`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Failed to refresh diamonds.');
+    }
+
+    return data;
+};

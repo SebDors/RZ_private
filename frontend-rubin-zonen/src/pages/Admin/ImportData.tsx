@@ -1,10 +1,11 @@
 import { useState, useRef } from 'react';
 import type { DragEvent, ChangeEvent } from 'react';
 import { toast } from 'sonner';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileSpreadsheet, X } from 'lucide-react';
 import { getToken } from '@/lib/utils';
+import { refreshDiamonds } from '@/services/diamonds';
 
 const csvMimeTypes = [
   'text/csv',
@@ -14,6 +15,20 @@ export default function ImportData() {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleSync = async () => {
+    setIsSyncing(true);
+    try {
+        const data = await refreshDiamonds();
+        toast.success(data.message || 'Database sync started!');
+    } catch (error) {
+        console.error('Sync error:', error);
+        toast.error('An error occurred during database sync.');
+    } finally {
+        setIsSyncing(false);
+    }
+  };
 
   const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -117,7 +132,11 @@ export default function ImportData() {
     <div className="p-4 bg-secondary rounded-md h-full">
       <Card>
         <CardHeader>
-          <CardTitle>Import Data</CardTitle>
+          <div className="flex justify-between items-center">
+            <Button onClick={handleSync} disabled={isSyncing}>
+                {isSyncing ? 'Syncing...' : 'Manually sync the database'}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div
@@ -157,7 +176,7 @@ export default function ImportData() {
           </div>
           <div className="mt-4">
             <Button onClick={handleUpload} disabled={selectedFiles.length === 0}>
-              Upload
+              Manual Data Upload (Not recommended)
             </Button>
           </div>
         </CardContent>

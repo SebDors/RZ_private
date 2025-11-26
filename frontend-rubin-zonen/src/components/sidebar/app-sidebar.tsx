@@ -94,7 +94,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           url: "/admin/filter-settings",
         },
         {
-          title: "Import Data",
+          title: "Manual Sync Data",
           url: "/admin/import-data",
         },
         {

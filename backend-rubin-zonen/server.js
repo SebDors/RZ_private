@@ -25,7 +25,7 @@ const port = process.env.PORT || 3000;
 
 // Enable CORS for the routes in the array
 // TODO: Adjust allowed origins in production
-const allowedOrigins = ['http://localhost:4173', 'http://localhost:5173','http://localhost:3000'];
+const allowedOrigins = ['http://localhost:4173', 'http://localhost:5173','http://localhost:3000', 'http://74.161.36.149:4173'];
 app.use(cors({
     origin: function (origin, callback) {
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
@@ -87,6 +87,10 @@ const swaggerOptions = {
             {
                 url: 'http://localhost:3000',
                 description: 'Local development server'
+            },
+            {
+                url: 'http://74.161.36.149:3000',
+                description: 'Production server'
             },
             // Add other servers here (staging, production) if necessary
         ],

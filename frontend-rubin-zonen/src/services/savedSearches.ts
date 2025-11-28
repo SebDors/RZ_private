@@ -10,7 +10,7 @@ interface SavedSearchRaw {
     created_at: string;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
 export const getSavedSearches = async (): Promise<SavedSearch[]> => {
     const token = getToken();

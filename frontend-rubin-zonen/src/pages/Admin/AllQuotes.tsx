@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import { getAllQuotes, deleteQuote } from "@/services/quote";
+import { getAllQuotes, deleteQuote, updateQuoteStatus } from "@/services/quote";
 import type { Quote } from "@/services/quote";
 import { useRedirectIfNotAdmin } from "@/hooks/useRedirect";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -17,9 +16,12 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useNavigate } from "react-router-dom";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 function AllQuotesContent() {
     useRedirectIfNotAdmin();
+    const navigate = useNavigate();
     const [quotes, setQuotes] = useState<Quote[]>([]);
     const [loading, setLoading] = useState(true);
     const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
@@ -62,6 +64,17 @@ function AllQuotesContent() {
         setIsAlertDialogOpen(true);
     };
 
+    const handleStatusChange = async (quoteId: number, newStatus: string) => {
+        try {
+            await updateQuoteStatus(quoteId, newStatus);
+            toast.success("Quote status updated.");
+            fetchAllQuotes(); // Refresh the list
+        } catch (error) {
+            console.error("Error updating quote status:", error);
+            toast.error("Failed to update quote status.");
+        }
+    };
+
     return (
         <div className="p-4 bg-secondary rounded-md h-full">
             <Card>
@@ -79,9 +92,21 @@ function AllQuotesContent() {
                                         <Card key={quote.id}>
                                             <CardHeader>
                                                 <CardTitle className="flex justify-between items-center">
-                                                    <span>Quote #{quote.id} - {quote.user?.first_name} {quote.user?.last_name} ({quote.user?.email})</span>
                                                     <div>
-                                                        <Badge>{quote.status}</Badge>
+                                                        <span>Quote #{quote.id} - {quote.user?.first_name} {quote.user?.last_name} ({quote.user?.email})</span>
+                                                        <Button variant="link" onClick={() => navigate(`/admin/clients/${quote.user?.id}`)}>Client Details</Button>
+                                                    </div>
+                                                    <div className="flex items-center">
+                                                        <Select onValueChange={(value) => handleStatusChange(quote.id, value)} defaultValue={quote.status}>
+                                                            <SelectTrigger className="w-[180px]">
+                                                                <SelectValue placeholder="Status" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="pending">Pending</SelectItem>
+                                                                <SelectItem value="approved">Approved</SelectItem>
+                                                                <SelectItem value="rejected">Rejected</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
                                                         <Button variant="destructive" size="sm" onClick={() => handleRemoveClick(quote.id)} className="ml-4">
                                                             Remove
                                                         </Button>
@@ -96,7 +121,7 @@ function AllQuotesContent() {
                                                 <ul className="list-disc pl-5 mt-2">
                                                     {quote.items.map((item, index) => (
                                                         <li key={index}>
-                                                            {item.shape} {item.weight}ct, {item.color}
+                                                            Stock ID: {item.stock_id}, Shape: {item.shape}, Weight: {item.weight}ct, Color: {item.color}, Clarity: {item.clarity}, Price/Carat: ${item.price_carat}
                                                         </li>
                                                     ))}
                                                 </ul>

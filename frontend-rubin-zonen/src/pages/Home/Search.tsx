@@ -11,6 +11,12 @@ import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
 import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
     AlertDialog,
     AlertDialogAction,
     AlertDialogCancel,
@@ -33,30 +39,61 @@ const shapes = [
     { Name: "Radiant", db_value: 'RA' },
     { Name: "Princess", db_value: 'PC' },
     { Name: "Emerald", db_value: 'EM' },
-    { Name: "Square Emerald", db_value: 'SEM' },
+    { Name: "Square Emerald", db_value: 'AS' },
     { Name: "Asscher", db_value: 'AS'},
     { Name: "Cushion Modified", db_value: 'CMB' },
     { Name: "Cushion Brilliant", db_value: 'CB' },
     { Name: "Cushion", db_value: 'CU' },
-    { Name: "Long Radiant", db_value: 'LRA' },
-    { Name: "Square Radiant", db_value: 'SRA' },
+    { Name: "Long Radiant", db_value: 'RA' },
+    { Name: "Square Radiant", db_value: 'RA' },
     { Name: "Trilliant", db_value: 'TR' },
     { Name: "Old Mine Cushion", db_value: 'OM' },
     { Name: "Shield", db_value: 'SH' },
     { Name: "Baguette", db_value: 'BAG' },
-    { Name: "Trapezoid", db_value: 'TP' },
+    { Name: "Trapezoid", db_value: 'TZ' },
     { Name: "Old European Cut", db_value: 'EU' },
     { Name: "Special Shape", db_value: 'SP' },
-    { Name: "Rose Cut", db_value: 'RC' },
+    { Name: "Rose Cut", db_value: 'RS' },
     // { Name: "Other", db_value: 'null' } // TODO change
 ];
 const colors = ["All", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O-P", "Q-R", "S-T", "U-V", "W-X", "Y-Z", "N-O", "P-R"];
-const clarities = ["All", "FL", "IF", "VVS1", "VVS2", "VS1", "VS2", "SI1", "SI2", "SI3", "I1", "I2"];
+const clarities = [
+    { Name: "All", db_value: "All", description: "Select all clarities" },
+    { Name: "FL", db_value: "FL", description: "Flawless" },
+    { Name: "IF", db_value: "IF", description: "Internally Flawless" },
+    { Name: "VVS1", db_value: "VVS1", description: "Very, Very Slightly Included 1" },
+    { Name: "VVS2", db_value: "VVS2", description: "Very, Very Slightly Included 2" },
+    { Name: "VS1", db_value: "VS1", description: "Very Slightly Included 1" },
+    { Name: "VS2", db_value: "VS2", description: "Very Slightly Included 2" },
+    { Name: "SI1", db_value: "SI1", description: "Slightly Included 1" },
+    { Name: "SI2", db_value: "SI2", description: "Slightly Included 2" },
+    { Name: "SI3", db_value: "SI3", description: "Slightly Included 3" },
+    { Name: "I1", db_value: "I1", description: "Included 1" },
+    { Name: "I2", db_value: "I2", description: "Included 2" },
+    { Name: "I3", db_value: "I3", description: "Included 3" },
+    { Name: "LC", db_value: "LC", description: "Loupe Clean" }
+];
 const carats = ["Less than 0.30", "0.30-0.39", "0.40-0.49", "0.50-0.69", "0.70-0.89", "0.90-1.99", "1.00-1.49", "1.50-1.99", "2.00-2.99", "3.00-3.99", "4.00-4.99", "5.00-5.99", "6.00-6.99", "7.00-7.99", "8.00-8.99", "9.00-9.99", "More than 10.00"];
-const cut = ["EX", "VG", "GD", "FR"];
-const polish = ["EX", "VG", "GD", "FR"];
-const symmetry = ["EX", "VG", "GD", "FR"];
-const fluorescences = ["NON", "FNT", "SLT", "VSLT", "MED", "STG", "VST"];
+const finishingGrades = [
+    { Name: "All", db_value: "All", description: "Select all grades" },
+    { Name: "EX", db_value: "EX", description: "Excellent" },
+    { Name: "VG", db_value: "VG", description: "Very Good" },
+    { Name: "GD", db_value: "GD", description: "Good" },
+    { Name: "FR", db_value: "FR", description: "Fair" }
+];
+const cut = finishingGrades;
+const polish = finishingGrades;
+const symmetry = finishingGrades;
+const fluorescences = [
+    { Name: "All", db_value: "All", description: "Select all fluorescences" },
+    { Name: "NON", db_value: "NON", description: "None" },
+    { Name: "FNT", db_value: "FNT", description: "Faint" },
+    { Name: "SLT", db_value: "SLT", description: "Slight" },
+    { Name: "VSLT", db_value: "VSLT", description: "Very Slight" },
+    { Name: "MED", db_value: "MED", description: "Medium" },
+    { Name: "STG", db_value: "STG", description: "Strong" },
+    { Name: "VST", db_value: "VST", description: "Very Strong" }
+];
 const labs = ["GIA", "IGI", "HRD"];
 const priceRanges = ["0-1000", "1001-5000", "5001-10000", "10001+"];
 
@@ -113,7 +150,7 @@ function QuickSearchContent() {
                     allValues = colors;
                     break;
                 case 'clarity':
-                    allValues = clarities;
+                    allValues = clarities.map(c => c.db_value);
                     break;
                 case 'carat':
                     // carat has custom values in the state based on user input, so "All" behavior needs careful handling.
@@ -123,16 +160,16 @@ function QuickSearchContent() {
                     allValues = carats;
                     break;
                 case 'cut':
-                    allValues = cut;
+                    allValues = cut.map(c => c.db_value);
                     break;
                 case 'polish':
-                    allValues = polish;
+                    allValues = polish.map(p => p.db_value);
                     break;
                 case 'symmetry':
-                    allValues = symmetry;
+                    allValues = symmetry.map(s => s.db_value);
                     break;
                 case 'fluorescence':
-                    allValues = fluorescences;
+                    allValues = fluorescences.map(f => f.db_value);
                     break;
                 case 'lab':
                     allValues = labs;
@@ -255,13 +292,33 @@ function QuickSearchContent() {
         }));
     };
 
-    const renderGrid = (title: string, key: string, items: (string | { Name: string; db_value: string | null })[]) => (
+    const renderGrid = (title: string, key: string, items: (string | { Name: string; db_value: string | null, description?: string })[]) => (
         <div className="mb-4">
             <h3 className="text-lg font-semibold mb-1">{title}</h3>
             <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-12 grid-flow-row-dense gap-2">
                 {items.map(item => {
                     const name = typeof item === 'string' ? item : item.Name;
                     const value = typeof item === 'string' ? item : (item.db_value === null ? '' : item.db_value);
+                    const description = typeof item === 'object' && item.description ? item.description : null;
+
+                    if (description) {
+                        return (
+                            <Tooltip key={name}>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant={selectedCriteria[key].includes(value) ? "default" : "outline"}
+                                        onClick={() => handleSelect(key, value)}
+                                    >
+                                        {name}
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>{description}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        );
+                    }
+
                     return (
                         <Button
                             key={name}
@@ -379,7 +436,9 @@ function QuickSearchContent() {
 export default function QuickSearch() {
     return (
         <SidebarProvider>
-            <QuickSearchContent />
+            <TooltipProvider>
+                <QuickSearchContent />
+            </TooltipProvider>
         </SidebarProvider>
     );
 }

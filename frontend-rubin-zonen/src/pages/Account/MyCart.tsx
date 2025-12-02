@@ -24,9 +24,7 @@ function MyCartContent() {
     const { setOpen, open } = useSidebar();
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [loading, setLoading] = useState(true);
-
-    // Define test email receiver here
-    const TEST_EMAIL_RECEIVER = "test@example.com";
+    const ADMIN_EMAIL_RECEIVER = import.meta.env.VITE_ADMIN_EMAIL_RECEIVER;
 
     const handleOpen = () => {
         if (!open) {
@@ -130,7 +128,7 @@ function MyCartContent() {
             // Send email to test address
             const subject = "New Quote Request from Rubin & Zonen"; 
             const textContent = `A new quote has been requested for the following diamond stock IDs: ${diamondStockIds.join(', ')}.`;
-            await sendCustomEmail(TEST_EMAIL_RECEIVER, subject, textContent);
+            await sendCustomEmail(ADMIN_EMAIL_RECEIVER, subject, textContent);
             toast.success("Notification email sent to test address.");
 
             // Clear the cart after quote creation

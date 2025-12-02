@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
+import { sendCustomEmail } from "@/services/email";
 
 function DiamondListContent() {
     useRedirectIfNotAuth();
@@ -40,6 +41,7 @@ function DiamondListContent() {
     const [diamonds, setDiamonds] = useState<Diamant[]>([]);
     const [loading, setLoading] = useState(true);
     const [showNoResultsDialog, setShowNoResultsDialog] = useState(false);
+    const ADMIN_EMAIL_RECEIVER = import.meta.env.VITE_ADMIN_EMAIL_RECEIVER;
 
     useEffect(() => {
         const fetchDiamonds = async () => {
@@ -127,8 +129,19 @@ function DiamondListContent() {
         navigate(`/stone-detail/${stock_id}`);
     };
 
-    const handleCustomDemand = () => {
-        toast("We will look at your demand.");//TODO change the message and send a mail to the admin
+    const handleCustomDemand = async () => {
+        const searchParams = location.state?.searchParams;
+        const subject = "Custom Diamond Demand";
+        const textContent = `A user has made a custom diamond demand with the following criteria:\n\n${JSON.stringify(searchParams, null, 2)}`;
+
+        try {
+            await sendCustomEmail(ADMIN_EMAIL_RECEIVER, subject, textContent);
+            toast.success("Your custom demand has been sent to the admin.");
+        } catch (error) {
+            console.error("Failed to send custom demand email:", error);
+            toast.error("Could not send your custom demand. Please try again later.");
+        }
+
         setShowNoResultsDialog(false);
         navigate(-1);
     };

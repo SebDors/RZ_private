@@ -179,7 +179,7 @@ ALTER SEQUENCE public.quote_items_id_seq OWNED BY public.quote_items.id;
 CREATE TABLE public.quotes (
     id integer NOT NULL,
     user_id integer NOT NULL,
-    status character varying(50) DEFAULT 'en attente'::character varying NOT NULL,
+    status character varying(50) DEFAULT 'pending'::character varying NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
 );

@@ -654,7 +654,7 @@ COPY public.cart_items (id, user_id, diamond_stock_id, quantity, added_at) FROM 
 
 
 COPY public.quotes (id, user_id, status, created_at, updated_at) FROM stdin;
-1	1	en attente	2025-09-28 16:56:53.901519+00	2025-09-28 16:56:53.901519+00
+1	1	pending	2025-09-28 16:56:53.901519+00	2025-09-28 16:56:53.901519+00
 \.
 
 --

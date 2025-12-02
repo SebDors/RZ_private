@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
+import { Switch } from "@/components/ui/switch";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {
     Tooltip,
     TooltipContent,
@@ -97,10 +99,18 @@ const fluorescences = [
 const labs = ["GIA", "IGI", "HRD"];
 const priceRanges = ["0-1000", "1001-5000", "5001-10000", "10001+"];
 
+const fancyIntensities = ["Faint", "Very Light", "Light", "Fancy Light", "Fancy", "Fancy Dark", "Fancy Intense", "Fancy Vivid", "Fancy Deep"];
+const fancyOvertones = ["None", "Yellow", "Yellowish", "Pink", "Pinkish", "Blue", "Bluish", "Red", "Reddish", "Green", "Greenish", "Purple", "Purplish", "Orange", "Orangey", "Gray", "Grayish Greenish", "Black", "Brown", "Brownish", "Gray Yellowish", "Champagne", "Cognac", "Chameleon", "Violetish", "White"];
+const fancyColors = ["Yellow", "Green", "Pink", "Blue", "Red", "Purple", "Orange", "Violet", "Gray", "Black", "Brown", "Champagne", "Cognac", "Chameleon", "White", "Other", "Brown-Orange"];
+
 function QuickSearchContent() {
     useRedirectIfNotAuth();
     const navigate = useNavigate();
     const { setOpen, open } = useSidebar();
+    const [isFancyColor, setIsFancyColor] = useState(false);
+    const [selectedFancyIntensity, setSelectedFancyIntensity] = useState<string[]>([]);
+    const [selectedFancyOvertone, setSelectedFancyOvertone] = useState<string[]>([]);
+    const [selectedFancyColor, setSelectedFancyColor] = useState<string[]>([]);
     const [selectedCriteria, setSelectedCriteria] = useState<Record<string, string[]>>({
         shape: [],
         carat: [],
@@ -128,11 +138,41 @@ function QuickSearchContent() {
 
     const loadSearch = (params: Record<string, string[]>) => {
         setSelectedCriteria(params);
+        if (params.fancy_color_intensity || params.fancy_color_overtone || params.fancy_color) {
+            setIsFancyColor(true);
+            setSelectedFancyIntensity(params.fancy_color_intensity || []);
+            setSelectedFancyOvertone(params.fancy_color_overtone || []);
+            setSelectedFancyColor(params.fancy_color || []);
+        } else {
+            setIsFancyColor(false);
+        }
     };
 
     const handleOpen = () => {
         if (!open) {
             setOpen(true);
+        }
+    };
+
+    const handleFancySelect = (category: 'intensity' | 'overtone' | 'color', value: string) => {
+        const getter = {
+            intensity: selectedFancyIntensity,
+            overtone: selectedFancyOvertone,
+            color: selectedFancyColor,
+        };
+        const setter = {
+            intensity: setSelectedFancyIntensity,
+            overtone: setSelectedFancyOvertone,
+            color: setSelectedFancyColor,
+        };
+
+        const currentSelection = getter[category];
+        const setSelection = setter[category];
+
+        if (currentSelection.includes(value)) {
+            setSelection(currentSelection.filter(item => item !== value));
+        } else {
+            setSelection([...currentSelection, value]);
         }
     };
 
@@ -222,9 +262,19 @@ function QuickSearchContent() {
     };
 
     const handleSearch = useCallback(() => {
-        addSearchToHistory(selectedCriteria);
-        navigate('/diamond-list', { state: { searchParams: selectedCriteria } });
-    }, [selectedCriteria, addSearchToHistory, navigate]);
+        let searchParams: Record<string, string[]> = { ...selectedCriteria };
+        if (isFancyColor) {
+            searchParams = {
+                ...searchParams,
+                fancy_color_intensity: selectedFancyIntensity,
+                fancy_color_overtone: selectedFancyOvertone,
+                fancy_color: selectedFancyColor,
+                color: [], // Ensure normal color is not sent
+            };
+        }
+        addSearchToHistory(searchParams);
+        navigate('/diamond-list', { state: { searchParams } });
+    }, [selectedCriteria, isFancyColor, selectedFancyIntensity, selectedFancyOvertone, selectedFancyColor, addSearchToHistory, navigate]);
 
     const handleSave = () => {
         setIsSaveDialogOpen(true);
@@ -235,7 +285,17 @@ function QuickSearchContent() {
         if (!name) {
             name = new Date().toLocaleString();
         }
-        saveSearch(name, selectedCriteria);
+        let searchToSave: Record<string, string[]> = { ...selectedCriteria };
+        if (isFancyColor) {
+            searchToSave = {
+                ...searchToSave,
+                fancy_color_intensity: selectedFancyIntensity,
+                fancy_color_overtone: selectedFancyOvertone,
+                fancy_color: selectedFancyColor,
+                color: [],
+            };
+        }
+        saveSearch(name, searchToSave);
         setIsSaveDialogOpen(false);
         setSaveSearchName("");
     };
@@ -255,6 +315,10 @@ function QuickSearchContent() {
         });
         setMinCarat('');
         setMaxCarat('');
+        setIsFancyColor(false);
+        setSelectedFancyIntensity([]);
+        setSelectedFancyOvertone([]);
+        setSelectedFancyColor([]);
     };
 
     const handleAddRange = () => {
@@ -375,7 +439,84 @@ function QuickSearchContent() {
                         <CardContent>
                             {renderGrid("Shape", "shape", shapes)}
                             {renderGrid("Carat", "carat", carats)}
-                            {renderGrid("Color", "color", colors)}
+                            <div className="mb-4">
+                                <div className="flex items-center space-x-2 mb-2">
+                                    <h3 className="text-lg font-semibold">Color</h3>
+                                    <Switch
+                                        checked={isFancyColor}
+                                        onCheckedChange={setIsFancyColor}
+                                        id="fancy-color-switch"
+                                    />
+                                    <label htmlFor="fancy-color-switch">Fancy Color</label>
+                                </div>
+                                {isFancyColor ? (
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="outline">Intensity ({selectedFancyIntensity.length})</Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent className="w-56" onCloseAutoFocus={(e) => e.preventDefault()}>
+                                                <DropdownMenuLabel>Intensity</DropdownMenuLabel>
+                                                {fancyIntensities.map(intensity => (
+                                                    <DropdownMenuCheckboxItem
+                                                        key={intensity}
+                                                        checked={selectedFancyIntensity.includes(intensity)}
+                                                        onCheckedChange={() => handleFancySelect('intensity', intensity)}
+                                                    >
+                                                        {intensity}
+                                                    </DropdownMenuCheckboxItem>
+                                                ))}
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="outline">Overtone ({selectedFancyOvertone.length})</Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent className="w-56" onCloseAutoFocus={(e) => e.preventDefault()}>
+                                                <DropdownMenuLabel>Overtone</DropdownMenuLabel>
+                                                {fancyOvertones.map(overtone => (
+                                                    <DropdownMenuCheckboxItem
+                                                        key={overtone}
+                                                        checked={selectedFancyOvertone.includes(overtone)}
+                                                        onCheckedChange={() => handleFancySelect('overtone', overtone)}
+                                                    >
+                                                        {overtone}
+                                                    </DropdownMenuCheckboxItem>
+                                                ))}
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="outline">Color ({selectedFancyColor.length})</Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent className="w-56" onCloseAutoFocus={(e) => e.preventDefault()}>
+                                                <DropdownMenuLabel>Color</DropdownMenuLabel>
+                                                {fancyColors.map(color => (
+                                                    <DropdownMenuCheckboxItem
+                                                        key={color}
+                                                        checked={selectedFancyColor.includes(color)}
+                                                        onCheckedChange={() => handleFancySelect('color', color)}
+                                                    >
+                                                        {color}
+                                                    </DropdownMenuCheckboxItem>
+                                                ))}
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-12 grid-flow-row-dense gap-2">
+                                        {colors.map(color => (
+                                            <Button
+                                                key={color}
+                                                variant={selectedCriteria.color.includes(color) ? "default" : "outline"}
+                                                onClick={() => handleSelect("color", color)}
+                                            >
+                                                {color}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                             {renderGrid("Clarity", "clarity", clarities)}
                             {renderGrid("Cut", "cut", cut)}
                             {renderGrid("Polish", "polish", polish)}

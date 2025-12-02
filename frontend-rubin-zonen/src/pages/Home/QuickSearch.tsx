@@ -23,21 +23,22 @@ const shapes = [
     { Name: "Radiant", db_value: 'RA' },
     { Name: "Princess", db_value: 'PC' },
     { Name: "Emerald", db_value: 'EM' },
-    { Name: "Square Emerald", db_value: 'SEM' },
+    { Name: "Square Emerald", db_value: 'AS' },
     { Name: "Asscher", db_value: 'AS'},
     { Name: "Cushion Modified", db_value: 'CMB' },
     { Name: "Cushion Brilliant", db_value: 'CB' },
     { Name: "Cushion", db_value: 'CU' },
-    { Name: "Long Radiant", db_value: 'LRA' },
-    { Name: "Square Radiant", db_value: 'SRA' },
+    { Name: "Long Radiant", db_value: 'RA' },
+    { Name: "Square Radiant", db_value: 'RA' },
     { Name: "Trilliant", db_value: 'TR' },
     { Name: "Old Mine Cushion", db_value: 'OM' },
     { Name: "Shield", db_value: 'SH' },
     { Name: "Baguette", db_value: 'BAG' },
-    { Name: "Trapezoid", db_value: 'TP' },
+    { Name: "Trapezoid", db_value: 'TZ' },
     { Name: "Old European Cut", db_value: 'EU' },
     { Name: "Special Shape", db_value: 'SP' },
-    { Name: "Rose Cut", db_value: 'RC' },
+    { Name: "Rose Cut", db_value: 'RS' },
+    { Name: "Other", db_value: 'OTH' }
 ];
 
 const caratRanges = ["0.30-0.399", "0.40-0.499", "0.50-0.699", "0.70-0.899", "0.90-0.999", "1.00-1.49", "1.50-1.99", "2.00-2.99", "3.00-3.99", "4.00-4.99", "5.00-5.99", "6.00-7.99", "8.00-9.99", "10.00+"];

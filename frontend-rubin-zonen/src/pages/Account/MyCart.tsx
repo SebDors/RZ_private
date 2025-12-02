@@ -3,6 +3,7 @@ import { getCart, deleteCartItem, addItemToCart } from "@/services/cart";
 import { addItemToWatchlist, deleteWatchlistItem } from "@/services/watchlist";
 import type { CartItem } from "@/services/cart";
 import { sendCustomEmail } from "@/services/email"; // Import sendCustomEmail
+import { getDiamondById } from "@/services/diamonds";
 
 import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
 import { Button } from "@/components/ui/button";
@@ -12,13 +13,10 @@ import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import Header from "@/components/Header";
 import { SidebarInset, SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { createQuote } from "@/services/quote";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { exportToExcel } from "@/lib/export";
+import { Spinner } from "@/components/ui/spinner";
 
 function MyCartContent() {
     useRedirectIfNotAuth();
@@ -26,7 +24,6 @@ function MyCartContent() {
     const { setOpen, open } = useSidebar();
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [loading, setLoading] = useState(true);
-    const [date, setDate] = useState<Date | undefined>(undefined);
 
     // Define test email receiver here
     const TEST_EMAIL_RECEIVER = "test@example.com";
@@ -152,6 +149,90 @@ function MyCartContent() {
         return cartItems.reduce((total, item) => total + Number(item.price_carat) * item.weight, 0);
     };
 
+    const handleExport = async () => {
+        if (cartItems.length === 0) {
+            toast.error("No items in cart to export.");
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const detailedCartItems = await Promise.all(
+                cartItems.map(item => getDiamondById(item.diamond_stock_id))
+            );
+
+            const dataToExport = detailedCartItems.map(d => ({
+                "Stock ID": d.stock_id,
+                "Availability": d.availability,
+                "Shape": d.shape,
+                "Weight": d.weight,
+                "Color": d.color,
+                "Clarity": d.clarity,
+                "Cut Grade": d.cut_grade,
+                "Polish": d.polish,
+                "Symmetry": d.symmetry,
+                "Fluorescence Intensity": d.fluorescence_intensity,
+                "Fluorescence Color": d.fluorescence_color,
+                "Measurements": d.measurements,
+                "Lab": d.lab,
+                "Certificate Number": d.certificate_number,
+                "Treatment": d.treatment,
+                "Price/Carat": d.price_carat,
+                "Fancy Color": d.fancy_color,
+                "Fancy Color Intensity": d.fancy_color_intensity,
+                "Fancy Color Overtone": d.fancy_color_overtone,
+                "Depth %": d.depth_pct,
+                "Table %": d.table_pct,
+                "Girdle Thin": d.girdle_thin,
+                "Girdle Thick": d.girdle_thick,
+                "Girdle %": d.girdle_pct,
+                "Girdle Condition": d.girdle_condition,
+                "Culet Size": d.culet_size,
+                "Culet Condition": d.culet_condition,
+                "Crown Height": d.crown_height,
+                "Crown Angle": d.crown_angle,
+                "Pavilion Depth": d.pavilion_depth,
+                "Pavilion Angle": d.pavilion_angle,
+                "Laser Inscription": d.laser_inscription,
+                "Comment": d.comment,
+                "Country": d.country,
+                "State": d.state,
+                "City": d.city,
+                "Is Matched Pair Separable": d.is_matched_pair_separable,
+                "Pair Stock ID": d.pair_stock_id,
+                "Allow Raplink Feed": d.allow_raplink_feed,
+                "Parcel Stones": d.parcel_stones,
+                "Certificate Filename": d.certificate_filename,
+                "Diamond Image": d.diamond_image,
+                "3D File": d["3d_file"],
+                "Trade Show": d.trade_show,
+                "Member Comments": d.member_comments,
+                "Rap": d.rap,
+                "Disc": d.disc,
+                "Video File": d.video_file,
+                "Image File": d.image_file,
+                "Certificate File": d.certificate_file,
+                "Is Special": d.is_special,
+                "Is Upcoming": d.is_upcoming,
+            }));
+
+            exportToExcel(dataToExport, "cart");
+        } catch (error) {
+            toast.error("Could not export cart details.");
+            console.error("Export error:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Spinner className="h-12 w-12" />
+            </div>
+        );
+    }
+
     return (
         <>
             <AppSidebar onClick={handleOpen} className="cursor-pointer" />
@@ -183,6 +264,9 @@ function MyCartContent() {
                                                         <Button variant="outline" onClick={() => handleMoveToWatchlist(item.diamond_stock_id)}>
                                                             Move to Watchlist
                                                         </Button>
+                                                        <Button variant="outline" onClick={() => navigate(`/stone-detail/${item.diamond_stock_id}`)}>
+                                                            Show Details
+                                                        </Button>
                                                     </div>
                                                 </CardContent>
                                             </Card>
@@ -201,28 +285,7 @@ function MyCartContent() {
                                             <span>${calculateTotal().toFixed(2)}</span>
                                         </div>
                                         <Button className="w-full mt-4" onClick={handleAskQuote}>Ask a Quote</Button>
-                                        <Popover>
-                                            <PopoverTrigger asChild>
-                                                <Button
-                                                    variant={"outline"}
-                                                    className={cn(
-                                                        "w-full justify-start text-left font-normal mt-4",
-                                                        !date && "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                                    {date ? format(date, "PPP") : <span>Pick a date</span>}
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-auto p-0">
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={date}
-                                                    onSelect={setDate}
-                                                    initialFocus
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
+                                        <Button className="w-full mt-4" variant="outline" onClick={handleExport}>Export to Excel</Button>
                                     </CardContent>
                                 </Card>
                             </div>

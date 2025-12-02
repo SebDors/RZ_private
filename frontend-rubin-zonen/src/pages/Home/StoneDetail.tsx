@@ -19,6 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Clock, ShoppingCart, Download, FileText, Image as ImageIcon, Video } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { exportToExcel } from "@/lib/export";
 
 // Helper component to render the detail rows using theme colors
 const DetailRow = ({ 
@@ -130,9 +131,67 @@ function StoneDetailContent() {
     };
 
     const handleExport = () => {
-        toast.info("Exporting to Excel...", {
-            description: "This feature will be available soon."
-        });
+        if (!diamond) {
+            toast.error("No diamond details to export.");
+            return;
+        }
+
+        const dataToExport = [{
+            "Stock ID": diamond.stock_id,
+            "Availability": diamond.availability,
+            "Shape": diamond.shape,
+            "Weight": diamond.weight,
+            "Color": diamond.color,
+            "Clarity": diamond.clarity,
+            "Cut Grade": diamond.cut_grade,
+            "Polish": diamond.polish,
+            "Symmetry": diamond.symmetry,
+            "Fluorescence Intensity": diamond.fluorescence_intensity,
+            "Fluorescence Color": diamond.fluorescence_color,
+            "Measurements": diamond.measurements,
+            "Lab": diamond.lab,
+            "Certificate Number": diamond.certificate_number,
+            "Treatment": diamond.treatment,
+            "Price/Carat": diamond.price_carat,
+            "Fancy Color": diamond.fancy_color,
+            "Fancy Color Intensity": diamond.fancy_color_intensity,
+            "Fancy Color Overtone": diamond.fancy_color_overtone,
+            "Depth %": diamond.depth_pct,
+            "Table %": diamond.table_pct,
+            "Girdle Thin": diamond.girdle_thin,
+            "Girdle Thick": diamond.girdle_thick,
+            "Girdle %": diamond.girdle_pct,
+            "Girdle Condition": diamond.girdle_condition,
+            "Culet Size": diamond.culet_size,
+            "Culet Condition": diamond.culet_condition,
+            "Crown Height": diamond.crown_height,
+            "Crown Angle": diamond.crown_angle,
+            "Pavilion Depth": diamond.pavilion_depth,
+            "Pavilion Angle": diamond.pavilion_angle,
+            "Laser Inscription": diamond.laser_inscription,
+            "Comment": diamond.comment,
+            "Country": diamond.country,
+            "State": diamond.state,
+            "City": diamond.city,
+            "Is Matched Pair Separable": diamond.is_matched_pair_separable,
+            "Pair Stock ID": diamond.pair_stock_id,
+            "Allow Raplink Feed": diamond.allow_raplink_feed,
+            "Parcel Stones": diamond.parcel_stones,
+            "Certificate Filename": diamond.certificate_filename,
+            "Diamond Image": diamond.diamond_image,
+            "3D File": diamond["3d_file"],
+            "Trade Show": diamond.trade_show,
+            "Member Comments": diamond.member_comments,
+            "Rap": diamond.rap,
+            "Disc": diamond.disc,
+            "Video File": diamond.video_file,
+            "Image File": diamond.image_file,
+            "Certificate File": diamond.certificate_file,
+            "Is Special": diamond.is_special,
+            "Is Upcoming": diamond.is_upcoming,
+        }];
+
+        exportToExcel(dataToExport, `diamond_${diamond.stock_id}`);
     };
 
     // Reset error states when diamond changes or tab changes

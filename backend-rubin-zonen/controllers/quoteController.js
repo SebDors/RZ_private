@@ -1,5 +1,6 @@
 const db = require('../config/db');
 const { addLog } = require('./logController');
+const { sendTemplateEmailToAddress } = require('./emailController');
 
 // --- User Functions ---
 // POST /api/quotes - Create a new quote
@@ -27,6 +28,29 @@ exports.createQuote = async (req, res) => {
         }
 
         await client.query('COMMIT'); // Commit the transaction
+        
+        // Get user info for email
+        const userResult = await client.query('SELECT first_name, last_name, email FROM users WHERE id = $1', [userId]);
+        if (userResult.rows.length > 0) {
+            const user = userResult.rows[0];
+
+            // Send email to admin
+            const adminEmail = process.env.ADMIN_EMAIL_RECEIVER;
+            if (adminEmail) {
+                sendTemplateEmailToAddress( // Not awaiting to not block the response
+                    adminEmail,
+                    'Ask_Quote_Admin',
+                    {
+                        client_name: `${user.first_name} ${user.last_name}`,
+                        client_email: user.email,
+                        diamond_ids: diamond_stock_ids.join(', '),
+                        quote_id: newQuote.id,
+                    },
+                    userId // for logging
+                );
+            }
+        }
+
         await addLog({
             userId,
             level: 'info',

@@ -92,5 +92,58 @@ const sendTemplateEmail = async (userId, template_name, data = {}) => {
 };
 
 
+const sendTemplateEmailToAddress = async (to, template_name, data = {}, userIdForLog = null) => {
+    const client = await db.connect();
+    try {
+        // Fetch email template
+        const templateResult = await client.query('SELECT * FROM email_templates WHERE template_name = $1', [template_name]);
+        if (templateResult.rows.length === 0) {
+            throw new Error(`Email template '${template_name}' not found.`);
+        }
+
+        const template = templateResult.rows[0];
+        let { subject, body } = template;
+
+        // Replace placeholders
+        for (const key in data) {
+            const regex = new RegExp(`{{${key}}}`, 'g');
+            subject = subject.replace(regex, data[key]);
+            body = body.replace(regex, data[key]);
+        }
+        
+        try {
+            await sendCustomEmail(to, subject, body);
+            await addLog({
+                userId: userIdForLog,
+                level: 'info',
+                action: `SEND_${template_name.toUpperCase()}_EMAIL_SUCCESS`,
+                details: { email: to }
+            });
+        } catch (emailError) {
+            console.error(`Failed to send ${template_name} email to ${to}:`, emailError);
+            await addLog({
+                userId: userIdForLog,
+                level: 'error',
+                action: `SEND_${template_name.toUpperCase()}_EMAIL_FAILED`,
+                details: { email: to, error: emailError.message }
+            });
+        }
+
+    } catch (error) {
+        console.error('Error preparing to send template email:', error);
+        await addLog({
+            userId: userIdForLog,
+            level: 'error',
+            action: `PREPARE_EMAIL_${template_name.toUpperCase()}_FAILED`,
+            details: { error: error.message }
+        });
+    }
+    finally {
+        client.release();
+    }
+};
+
+
 exports.sendCustomEmail = sendCustomEmail;
 exports.sendTemplateEmail = sendTemplateEmail;
+exports.sendTemplateEmailToAddress = sendTemplateEmailToAddress;

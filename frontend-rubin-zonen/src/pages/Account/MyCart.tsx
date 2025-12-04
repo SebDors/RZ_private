@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { getCart, deleteCartItem, addItemToCart } from "@/services/cart";
 import { addItemToWatchlist, deleteWatchlistItem } from "@/services/watchlist";
 import type { CartItem } from "@/services/cart";
-import { sendCustomEmail } from "@/services/email"; // Import sendCustomEmail
 import { getDiamondById } from "@/services/diamonds";
 
 import { useRedirectIfNotAuth } from "@/hooks/useRedirect";
@@ -24,7 +23,6 @@ function MyCartContent() {
     const { setOpen, open } = useSidebar();
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [loading, setLoading] = useState(true);
-    const ADMIN_EMAIL_RECEIVER = import.meta.env.VITE_ADMIN_EMAIL_RECEIVER;
 
     const handleOpen = () => {
         if (!open) {
@@ -124,12 +122,6 @@ function MyCartContent() {
                     onClick: () => navigate("/my-quote"),
                 },
             });
-
-            // Send email to test address
-            const subject = "New Quote Request from Rubin & Zonen"; 
-            const textContent = `A new quote has been requested for the following diamond stock IDs: ${diamondStockIds.join(', ')}.`;
-            await sendCustomEmail(ADMIN_EMAIL_RECEIVER, subject, textContent);
-            toast.success("Notification email sent to test address.");
 
             // Clear the cart after quote creation
             for (const item of cartItems) {

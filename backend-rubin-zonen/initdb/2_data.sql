@@ -743,6 +743,7 @@ SELECT pg_catalog.setval (
 COPY public.email_templates (template_name, subject, body) FROM stdin;
 New_user	Bonjour chez Rubin & Zonen	Bonjour {{name}}, bienvenue chez rubin et zonen
 Password_Reset	Password Reset	You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\nPlease click on the following link, or paste this into your browser to complete the process:\n\n{{resetURL}}\n\nIf you did not request this, please ignore this email and your password will remain unchanged.\n
+Ask_Quote_Admin	New Quote Request - #{{quote_id}}	Client "{{client_name}}" ({{client_email}}) has requested a quote for the following diamond(s): {{diamond_ids}}. Quote ID: {{quote_id}}. Please contact them as soon as possible.
 \.
 
 --

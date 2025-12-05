@@ -6,7 +6,7 @@
   tasks:
     - name: Create resource group
       azure.azcollection.azure_rm_resourcegroup:
-        name: "rg-seb"
+        name: "rg-seb_V2"
         location: "France Central"
       register: rg_result
 

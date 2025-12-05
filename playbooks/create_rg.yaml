@@ -1,0 +1,15 @@
+# Create a ressource group
+- name: Create a resource group
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Create resource group
+      azure.azcollection.azure_rm_resourcegroup:
+        name: "rg-seb"
+        location: "France Central"
+      register: rg_result
+
+    - name: Display resource group creation result
+      debug:
+        var: rg_result

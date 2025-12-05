@@ -1,0 +1,16 @@
+# Delete a ressource group
+- name: Delete a resource group
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Delete resource group
+      azure.azcollection.azure_rm_resourcegroup:
+        name: "rg-seb_V2"
+        location: "France Central"
+        state: absent
+      register: rg_result
+
+    - name: Display resource group creation result
+      debug:
+        var: rg_result

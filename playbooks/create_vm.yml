@@ -5,21 +5,21 @@
   - name: Delete resource group
     azure.azcollection.azure_rm_resourcegroup:
         name: "VM_rg"
-        location: "westeurope"
+        location: "francecentral"
         state: absent
     register: rg_result
 
   - name: Create resource group
     azure_rm_resourcegroup:
       name: VM_rg
-      location: "westeurope"
+      location: "francecentral"
 
   - name: Create virtual network
     azure_rm_virtualnetwork:
       resource_group: VM_rg
       name: myVnet
       address_prefixes: "10.0.0.0/16"
-      location: "westeurope"
+      location: "francecentral"
 
   - name: Add subnet
     azure_rm_subnet:
@@ -33,7 +33,7 @@
       resource_group: VM_rg
       allocation_method: Static
       name: myPublicIP
-      location: "westeurope"
+      location: "francecentral"
     register: output_ip_address
 
   - name: Public IP of VM
@@ -47,14 +47,14 @@
       virtual_network: myVnet
       subnet: mySubnet
       public_ip_name: myPublicIP
-      location: "westeurope"
+      location: "francecentral"
 
   - name: Create VM
     azure_rm_virtualmachine:
       resource_group: VM_rg
       name: myVM
       vm_size: Standard_DS1_v2
-      location: "westeurope"
+      location: "francecentral"
       admin_username: azureuser
       admin_password: "password!"
       ssh_password_enabled: true

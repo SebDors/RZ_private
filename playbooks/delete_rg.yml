@@ -7,7 +7,7 @@
     - name: Delete resource group
       azure.azcollection.azure_rm_resourcegroup:
         name: "rg-seb_V2"
-        location: "France Central"
+        location: "France  Central"
         state: absent
       register: rg_result
 
